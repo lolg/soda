@@ -4,9 +4,9 @@ import math
 from itertools import product
 from typing import Iterator
 
-from juno.core.config import OrchestrationConfig
-from juno.core.models import SegmentationMetrics
-from juno.core.segment_builder import SegmentBuilder
+from soda.core.config import OrchestrationConfig
+from soda.core.models import SegmentationMetrics
+from soda.core.segment_builder import SegmentBuilder
 
 
 def score_config(metrics: SegmentationMetrics, weights: dict[str, float]) -> float:

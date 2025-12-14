@@ -1,5 +1,5 @@
 [project]
-name = "juno"
+name = "soda"
 version = "0.1.0"
 description = "Open-source ODI segmentation tool for product teams"
 readme = "README.md"
@@ -24,14 +24,14 @@ dev = [
 ]
 
 [project.scripts]
-juno = "cli.main:main"
+soda = "cli.main:main"
 
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-include = ["juno*", "cli*"]
+include = ["soda*", "cli*"]
 
 [tool.ruff]
 line-length = 100

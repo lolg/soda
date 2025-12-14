@@ -4,8 +4,8 @@ import logging
 from dataclasses import dataclass
 from typing import ClassVar
 
-from juno.pipeline.context import Context
-from juno.pipeline.step import Step
+from soda.pipeline.context import Context
+from soda.pipeline.step import Step
 
 logger = logging.getLogger(__name__)
 

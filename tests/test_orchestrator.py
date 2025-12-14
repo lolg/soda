@@ -2,10 +2,10 @@
 
 import pandas as pd
 
-from juno.core.config import Constraint, OrchestrationConfig
-from juno.core.models import SegmentationMetrics
-from juno.core.orchestrator import Orchestrator, score_config
-from juno.core.schema import DataKey, importance_col, satisfaction_col
+from soda.core.config import Constraint, OrchestrationConfig
+from soda.core.models import SegmentationMetrics
+from soda.core.orchestrator import Orchestrator, score_config
+from soda.core.schema import DataKey, importance_col, satisfaction_col
 
 
 def make_responses(n_respondents=30, n_outcomes=5):

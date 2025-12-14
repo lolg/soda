@@ -45,9 +45,9 @@ import numpy as np
 import pandas as pd
 from sklearn.decomposition import PCA
 
-from juno.pipeline.context import Context
-from juno.pipeline.keys import Key
-from juno.pipeline.step import Step
+from soda.pipeline.context import Context
+from soda.pipeline.keys import Key
+from soda.pipeline.step import Step
 
 logger = logging.getLogger(__name__)
 

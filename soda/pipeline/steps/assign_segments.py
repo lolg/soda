@@ -79,10 +79,10 @@ from typing import ClassVar
 import pandas as pd
 from sklearn.cluster import KMeans
 
-from juno.core.schema import DataKey, list_opportunity_columns
-from juno.pipeline.context import Context
-from juno.pipeline.keys import Key
-from juno.pipeline.step import Step
+from soda.core.schema import DataKey, list_opportunity_columns
+from soda.pipeline.context import Context
+from soda.pipeline.keys import Key
+from soda.pipeline.step import Step
 
 logger = logging.getLogger(__name__)
 

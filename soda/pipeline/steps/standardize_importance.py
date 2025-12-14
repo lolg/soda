@@ -30,10 +30,10 @@ from typing import ClassVar
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
-from juno.core.schema import is_importance
-from juno.pipeline.context import Context
-from juno.pipeline.keys import Key
-from juno.pipeline.step import Step
+from soda.core.schema import is_importance
+from soda.pipeline.context import Context
+from soda.pipeline.keys import Key
+from soda.pipeline.step import Step
 
 logger = logging.getLogger(__name__)
 

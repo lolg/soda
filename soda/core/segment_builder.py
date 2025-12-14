@@ -7,26 +7,26 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import silhouette_samples, silhouette_score
 
-from juno.core.models import (
+from soda.core.models import (
     Segment,
     SegmentAssignments,
     SegmentationMetrics,
     SegmentModel,
     SegmentOutcome,
 )
-from juno.core.schema import DataKey, Prefix
-from juno.pipeline.context import Context
-from juno.pipeline.keys import Key
-from juno.pipeline.runner import run_pipeline
-from juno.pipeline.step import Step
-from juno.pipeline.steps.assign_segments import AssignSegments
-from juno.pipeline.steps.characterize_segments import CharacterizeSegments
-from juno.pipeline.steps.compute_factor_loadings import ComputeFactorLoadings
-from juno.pipeline.steps.compute_opportunity_profiles import ComputeOpportunityProfiles
-from juno.pipeline.steps.compute_pca_components import ComputePCAComponents
-from juno.pipeline.steps.select_key_outcomes import SelectKeyOutcomes
-from juno.pipeline.steps.standardize_importance import StandardizeImportance
-from juno.pipeline.steps.validate_preflight import ValidatePreflight
+from soda.core.schema import DataKey, Prefix
+from soda.pipeline.context import Context
+from soda.pipeline.keys import Key
+from soda.pipeline.runner import run_pipeline
+from soda.pipeline.step import Step
+from soda.pipeline.steps.assign_segments import AssignSegments
+from soda.pipeline.steps.characterize_segments import CharacterizeSegments
+from soda.pipeline.steps.compute_factor_loadings import ComputeFactorLoadings
+from soda.pipeline.steps.compute_opportunity_profiles import ComputeOpportunityProfiles
+from soda.pipeline.steps.compute_pca_components import ComputePCAComponents
+from soda.pipeline.steps.select_key_outcomes import SelectKeyOutcomes
+from soda.pipeline.steps.standardize_importance import StandardizeImportance
+from soda.pipeline.steps.validate_preflight import ValidatePreflight
 
 
 class SegmentBuilder:

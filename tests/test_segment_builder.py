@@ -1,8 +1,8 @@
 import pandas as pd
 import pytest
 
-from juno.core.schema import DataKey, importance_col, satisfaction_col
-from juno.core.segment_builder import SegmentBuilder
+from soda.core.schema import DataKey, importance_col, satisfaction_col
+from soda.core.segment_builder import SegmentBuilder
 
 
 def make_responses(n_respondents=10, n_outcomes=3):

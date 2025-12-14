@@ -1,7 +1,7 @@
 import io
 
-from juno.core.loaders.responses_loader import ResponsesLoader
-from juno.core.schema import DataKey, importance_col, satisfaction_col
+from soda.core.loaders.responses_loader import ResponsesLoader
+from soda.core.schema import DataKey, importance_col, satisfaction_col
 
 
 def test_load_jsonl():

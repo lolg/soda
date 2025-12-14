@@ -3,8 +3,8 @@ import json
 import pandas as pd
 from pydantic import BaseModel, ValidationError, conint
 
-from juno.core.loaders.base_loader import BaseLoader
-from juno.core.schema import (
+from soda.core.loaders.base_loader import BaseLoader
+from soda.core.schema import (
     DataKey,
     importance_col,
     satisfaction_col,

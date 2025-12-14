@@ -1,4 +1,4 @@
-"""Command-line interface for Juno segmentation analysis."""
+"""Command-line interface for Soda segmentation analysis."""
 
 import argparse
 import json
@@ -7,9 +7,9 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-from juno.core.config import OrchestrationConfig
-from juno.core.loaders.responses_loader import ResponsesLoader
-from juno.core.orchestrator import Orchestrator
+from soda.core.config import OrchestrationConfig
+from soda.core.loaders.responses_loader import ResponsesLoader
+from soda.core.orchestrator import Orchestrator
 
 logging.basicConfig(
     level=logging.INFO,
@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        prog='juno',
+        prog='soda',
         description='ODI segmentation analysis - discover outcome-based market segments'
     )
     

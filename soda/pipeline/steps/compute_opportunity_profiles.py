@@ -27,17 +27,17 @@ from typing import ClassVar, List
 
 import pandas as pd
 
-from juno.core.schema import (
+from soda.core.schema import (
     DataKey,
     corresponding_opportunity,
     corresponding_satisfaction,
     is_importance,
     is_satisfaction,
 )
-from juno.pipeline.context import Context
-from juno.pipeline.keys import Key
-from juno.pipeline.opportunity import compute_individual_opportunity
-from juno.pipeline.step import Step
+from soda.pipeline.context import Context
+from soda.pipeline.keys import Key
+from soda.pipeline.opportunity import compute_individual_opportunity
+from soda.pipeline.step import Step
 
 logger = logging.getLogger(__name__)
 
