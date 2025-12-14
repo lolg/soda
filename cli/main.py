@@ -25,32 +25,51 @@ def parse_args() -> argparse.Namespace:
         description='ODI segmentation analysis - discover outcome-based market segments'
     )
     
+    # Add global options
     parser.add_argument(
+        '-v', '--verbose',
+        action='store_true',
+        help='Enable verbose logging'
+    )
+    
+    # Create subcommands
+    subparsers = parser.add_subparsers(
+        dest='command',
+        help='Available commands',
+        required=True
+    )
+    
+    # Segment command
+    segment_parser = subparsers.add_parser(
+        'segment',
+        help='Run ODI segmentation analysis'
+    )
+    
+    segment_parser.add_argument(
         'responses',
         type=str,
         help='Path to responses.jsonl file'
     )
     
-    parser.add_argument(
+    segment_parser.add_argument(
         '-c', '--config',
         type=str,
         default=None,
-        help='Path to orchestration config JSON (optional,'
-         'uses defaults if not provided)'
+        help='Path to orchestration config JSON (optional, uses defaults if not provided)'
     )
     
-    parser.add_argument(
+    segment_parser.add_argument(
         '-o', '--output',
         type=str,
         default='./output',
         help='Output directory (default: ./output)'
     )
     
-    parser.add_argument(
-        '-v', '--verbose',
-        action='store_true',
-        help='Enable verbose logging'
-    )
+    # Future: Report command placeholder
+    # report_parser = subparsers.add_parser(
+    #     'report', 
+    #     help='Generate strategic narrative from segment analysis'
+    # )
     
     return parser.parse_args()
 
@@ -125,12 +144,8 @@ def write_outputs(output_dir: Path, results: dict[int, dict], responses_path: st
     logger.info(f"Wrote {summary_path}")
 
 
-def main():
-    args = parse_args()
-    
-    if args.verbose:
-        logging.getLogger().setLevel(logging.DEBUG)
-    
+def cmd_segment(args):
+    """Handle 'segment' command."""
     # Load inputs
     logger.info(f"Loading responses from {args.responses}")
     responses_df = load_responses(args.responses)
@@ -152,6 +167,20 @@ def main():
     write_outputs(output_dir, results, args.responses)
     
     logger.info("Done")
+
+
+def main():
+    args = parse_args()
+    
+    if args.verbose:
+        logging.getLogger().setLevel(logging.DEBUG)
+    
+    # Route to command handlers
+    if args.command == 'segment':
+        cmd_segment(args)
+    else:
+        logger.error(f"Unknown command: {args.command}")
+        sys.exit(1)
 
 
 if __name__ == '__main__':
