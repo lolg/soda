@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from typing import Literal
 
+import yaml
 from pydantic import BaseModel
 
 
@@ -43,6 +45,28 @@ class OrchestrationConfig(BaseModel):
         with open(path, 'r') as f:
             data = json.load(f)
         return cls(**data)
+
+    @classmethod
+    def from_file(cls, path: str) -> OrchestrationConfig:
+        """Load config from JSON or YAML file."""
+        file_path = Path(path)
+        
+        with open(file_path, 'r') as f:
+            if file_path.suffix.lower() in ['.yml', '.yaml']:
+                # Load YAML 
+                data = yaml.safe_load(f)
+                
+                # Extract orchestration section from rules file
+                if 'orchestration' in data:
+                    config_data = data['orchestration']
+                else:
+                    # Assume entire file is orchestration config (legacy)
+                    config_data = data  
+            else:
+                # Legacy JSON support
+                config_data = json.load(f)
+                
+        return cls(**config_data)
 
     @classmethod
     def default(cls) -> OrchestrationConfig:

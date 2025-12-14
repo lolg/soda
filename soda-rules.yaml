@@ -1,0 +1,24 @@
+# SODA Business Rules Configuration
+# Version: 1.0.0 (Orchestration Only)
+
+metadata:
+  version: "1.0.0"
+  description: "SODA business rules - orchestration configuration only"
+  last_updated: "2025-01-15"
+
+# Current working orchestration rules
+orchestration:
+  parameters:
+    num_segments: [2, 3, 4]
+    max_cross_loading: [0.36, 0.40, 0.42, 0.46]
+    min_primary_loading: [0.40, 0.44, 0.48, 0.50]
+    random_state: [3, 6, 10, 12]
+    
+  constraints:
+    - type: "less_than"
+      left: "max_cross_loading"
+      right: "min_primary_loading"
+      
+  scoring:
+    silhouette_weight: 0.6
+    balance_weight: 0.4

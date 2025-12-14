@@ -50,12 +50,12 @@ def parse_args() -> argparse.Namespace:
         type=str,
         help='Path to responses.jsonl file'
     )
-    
+
     segment_parser.add_argument(
-        '-c', '--config',
+        '--rules',
         type=str,
         default=None,
-        help='Path to orchestration config JSON (optional, uses defaults if not provided)'
+        help='Path to business rules YAML file'
     )
     
     segment_parser.add_argument(
@@ -151,7 +151,13 @@ def cmd_segment(args):
     responses_df = load_responses(args.responses)
     logger.info(f"Loaded {len(responses_df)} respondents")
     
-    config = load_config(args.config)
+    # Load configuration 
+    if args.rules:
+        logger.info(f"Loading rules from {args.rules}")
+        config = OrchestrationConfig.from_file(args.rules)
+    else:
+        logger.info("Using default configuration")
+        config = OrchestrationConfig.default()
     
     # Run orchestration
     orchestrator = Orchestrator(config)
