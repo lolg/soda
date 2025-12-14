@@ -1,0 +1,42 @@
+[project]
+name = "juno"
+version = "0.1.0"
+description = "Open-source ODI segmentation tool for product teams"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.11"
+authors = [
+    {name = "Lawrence Graham"}
+]
+keywords = ["odi", "outcome-driven-innovation", "segmentation", "product-management", "jtbd"]
+
+dependencies = [
+    "pandas>=2.0",
+    "pydantic>=2.0",
+    "scikit-learn>=1.3",
+    "numpy>=1.24",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "ruff>=0.1",
+]
+
+[project.scripts]
+juno = "cli.main:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["juno*", "cli*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
