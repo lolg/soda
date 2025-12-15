@@ -3,11 +3,13 @@ Tools and logic for running segmentation analysis pipelines on
 survey respondent data.
 """
 
+from typing import Optional
+
 import numpy as np
 import pandas as pd
 from sklearn.metrics import silhouette_samples, silhouette_score
 
-from soda.core.config import SegmentBuilderConfig
+from soda.core.config import SegmentBuilderConfig, ZoneClassificationRules
 from soda.core.models import (
     Segment,
     SegmentAssignments,
@@ -16,6 +18,7 @@ from soda.core.models import (
     SegmentOutcome,
 )
 from soda.core.schema import DataKey, Prefix
+from soda.core.zone_classifier import ZoneClassifier
 from soda.pipeline.context import Context
 from soda.pipeline.keys import Key
 from soda.pipeline.runner import run_pipeline
@@ -37,22 +40,22 @@ class SegmentBuilder:
     """
     def __init__(
         self,
-        config: SegmentBuilderConfig):
+        config: SegmentBuilderConfig,
+        zone_rules: Optional[ZoneClassificationRules] = None):
 
             if config.segment_method != "kmeans":
                 raise ValueError(f"Only 'kmeans' supported, got '{config.segment_method}'")
 
             self.config = config
+            self.zone_rules = zone_rules or ZoneClassificationRules()
             self._context = None
             self._fitted = False
 
     def fit(self, responses: pd.DataFrame):
 
         self._validate_responses(responses)
-
         self._context = Context()
         self._context.set_primary(responses)
-
         self._fitted = False
 
         try:
@@ -101,6 +104,8 @@ class SegmentBuilder:
         df_segs = self._context.require_table(Key.GEN_TABLE_SEGMENT_OUTCOME_T2B)
         df_sizes = self._context.require_table(Key.GEN_TABLE_SEGMENT_SIZES)
 
+        classifier = ZoneClassifier(self.zone_rules)
+
         segments = []
     
         for _, size_row in df_sizes.iterrows():
@@ -115,7 +120,12 @@ class SegmentBuilder:
                     outcome_id=int(row[DataKey.OUTCOME_ID]),
                     sat_tb=round(float(row[DataKey.SAT_TB]), 1),
                     imp_tb=round(float(row[DataKey.IMP_TB]), 1),
-                    opportunity=round(float(row[DataKey.OPP_TB]), 2)
+                    opportunity=round(float(row[DataKey.OPP_TB]), 2),
+                    zone=classifier.classify_outcome(
+                       round(float(row[DataKey.IMP_TB]), 1),
+                        round(float(row[DataKey.SAT_TB]), 1), 
+                        round(float(row[DataKey.OPP_TB]), 2)
+                    )
                 )
                 for _, row in segment_outcomes_df.iterrows()
             ]

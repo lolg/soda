@@ -22,3 +22,8 @@ selection_rules:
   min_silhouette: 0.20
   silhouette_weight: 0.6
   balance_weight: 0.4
+
+zone_classification:
+  opportunity_threshold: 10.0   
+  importance_threshold: 60.0    
+  satisfaction_threshold: 50.0

@@ -70,11 +70,17 @@ class SelectionRulesConfig(BaseModel):
     silhouette_weight: float = 0.6
     balance_weight: float = 0.4
 
+class ZoneClassificationRules(BaseModel):
+    opportunity_threshold: float = 10.0   
+    importance_threshold: float = 60.0    
+    satisfaction_threshold: float = 50.0
+
 class RulesConfig(BaseModel):
     """Comprehensive ODI business rules configuration."""
     metadata: dict = {}
     orchestration: OrchestrationConfig
     selection_rules: SelectionRulesConfig
+    zone_rules: ZoneClassificationRules
     
     @classmethod
     def from_file(cls, path: str) -> RulesConfig:
@@ -90,11 +96,13 @@ class RulesConfig(BaseModel):
         # Extract sections, use defaults if missing
         orchestration_data = data.get('orchestration', {})
         selection_rules_data = data.get('selection_rules', {}) 
+        zone_rules_data = data.get('zone_classification', {})
         
         return cls(
             metadata=data.get('metadata', {}),
             orchestration=OrchestrationConfig(**orchestration_data) if orchestration_data else OrchestrationConfig.default(),
-            selection_rules=SelectionRulesConfig(**selection_rules_data) if selection_rules_data else SelectionRulesConfig()
+            selection_rules=SelectionRulesConfig(**selection_rules_data) if selection_rules_data else SelectionRulesConfig(),
+            zone_rules = ZoneClassificationRules(**zone_rules_data) if zone_rules_data else ZoneClassificationRules()
         )
     
     @classmethod 

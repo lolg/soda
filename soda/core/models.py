@@ -1,7 +1,15 @@
 """Core models and data structures for segmentation and zone analysis."""
 
+from enum import StrEnum
+
 from pydantic import BaseModel
 
+
+class ZoneType(StrEnum):
+    UNDERSERVED = "UNDER"
+    OVERSERVED = "OVER"
+    TABLE_STAKES = "TABLE"
+    APPROPRIATELY_SERVED = "APPROP"
 
 class SegmentOutcome(BaseModel):
     """
@@ -12,6 +20,7 @@ class SegmentOutcome(BaseModel):
     sat_tb: float
     imp_tb: float
     opportunity: float
+    zone: ZoneType
 
 class Segment(BaseModel):
     """Represents a segment with its size and associated outcomes."""
