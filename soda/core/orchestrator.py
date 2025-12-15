@@ -1,37 +1,15 @@
-"""Orchestration engine for running and evaluating segmentation experiments."""
+"""Orchestration engine for running segmentation experiments."""
 
 import math
 from itertools import product
 from typing import Iterator
 
-from soda.core.config import OrchestrationConfig
-from soda.core.models import SegmentationMetrics
+from soda.core.config import OrchestrationConfig, SegmentBuilderConfig
 from soda.core.segment_builder import SegmentBuilder
 
 
-def score_config(metrics: SegmentationMetrics, weights: dict[str, float]) -> float:
-    """Score a configuration based on existing metrics."""
-    
-    # Normalize silhouette (0 to 1 scale, where 0.5 is excellent)
-    silhouette_score = min(metrics.silhouette_mean / 0.5, 1.0)
-    
-    # Balance score: penalize imbalance
-    sizes = metrics.cluster_sizes_pct
-    max_size = max(sizes)
-    min_size = min(sizes)
-    balance_score = 1.0 - ((max_size - min_size) / 100.0)
-    
-    # Weighted combination
-    total_score = (
-        silhouette_score * weights.get('silhouette_weight', 0.6) +
-        balance_score * weights.get('balance_weight', 0.4)
-    )
-    
-    return total_score
-
-
 class Orchestrator:
-    """Run and score multiple configurations."""
+    """Run multiple segmentation parameter combinations."""
     
     def __init__(self, config: OrchestrationConfig):
         self.config = config
@@ -63,6 +41,20 @@ class Orchestrator:
         
         return valid_combos
     
+    def _create_segment_builder_config(self, orchestration_params: dict) -> SegmentBuilderConfig:
+        """
+        Create SegmentBuilderConfig from orchestration parameters.
+        
+        Maps orchestration params to SegmentBuilderConfig, using defaults for non-varying params.
+        """
+        # Start with default config
+        config_dict = SegmentBuilderConfig().model_dump()
+        
+        # Override with orchestration parameters
+        config_dict.update(orchestration_params)
+        
+        return SegmentBuilderConfig(**config_dict)
+    
     def get_valid_config_count(self) -> int:
         """Get count of valid configurations after filtering."""
         return len(self._get_valid_configs())
@@ -74,55 +66,29 @@ class Orchestrator:
         Yields results one at a time for progress tracking.
         
         Yields:
-            dict: Result containing params, analyzer, metrics, score
+            dict: Result containing config, analyzer, metrics
         """
         valid_configs = self._get_valid_configs()
         
-        for kwargs in valid_configs:
-            # Run analysis
-            segmenter = SegmentBuilder(**kwargs)
+        for orchestration_params in valid_configs:
+            # Create SegmentBuilderConfig from orchestration parameters
+            segment_config = self._create_segment_builder_config(orchestration_params)
+            
+            # Run analysis with config object
+            segmenter = SegmentBuilder(segment_config)
             segmenter.fit(responses_df)
             
-            # Score
-            score = score_config(segmenter.metrics, self.config.scoring)
-            
             yield {
-                'params': kwargs,
-                'analyzer': segmenter,
-                'metrics': segmenter.metrics,
-                'score': score
+                'config': segment_config,           # Full config object
+                'params': orchestration_params,     
+                'metrics': segmenter.metrics        # Results for evaluation
             }
     
     def run_all(self, responses_df) -> list[dict]:
         """
-        Run all configs and return sorted results.
+        Run all configs and return all results.
         
         Returns:
-            list[dict]: All results sorted by score (highest first)
+            list[dict]: All results (no sorting, no filtering)
         """
-        results = list(self.run(responses_df))
-        results.sort(key=lambda x: x['score'], reverse=True)
-        return results
-    
-    def get_best(self, responses_df) -> dict:
-        """Run all configs and return best result."""
-        results = self.run_all(responses_df)
-        return results[0]
-
-    def get_best_per_segment_count(self, responses_df) -> dict[int, dict]:
-        """
-        Run all configs and return best result for each segment count.
-        
-        Returns:
-            dict[int, dict]: Mapping of num_segments -> best result for that count
-        """
-        results = self.run_all(responses_df)
-        
-        best_per_k = {}
-        for result in results:
-            k = result['params']['num_segments']
-            if k not in best_per_k:
-                best_per_k[k] = result
-            # Already sorted by score, so first seen is best
-        
-        return best_per_k
+        return list(self.run(responses_df))

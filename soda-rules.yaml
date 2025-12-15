@@ -1,12 +1,9 @@
-# SODA Business Rules Configuration
-# Version: 1.0.0 (Orchestration Only)
+# soda-rules.yaml - ODI Business Rules with Methodology Citations
 
 metadata:
-  version: "1.0.0"
-  description: "SODA business rules - orchestration configuration only"
-  last_updated: "2025-01-15"
+  version: "1.1.0"
+  description: "SODA rules"
 
-# Current working orchestration rules
 orchestration:
   parameters:
     num_segments: [2, 3, 4]
@@ -18,7 +15,10 @@ orchestration:
     - type: "less_than"
       left: "max_cross_loading"
       right: "min_primary_loading"
+      rationale: "Prevents outcomes from loading heavily on multiple factors"
       
-  scoring:
-    silhouette_weight: 0.6
-    balance_weight: 0.4
+selection_rules:
+  min_segment_size_percent: 10.0
+  min_silhouette: 0.20
+  silhouette_weight: 0.6
+  balance_weight: 0.4

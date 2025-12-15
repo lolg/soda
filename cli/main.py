@@ -7,9 +7,11 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-from soda.core.config import OrchestrationConfig
+from soda.core.config import OrchestrationConfig, RulesConfig
 from soda.core.loaders.responses_loader import ResponsesLoader
 from soda.core.orchestrator import Orchestrator
+from soda.core.segment_builder import SegmentBuilder
+from soda.core.selection import SegmentationSelector
 
 logging.basicConfig(
     level=logging.INFO,
@@ -145,35 +147,47 @@ def write_outputs(output_dir: Path, results: dict[int, dict], responses_path: st
 
 
 def cmd_segment(args):
-    """Handle 'segment' command."""
-    # Load inputs
+    """Handle 'segment' command - full ODI segmentation pipeline."""
+    
+    # 1. Load data and rules
     logger.info(f"Loading responses from {args.responses}")
     responses_df = load_responses(args.responses)
     logger.info(f"Loaded {len(responses_df)} respondents")
     
-    # Load configuration 
     if args.rules:
         logger.info(f"Loading rules from {args.rules}")
-        config = OrchestrationConfig.from_file(args.rules)
+        rules = RulesConfig.from_file(args.rules)
     else:
-        logger.info("Using default configuration")
-        config = OrchestrationConfig.default()
+        logger.info("Using default rules")
+        rules = RulesConfig.default()
     
-    # Run orchestration
-    orchestrator = Orchestrator(config)
-    total_configs = orchestrator.get_valid_config_count()
-    logger.info(f"Running {total_configs} configurations...")
+    # 2. Orchestration (lightweight - config + metrics only)
+    orchestrator = Orchestrator(rules.orchestration)
+    all_results = orchestrator.run_all(responses_df)
+    logger.info(f"Generated {len(all_results)} candidate solutions")
     
-    results = orchestrator.get_best_per_segment_count(responses_df)
-    
-    logger.info(f"Found best solutions for {len(results)} segment counts")
-    
-    # Write outputs
-    output_dir = Path(args.output)
-    write_outputs(output_dir, results, args.responses)
-    
-    logger.info("Done")
+    # 3. Select the best solution based on the rules
+    selector = SegmentationSelector(rules.selection_rules)
+    recommended = selector.select_best(all_results)
 
+    logger.info(f"Recommended configuration: {recommended['config'].num_segments} segments")
+
+    # 4. Build final model and output JSON
+    logger.info("Building final model for recommended configuration...")
+    winning_config = recommended['config']
+    segmenter = SegmentBuilder(winning_config)
+    segmenter.fit(responses_df)
+    
+    # Output the full segment model as JSON
+    output_dir = Path(args.output)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    model_path = output_dir / 'segments.json'
+    with open(model_path, 'w') as f:
+        f.write(segmenter.model.model_dump_json(indent=2))
+    
+    logger.info(f"Wrote final model: {model_path}")
+    logger.info("Done")
 
 def main():
     args = parse_args()

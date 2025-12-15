@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import silhouette_samples, silhouette_score
 
+from soda.core.config import SegmentBuilderConfig
 from soda.core.models import (
     Segment,
     SegmentAssignments,
@@ -36,27 +37,12 @@ class SegmentBuilder:
     """
     def __init__(
         self,
-        num_segments: int = 3,
-        segment_method: str = "kmeans",
-        pca_method: str = 'kaiser',
-        random_state: int = 10,
-        max_outcomes_per_component: int = 1,
-        max_cross_loading: float = 0.30,
-        min_primary_loading: float = 0.35,
-        top_box_threshold: int = 4):
+        config: SegmentBuilderConfig):
 
-            if segment_method != "kmeans":
-                raise ValueError(f"Only 'kmeans' supported, got '{segment_method}'")
+            if config.segment_method != "kmeans":
+                raise ValueError(f"Only 'kmeans' supported, got '{config.segment_method}'")
 
-            self.num_segments = num_segments
-            self.segment_method = segment_method
-            self.pca_method = pca_method
-            self.random_state = random_state
-            self.max_outcomes_per_component = max_outcomes_per_component
-            self.max_cross_loading = max_cross_loading
-            self.min_primary_loading = min_primary_loading
-            self.top_box_threshold = top_box_threshold
-            
+            self.config = config
             self._context = None
             self._fitted = False
 
@@ -101,7 +87,7 @@ class SegmentBuilder:
                 f"{len(imp_cols)} importance columns"
             )
         
-        if len(df) < self.num_segments:
+        if len(df) < self.config.num_segments:
             raise ValueError(
                 f"Need at least {self.num_segments} respondents for "
                 f"{self.num_segments} segments, "
@@ -164,26 +150,26 @@ class SegmentBuilder:
         n = len(y)
 
         # silhouette (overall + per-cluster)
-        if self.num_segments > 1 and n > self.num_segments:
+        if self.config.num_segments > 1 and n > self.config.num_segments:
             sil_overall = float(silhouette_score(X, y))
             sil_samples = silhouette_samples(X, y)
             sil_by_cluster = [
                 float(np.mean(sil_samples[y == c])) if np.any(y == c) else float("nan")
-                for c in range(self.num_segments)
+                for c in range(self.config.num_segments)
             ]
         else:
             sil_overall = float("nan")
             sil_by_cluster = [float("nan")] * self.num_segments
 
         # cluster sizes
-        counts = np.array([(y == c).sum() for c in range(self.num_segments)], dtype=float)
+        counts = np.array([(y == c).sum() for c in range(self.config.num_segments)], dtype=float)
         sizes_pct = (counts / n * 100.0).tolist()
         min_cluster_pct = float(np.min(counts) / n * 100.0) if n > 0 else float("nan")
 
         return SegmentationMetrics(
-            method=self.segment_method,
-            k=self.num_segments,
-            random_state=self.random_state,
+            method=self.config.segment_method,
+            k=self.config.num_segments,
+            random_state=self.config.random_state,
             silhouette_mean=sil_overall,
             silhouette_by_cluster=sil_by_cluster,
             cluster_sizes_pct=sizes_pct,
@@ -211,24 +197,24 @@ class SegmentBuilder:
         steps = []
 
         # Validation
-        steps.append(ValidatePreflight(self.num_segments))
+        steps.append(ValidatePreflight(self.config.num_segments))
 
         # Feature engineering
         steps.append(StandardizeImportance())
-        steps.append(ComputePCAComponents(self.pca_method))
+        steps.append(ComputePCAComponents(self.config.pca_method))
         steps.append(ComputeFactorLoadings())
         steps.append(SelectKeyOutcomes(
-            max_outcomes_per_component=self.max_outcomes_per_component,
-            maximum_cross_loading=self.max_cross_loading,
-            minimal_primary_loading=self.min_primary_loading))
+            max_outcomes_per_component=self.config.max_outcomes_per_component,
+            maximum_cross_loading=self.config.max_cross_loading,
+            minimal_primary_loading=self.config.min_primary_loading))
 
         # Segmentation
         steps.append(ComputeOpportunityProfiles())
         steps.append(AssignSegments(
-            num_segments=self.num_segments,
-            random_state=self.random_state))
+            num_segments=self.config.num_segments,
+            random_state=self.config.random_state))
 
         steps.append(CharacterizeSegments(
-            top_box_threshold=self.top_box_threshold))
+            top_box_threshold=self.config.top_box_threshold))
 
         return steps
