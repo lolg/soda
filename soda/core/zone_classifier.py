@@ -1,11 +1,13 @@
+"""
+Applies zone classification to segment outcomes
+"""
 
 from soda.core.config import ZoneClassificationRules
 from soda.core.models import SegmentModel, ZoneType
 
 
 class ZoneClassifier:
-    """Apply ODI zone classification to segment outcomes."""
-    
+
     def __init__(self, zone_rules: ZoneClassificationRules):
         """
         Args:

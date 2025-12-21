@@ -1,6 +1,7 @@
 """Core models and data structures for segmentation and zone analysis."""
 
 from enum import StrEnum
+from typing import List
 
 from pydantic import BaseModel
 
@@ -22,12 +23,30 @@ class SegmentOutcome(BaseModel):
     opportunity: float
     zone: ZoneType
 
+class ZoneOutcome(BaseModel):
+    """Outcome data within a zone (no zone field needed since placement indicates zone)."""
+    outcome_id: int
+    sat_tb: float
+    imp_tb: float
+    opportunity: float
+
+class ZoneCategory(BaseModel):
+    """A zone category with percentage and outcomes."""
+    pct: float
+    outcomes: List[ZoneOutcome]
+
+class SegmentZones(BaseModel):
+    """All zone categories for a segment."""
+    underserved: ZoneCategory
+    overserved: ZoneCategory
+    table_stakes: ZoneCategory
+    appropriate: ZoneCategory
+
 class Segment(BaseModel):
     """Represents a segment with its size and associated outcomes."""
     segment_id: int
     size_pct: float
-    outcomes: list[SegmentOutcome]
-
+    zones: SegmentZones
 
 class SegmentModel(BaseModel):
     """A structured representation of all segments, each with outcomes and metrics."""

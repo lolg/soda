@@ -189,6 +189,9 @@ def cmd_segment(args):
     logger.info(f"Wrote final model: {model_path}")
     logger.info("Done")
 
+def cmd_strategy(args):
+    todo = None
+
 def main():
     args = parse_args()
     

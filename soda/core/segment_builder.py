@@ -15,7 +15,10 @@ from soda.core.models import (
     SegmentAssignments,
     SegmentationMetrics,
     SegmentModel,
-    SegmentOutcome,
+    SegmentZones,
+    ZoneCategory,
+    ZoneOutcome,
+    ZoneType,
 )
 from soda.core.schema import DataKey, Prefix
 from soda.core.zone_classifier import ZoneClassifier
@@ -107,39 +110,67 @@ class SegmentBuilder:
         classifier = ZoneClassifier(self.zone_rules)
 
         segments = []
-    
+
         for _, size_row in df_sizes.iterrows():
             seg_id = int(size_row[DataKey.SEGMENT_ID])
         
             # Get outcomes for this segment
             segment_outcomes_df = df_segs[df_segs[DataKey.SEGMENT_ID] == seg_id]
         
-            # Build outcome objects directly
-            outcomes = [
-                SegmentOutcome(
+            # Initialize zone categories
+            zones_data = {
+                "underserved": ZoneCategory(pct=0.0, outcomes=[]),
+                "overserved": ZoneCategory(pct=0.0, outcomes=[]), 
+                "table_stakes": ZoneCategory(pct=0.0, outcomes=[]),
+                "appropriate": ZoneCategory(pct=0.0, outcomes=[])
+            }
+            
+            # Group outcomes by zone
+            for _, row in segment_outcomes_df.iterrows():
+                outcome = ZoneOutcome(
                     outcome_id=int(row[DataKey.OUTCOME_ID]),
                     sat_tb=round(float(row[DataKey.SAT_TB]), 1),
                     imp_tb=round(float(row[DataKey.IMP_TB]), 1),
-                    opportunity=round(float(row[DataKey.OPP_TB]), 2),
-                    zone=classifier.classify_outcome(
-                       round(float(row[DataKey.IMP_TB]), 1),
-                        round(float(row[DataKey.SAT_TB]), 1), 
-                        round(float(row[DataKey.OPP_TB]), 2)
-                    )
+                    opportunity=round(float(row[DataKey.OPP_TB]), 2)
                 )
-                for _, row in segment_outcomes_df.iterrows()
-            ]
-        
-            # Build segment object directly
+                
+                zone = classifier.classify_outcome(
+                    round(float(row[DataKey.IMP_TB]), 1),
+                    round(float(row[DataKey.SAT_TB]), 1), 
+                    round(float(row[DataKey.OPP_TB]), 2)
+                )
+                
+                if zone == ZoneType.UNDERSERVED:
+                    zones_data["underserved"].outcomes.append(outcome)
+                elif zone == ZoneType.OVERSERVED:
+                    zones_data["overserved"].outcomes.append(outcome)
+                elif zone == ZoneType.TABLE_STAKES:
+                    zones_data["table_stakes"].outcomes.append(outcome)
+                elif zone == ZoneType.APPROPRIATELY_SERVED:
+                    zones_data["appropriate"].outcomes.append(outcome)
+            
+            # Calculate percentages
+            total_outcomes = len(segment_outcomes_df)
+            for zone_category in zones_data.values():
+                zone_category.pct = round(len(zone_category.outcomes) / total_outcomes * 100, 1)
+            
+            # Create SegmentZones object
+            segment_zones = SegmentZones(
+                underserved=zones_data["underserved"],
+                overserved=zones_data["overserved"],
+                table_stakes=zones_data["table_stakes"],
+                appropriate=zones_data["appropriate"]
+            )
+            
+            # Build segment with zones
             segments.append(
                 Segment(
                     segment_id=seg_id,
                     size_pct=float(size_row[DataKey.SIZE_PCT]),
-                    outcomes=outcomes
+                    zones=segment_zones
                 )
             )
-    
-        # Build model directly
+
         return SegmentModel(segments=segments)
 
     @property
