@@ -1,9 +1,9 @@
 """Core models and data structures for segmentation and zone analysis."""
 
 from enum import StrEnum
-from typing import List
+from typing import List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, model_validator
 
 
 class ZoneType(StrEnum):
@@ -26,6 +26,7 @@ class SegmentOutcome(BaseModel):
 class ZoneOutcome(BaseModel):
     """Outcome data within a zone (no zone field needed since placement indicates zone)."""
     outcome_id: int
+    description: Optional[str] = None  # Added for enrichment
     sat_tb: float
     imp_tb: float
     opportunity: float
@@ -95,3 +96,28 @@ class SegmentAssignments(BaseModel):
     def get_unique_segments(self) -> list[int]:
         """Get list of unique segment IDs."""
         return sorted(set(self.assignments.values()))
+
+class Outcome(BaseModel):
+    id: int
+    text: str
+
+    @model_validator(mode="after")
+    def _nonempty_text(self):
+        if not self.text.strip():
+            raise ValueError("Outcome text cannot be empty")
+        return self
+
+class Outcomes(BaseModel):
+    """Outcome definitions lookup."""
+    outcomes: list[Outcome]
+    
+    def get_text(self, outcome_id: int) -> str:
+        """Get text for an outcome ID."""
+        for o in self.outcomes:
+            if o.id == outcome_id:
+                return o.text
+        raise ValueError(f"Outcome {outcome_id} not found")
+    
+    def to_dict(self) -> dict[int, str]:
+        """Get outcome_id -> text mapping."""
+        return {o.id : o.text for o in self.outcomes}

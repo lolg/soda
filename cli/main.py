@@ -8,7 +8,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from soda.core.config import OrchestrationConfig, RulesConfig
+from soda.core.loaders.outcomes_loader import OutcomesLoader
 from soda.core.loaders.responses_loader import ResponsesLoader
+from soda.core.models import Outcomes, SegmentModel
 from soda.core.orchestrator import Orchestrator
 from soda.core.segment_builder import SegmentBuilder
 from soda.core.selection import SegmentationSelector
@@ -47,31 +49,17 @@ def parse_args() -> argparse.Namespace:
         help='Run ODI segmentation analysis'
     )
     
-    segment_parser.add_argument(
-        'responses',
-        type=str,
-        help='Path to responses.jsonl file'
-    )
+    segment_parser.add_argument('responses', type=str, help='Path to responses.jsonl file')
+    segment_parser.add_argument('--rules', type=str, default=None, help='Path to business rules YAML file')
+    segment_parser.add_argument('-o', '--output', type=str, default='./output', help='Output directory (default: ./output)')
 
-    segment_parser.add_argument(
-        '--rules',
-        type=str,
-        default=None,
-        help='Path to business rules YAML file'
-    )
-    
-    segment_parser.add_argument(
-        '-o', '--output',
-        type=str,
-        default='./output',
-        help='Output directory (default: ./output)'
-    )
-    
-    # Future: Report command placeholder
-    # report_parser = subparsers.add_parser(
-    #     'report', 
-    #     help='Generate strategic narrative from segment analysis'
-    # )
+    enrich_parser = subparsers.add_parser('enrich', help='Enrich segments with additional data')
+    enrich_parser.add_argument('segments_file', help='Path to segments.json file')
+    enrich_parser.add_argument('--outcomes', type=str, help='Path to outcomes.json file')
+    enrich_parser.add_argument('--respondents', help='Path to respondents.jsonl file')  
+    enrich_parser.add_argument('--codebook', help='Path to codebook.json file (required with --respondents)')
+    enrich_parser.add_argument('-o', '--output', type=str, default='./output', help='Output directory (default: ./output)')
+    enrich_parser.set_defaults(func=cmd_enrich)
     
     return parser.parse_args()
 
@@ -189,8 +177,48 @@ def cmd_segment(args):
     logger.info(f"Wrote final model: {model_path}")
     logger.info("Done")
 
-def cmd_strategy(args):
-    todo = None
+def cmd_enrich(args):
+    """Enrich segments with outcome descriptions and/or demographics."""
+    
+    # Load segments.json
+    with open(args.segments_file, 'r') as f:
+        segment_model = SegmentModel.model_validate_json(f.read())
+    
+    # Enrich with outcomes if provided
+    if args.outcomes:
+        outcomes_loader = OutcomesLoader(args.outcomes)
+        outcomes = outcomes_loader.load()
+        segment_model = _enrich_with_outcomes(segment_model, outcomes)
+    
+    # Enrich with demographics if provided
+    if args.respondents:
+        if not args.codebook:
+            raise ValueError("--codebook required when using --demographics")
+        segment_model = _enrich_with_demographics(segment_model, args.demographics, args.codebook)
+    
+    # Save enriched segments
+    output_file = args.output or args.segments_file
+    with open(output_file, 'w') as f:
+        f.write(segment_model.model_dump_json(indent=2))
+    
+    print(f"Enriched segments saved to {output_file}")
+
+def _enrich_with_outcomes(segment_model: SegmentModel, outcomes: Outcomes) -> SegmentModel:
+    """Add outcome descriptions to all zone outcomes."""
+    
+    for segment in segment_model.segments:
+        for zone_name, zone_category in segment.zones.__dict__.items():
+            for outcome in zone_category.outcomes:
+                try:
+                    outcome.description = outcomes.get_text(outcome.outcome_id)
+                except ValueError:
+                    print(f"Warning: No description found for outcome {outcome.outcome_id}")
+                    outcome.description = f"Outcome {outcome.outcome_id} (description missing)"
+    
+    return segment_model
+
+def _enrich_with_demographics(segment_model:SegmentModel, responses, codebook):
+    raise NotImplementedError()
 
 def main():
     args = parse_args()
@@ -201,6 +229,8 @@ def main():
     # Route to command handlers
     if args.command == 'segment':
         cmd_segment(args)
+    elif args.command == 'enrich':
+        cmd_enrich(args)     
     else:
         logger.error(f"Unknown command: {args.command}")
         sys.exit(1)
