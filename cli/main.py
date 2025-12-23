@@ -11,7 +11,7 @@ from soda.core.config import OrchestrationConfig, RulesConfig
 from soda.core.encoders.compact_encoder import CompactArrayEncoder
 from soda.core.loaders.outcomes_loader import OutcomesLoader
 from soda.core.loaders.responses_loader import ResponsesLoader
-from soda.core.models import Outcomes, SegmentModel
+from soda.core.models import Outcomes, SegmentModel, SegmentModelWithAssignments
 from soda.core.orchestrator import Orchestrator
 from soda.core.segment_builder import SegmentBuilder
 from soda.core.selection import SegmentationSelector
@@ -183,7 +183,7 @@ def cmd_enrich(args):
     
     # Load segments.json
     with open(args.segments_file, 'r') as f:
-        segment_model = SegmentModel.model_validate_json(f.read())
+        segment_model = SegmentModelWithAssignments.model_validate_json(f.read())
     
     # Enrich with outcomes if provided
     if args.outcomes:
@@ -200,11 +200,13 @@ def cmd_enrich(args):
     # Save enriched segments
     output_file = args.output or args.segments_file
     with open(output_file, 'w') as f:
-        f.write(segment_model.model_dump_json(indent=2))
+        data = segment_model.model_dump()
+        json = CompactArrayEncoder().encode(data)
+        f.write(json)
     
     print(f"Enriched segments saved to {output_file}")
 
-def _enrich_with_outcomes(segment_model: SegmentModel, outcomes: Outcomes) -> SegmentModel:
+def _enrich_with_outcomes(segment_model: SegmentModelWithAssignments, outcomes: Outcomes) -> SegmentModel:
     """Add outcome descriptions to all zone outcomes."""
     
     for segment in segment_model.segments:
