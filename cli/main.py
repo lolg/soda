@@ -7,12 +7,17 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+import pandas as pd
+
 from soda.core.config import OrchestrationConfig, RulesConfig
 from soda.core.encoders.compact_encoder import CompactArrayEncoder
+from soda.core.loaders.codebook_loader import CodebookLoader
 from soda.core.loaders.outcomes_loader import OutcomesLoader
+from soda.core.loaders.respondents_loader import RespondentsLoader
 from soda.core.loaders.responses_loader import ResponsesLoader
-from soda.core.models import Outcomes, SegmentModel, SegmentModelWithAssignments
+from soda.core.models import Codebook, Outcomes, SegmentModel, SegmentModelWithAssignments
 from soda.core.orchestrator import Orchestrator
+from soda.core.schema import DataKey
 from soda.core.segment_builder import SegmentBuilder
 from soda.core.selection import SegmentationSelector
 
@@ -44,22 +49,19 @@ def parse_args() -> argparse.Namespace:
         required=True
     )
     
-    # Segment command
-    segment_parser = subparsers.add_parser(
-        'segment',
-        help='Run ODI segmentation analysis'
-    )
-    
+    # Segment commands
+    segment_parser = subparsers.add_parser('segment', help='Run ODI segmentation analysis')
     segment_parser.add_argument('responses', type=str, help='Path to responses.jsonl file')
     segment_parser.add_argument('--rules', type=str, default=None, help='Path to business rules YAML file')
     segment_parser.add_argument('-o', '--output', type=str, default='./output', help='Output directory (default: ./output)')
 
+    # Enrich commands
     enrich_parser = subparsers.add_parser('enrich', help='Enrich segments with additional data')
     enrich_parser.add_argument('segments_file', help='Path to segments.json file')
     enrich_parser.add_argument('--outcomes', type=str, help='Path to outcomes.json file')
-    enrich_parser.add_argument('--respondents', help='Path to respondents.jsonl file')  
-    enrich_parser.add_argument('--codebook', help='Path to codebook.json file (required with --respondents)')
-    enrich_parser.add_argument('-o', '--output', type=str, default='./output', help='Output directory (default: ./output)')
+    enrich_parser.add_argument('--demographics', help='Path to respondents.jsonl file')  
+    enrich_parser.add_argument('--codebook', help='Path to codebook.json file (required with --demographics)') 
+    enrich_parser.add_argument('--output', '-o', help='Output file (default: overwrite input)') 
     enrich_parser.set_defaults(func=cmd_enrich)
     
     return parser.parse_args()
@@ -168,12 +170,11 @@ def cmd_segment(args):
     segmenter.fit(responses_df)
     
     # Output the full segment model as JSON
-    
     output_path = Path(args.output)
     with open(output_path, 'w') as f:
         data = segmenter.model_with_assignments.model_dump()
-        json = CompactArrayEncoder().encode(data)
-        f.write(json)
+        json_data = CompactArrayEncoder().encode(data)
+        f.write(json_data)
     
     logger.info(f"Wrote final model: {output_path}")
     logger.info("Done")
@@ -181,9 +182,20 @@ def cmd_segment(args):
 def cmd_enrich(args):
     """Enrich segments with outcome descriptions and/or demographics."""
     
-    # Load segments.json
+    # Load segments - try SegmentModelWithAssignments first (for enriched files)
     with open(args.segments_file, 'r') as f:
-        segment_model = SegmentModelWithAssignments.model_validate_json(f.read())
+        data = json.load(f)
+    
+    # Check if it has segment_assignments (full model) or not (basic model)
+    if "segment_assignments" in data:
+        segment_model = SegmentModelWithAssignments.model_validate(data)
+    else:
+        # Convert basic model to full model (no assignments, but compatible)
+        basic_model = SegmentModel.model_validate(data)
+        segment_model = SegmentModelWithAssignments(
+            segments=basic_model.segments,
+            segment_assignments=None
+        )
     
     # Enrich with outcomes if provided
     if args.outcomes:
@@ -192,17 +204,17 @@ def cmd_enrich(args):
         segment_model = _enrich_with_outcomes(segment_model, outcomes)
     
     # Enrich with demographics if provided
-    if args.respondents:
+    if args.demographics:
         if not args.codebook:
-            raise ValueError("--codebook required when using --demographics")
+            raise ValueError("--codebook required when using --respondents")
         segment_model = _enrich_with_demographics(segment_model, args.demographics, args.codebook)
     
     # Save enriched segments
     output_file = args.output or args.segments_file
     with open(output_file, 'w') as f:
         data = segment_model.model_dump()
-        json = CompactArrayEncoder().encode(data)
-        f.write(json)
+        json_data = CompactArrayEncoder().encode(data)
+        f.write(json_data)
     
     print(f"Enriched segments saved to {output_file}")
 
@@ -220,8 +232,179 @@ def _enrich_with_outcomes(segment_model: SegmentModelWithAssignments, outcomes: 
     
     return segment_model
 
-def _enrich_with_demographics(segment_model:SegmentModel, responses, codebook):
-    raise NotImplementedError()
+def _enrich_with_demographics(segment_model: SegmentModelWithAssignments, respondents_path: str, codebook_path: str) -> SegmentModelWithAssignments:
+    """Add demographic distributions to segments."""
+    
+    # Load data using existing loaders
+    respondents_loader = RespondentsLoader(path=respondents_path)
+    respondents_df = respondents_loader.load()  # Returns pd.DataFrame
+    
+    codebook_loader = CodebookLoader(path=codebook_path)
+    codebook = codebook_loader.load()  # Returns Codebook model
+    
+    # Ensure we have segment assignments
+    if not segment_model.segment_assignments:
+        raise ValueError("Segment assignments required for demographics enrichment")
+    
+    # Process each segment
+    for segment in segment_model.segments:
+        # Get respondent IDs for this segment from assignments
+        respondent_ids = segment_model.segment_assignments.get_respondents(segment.segment_id)
+        
+        if not respondent_ids:
+            print(f"Warning: No respondent IDs for segment {segment.segment_id}")
+            segment.demographics = {}
+            continue
+        
+        # Filter respondents DataFrame to this segment's respondents
+        segment_respondents = respondents_df[
+            respondents_df[DataKey.RESPONDENT_ID].isin(respondent_ids)
+        ]
+        
+        if len(segment_respondents) == 0:
+            print(f"Warning: No respondent data found for segment {segment.segment_id}")
+            segment.demographics = {}
+            continue
+            
+        # Calculate demographics for this segment
+        demographics = _calculate_segment_demographics(segment_respondents, codebook)
+        segment.demographics = demographics
+    
+    return segment_model
+
+
+def _calculate_segment_demographics(segment_df: pd.DataFrame, codebook: Codebook) -> dict:
+    """Calculate demographic distributions for a segment."""
+    
+    demographics = {}
+    
+    # Process only categorical dimensions
+    for dimension in codebook.get_categorical_dimensions():
+        # Check if dimension exists in respondents data
+        if dimension.name not in segment_df.columns:
+            print(f"Warning: Dimension {dimension.name} not found in respondents data")
+            continue
+            
+        column_data = segment_df[dimension.name]
+        
+        # Convert numeric values to strings for codebook lookup
+        string_data = column_data.astype(str)
+        
+        # Filter out missing codes if they exist
+        if dimension.missing_codes:
+            valid_data = string_data[~string_data.isin(dimension.missing_codes)]
+        else:
+            valid_data = string_data
+        
+        # Skip if no valid data
+        if len(valid_data) == 0:
+            print(f"Warning: No valid data for dimension {dimension.name} in segment")
+            demographics[dimension.name] = {}
+            continue
+        
+        # Calculate value counts and percentages
+        value_counts = valid_data.value_counts()
+        total = len(valid_data)
+        
+        # Map codes to labels and calculate percentages
+        percentages = {}
+        for code, count in value_counts.items():
+            # Look up label in codebook options
+            if dimension.options and code in dimension.options:
+                label = dimension.options[code]
+            else:
+                label = f"Unknown ({code})"
+                print(f"Warning: Code {code} not found in {dimension.name} options")
+            
+            percentage = round((count / total) * 100, 1)
+            percentages[label] = percentage
+        
+        # Sort by percentage (highest first) for better readability
+        sorted_percentages = dict(sorted(percentages.items(), key=lambda x: x[1], reverse=True))
+        demographics[dimension.name] = sorted_percentages
+    
+    return demographics
+
+def _enrich_with_demographics(segment_model: SegmentModelWithAssignments, respondents_path: str, codebook_path: str) -> SegmentModelWithAssignments:
+    """Add demographic distributions to segments."""
+    
+    # Load data
+    respondents_loader = RespondentsLoader(respondents_path)
+    respondents_df = respondents_loader.load()
+    
+    codebook_loader = CodebookLoader(codebook_path)
+    codebook = codebook_loader.load()
+    
+    # Check we have segment assignments
+    if not segment_model.segment_assignments:
+        raise ValueError("No segment assignments found - cannot enrich demographics")
+    
+    # For each segment
+    for segment in segment_model.segments:
+        print(f"Processing segment {segment.segment_id}")
+        
+        # Step 1: Get respondents in this segment
+        respondent_ids = segment_model.segment_assignments.get_respondents(segment.segment_id)
+        if not respondent_ids:
+            print(f"  No respondents in segment {segment.segment_id}")
+            segment.demographics = {}
+            continue
+        
+        # Filter respondents to only those in this segment
+        segment_respondents = respondents_df[respondents_df['respondentId'].isin(respondent_ids)]
+        print(f"  Found {len(segment_respondents)} respondents")
+        
+        segment.demographics = {}
+        
+        # Step 2: For each categorical dimension, calculate percentages
+        for dimension in codebook.dimensions:
+            if dimension.type != "categorical":
+                continue  # Skip text dimensions like D4
+            
+            print(f"    Processing {dimension.name} ({dimension.id})")
+            
+            # Get data for this dimension (e.g., D1, D2, D3)
+            if dimension.id not in segment_respondents.columns:
+                print(f"    Warning: {dimension.id} not found in data")
+                continue
+            
+            dimension_data = segment_respondents[dimension.id]
+            
+            # Remove missing codes (e.g., "No Response")
+            if dimension.missing_codes:
+                # Convert missing codes to int for comparison
+                missing_codes_int = [int(code) for code in dimension.missing_codes]
+                valid_data = dimension_data[~dimension_data.isin(missing_codes_int)]
+            else:
+                valid_data = dimension_data
+            
+            if len(valid_data) == 0:
+                segment.demographics[dimension.name] = {}
+                continue
+            
+            # Step 3: Count values and convert to percentages
+            value_counts = valid_data.value_counts()
+            total = len(valid_data)
+            
+            # Step 4: Map codes to labels and calculate percentages
+            percentages = {}
+            for value, count in value_counts.items():
+                # Look up the label for this value (e.g., 1 -> "Female")
+                value_str = str(value)
+                if dimension.options and value_str in dimension.options:
+                    label = dimension.options[value_str]
+                else:
+                    label = f"Unknown ({value})"
+                
+                percentage = round((count / total) * 100, 1)
+                percentages[label] = percentage
+                print(f"      {label}: {percentage}%")
+            
+            # Sort by percentage (highest first)
+            sorted_percentages = dict(sorted(percentages.items(), key=lambda x: x[1], reverse=True))
+            segment.demographics[dimension.name] = sorted_percentages
+    
+    return segment_model
 
 def main():
     args = parse_args()

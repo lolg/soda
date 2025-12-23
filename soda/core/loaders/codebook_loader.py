@@ -1,5 +1,6 @@
-from loaders.base_loader import BaseLoader
+import pandas as pd
 
+from soda.core.loaders.base_loader import BaseLoader
 from soda.core.models import Codebook, DimensionDefinition
 
 
@@ -12,6 +13,11 @@ class CodebookLoader(BaseLoader):
     @property
     def _error_class(self):
         return CodebookLoadError
+    
+    def _load_from_file(self, file_handle) -> pd.DataFrame:
+        """BaseLoader expects DataFrame, but we'll override load() to return Codebook."""
+        # This method is required by BaseLoader but we don't use it
+        raise NotImplementedError("Use load() method directly")
     
     def load(self) -> Codebook:
         """Load codebook directly as Pydantic model."""
@@ -34,7 +40,3 @@ class CodebookLoader(BaseLoader):
             raise CodebookLoadError(f"Invalid codebook format: {e}") from e
         
         return codebook
-    
-    def _load_from_file(self, file_handle):
-        """Not used - overridden by load()."""
-        raise NotImplementedError("Use load() directly")

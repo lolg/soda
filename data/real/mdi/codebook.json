@@ -1,70 +1,30 @@
 [
   {
     "id": "D1",
-    "name": "age_group",
+    "name": "gender",
+    "text": "How do you describe yourself?",
     "type": "categorical",
-    "options": {
-      "1": "18-24",
-      "2": "25-34",
-      "3": "35-44",
-      "4": "45-54",
-      "5": "55-64",
-      "6": "65+"
-    }
+    "options": {"1": "Female", "2": "Male", "3": "Other", "4": "Prefer not to disclose", "5": "No Response"},
+    "missing_codes": ["4","5"]
   },
   {
     "id": "D2",
-    "name": "gender",
+    "name": "age_group",
+    "text": "Which age group do you belong to?",
     "type": "categorical",
-    "options": {
-      "1": "Female",
-      "2": "Male",
-      "3": "Non-binary",
-      "4": "Prefer not to say"
-    },
-    "missing_codes": [
-      "4"
-    ]
+    "options": {"1":"18-24","2":"25-34","3":"35-44","4":"45-54","5":"55-64","6":"65+","7":"No Response"},
+    "missing_codes": ["7"]
   },
   {
     "id": "D3",
-    "name": "income_level",
+    "name": "residence_group",
     "type": "categorical",
-    "options": {
-      "1": "Under $30k",
-      "2": "$30k-$60k",
-      "3": "$60k-$100k",
-      "4": "$100k-$150k",
-      "5": "Over $150k",
-      "6": "Prefer not to say"
-    },
-    "missing_codes": [
-      "6"
-    ]
+    "options": {"1":"Surrounding Suburbs (<5 km)","2":"Other Metropolitan Suburbs","3":"Regional Western Australia","4":"Other Australian States","5":"International","6":"No Response"},
+    "missing_codes": ["6"]
   },
   {
     "id": "D4",
-    "name": "shopping_frequency",
-    "type": "categorical",
-    "options": {
-      "1": "Daily",
-      "2": "Several times per week",
-      "3": "Weekly",
-      "4": "Monthly",
-      "5": "A few times per year",
-      "6": "Rarely"
-    }
-  },
-  {
-    "id": "D5",
-    "name": "tech_comfort",
-    "type": "categorical",
-    "options": {
-      "1": "Very comfortable",
-      "2": "Somewhat comfortable",
-      "3": "Neutral",
-      "4": "Somewhat uncomfortable",
-      "5": "Very uncomfortable"
-    }
+    "name": "residence_free_text",
+    "type": "text"
   }
 ]

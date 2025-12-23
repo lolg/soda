@@ -1,400 +1,393 @@
-{"respondentId": 1, "D1": 4, "D2": 1, "D3": 1, "D4": 5, "D5": 3}
-{"respondentId": 2, "D1": 1, "D2": 2, "D3": 1, "D4": 3, "D5": 1}
-{"respondentId": 3, "D1": 1, "D2": 2, "D3": 2, "D4": 3, "D5": 1}
-{"respondentId": 4, "D1": 4, "D2": 1, "D3": 2, "D4": 3, "D5": 2}
-{"respondentId": 5, "D1": 5, "D2": 1, "D3": 2, "D4": 2, "D5": 3}
-{"respondentId": 6, "D1": 5, "D2": 1, "D3": 4, "D4": 4, "D5": 2}
-{"respondentId": 7, "D1": 3, "D2": 2, "D3": 1, "D4": 5, "D5": 2}
-{"respondentId": 8, "D1": 1, "D2": 2, "D3": 3, "D4": 2, "D5": 3}
-{"respondentId": 9, "D1": 4, "D2": 1, "D3": 3, "D4": 2, "D5": 1}
-{"respondentId": 10, "D1": 3, "D2": 2, "D3": 2, "D4": 4, "D5": 5}
-{"respondentId": 11, "D1": 1, "D2": 2, "D3": 2, "D4": 3, "D5": 1}
-{"respondentId": 12, "D1": 3, "D2": 1, "D3": 3, "D4": 5, "D5": 2}
-{"respondentId": 13, "D1": 1, "D2": 2, "D3": 5, "D4": 3, "D5": 1}
-{"respondentId": 14, "D1": 1, "D2": 2, "D3": 2, "D4": 3, "D5": 1}
-{"respondentId": 15, "D1": 5, "D2": 1, "D3": 2, "D4": 4, "D5": 1}
-{"respondentId": 16, "D1": 1, "D2": 1, "D3": 3, "D4": 5, "D5": 2}
-{"respondentId": 17, "D1": 2, "D2": 1, "D3": 4, "D4": 3, "D5": 2}
-{"respondentId": 18, "D1": 2, "D2": 2, "D3": 1, "D4": 6, "D5": 1}
-{"respondentId": 19, "D1": 2, "D2": 2, "D3": 2, "D4": 4, "D5": 4}
-{"respondentId": 20, "D1": 3, "D2": 2, "D3": 4, "D4": 2, "D5": 1}
-{"respondentId": 21, "D1": 5, "D2": 2, "D3": 3, "D4": 3, "D5": 3}
-{"respondentId": 22, "D1": 2, "D2": 1, "D3": 6, "D4": 3, "D5": 2}
-{"respondentId": 23, "D1": 3, "D2": 1, "D3": 3, "D4": 2, "D5": 3}
-{"respondentId": 24, "D1": 4, "D2": 1, "D3": 2, "D4": 3, "D5": 2}
-{"respondentId": 25, "D1": 3, "D2": 1, "D3": 4, "D4": 2, "D5": 1}
-{"respondentId": 26, "D1": 2, "D2": 1, "D3": 2, "D4": 2, "D5": 1}
-{"respondentId": 27, "D1": 4, "D2": 2, "D3": 2, "D4": 3, "D5": 2}
-{"respondentId": 28, "D1": 1, "D2": 2, "D3": 4, "D4": 2, "D5": 1}
-{"respondentId": 29, "D1": 3, "D2": 1, "D3": 2, "D4": 6, "D5": 1}
-{"respondentId": 30, "D1": 4, "D2": 2, "D3": 2, "D4": 4, "D5": 4}
-{"respondentId": 31, "D1": 3, "D2": 1, "D3": 2, "D4": 4, "D5": 3}
-{"respondentId": 32, "D1": 2, "D2": 1, "D3": 3, "D4": 4, "D5": 2}
-{"respondentId": 33, "D1": 6, "D2": 1, "D3": 3, "D4": 5, "D5": 2}
-{"respondentId": 34, "D1": 3, "D2": 1, "D3": 1, "D4": 4, "D5": 1}
-{"respondentId": 35, "D1": 3, "D2": 2, "D3": 4, "D4": 3, "D5": 2}
-{"respondentId": 36, "D1": 3, "D2": 1, "D3": 4, "D4": 2, "D5": 2}
-{"respondentId": 37, "D1": 2, "D2": 2, "D3": 4, "D4": 6, "D5": 2}
-{"respondentId": 38, "D1": 2, "D2": 1, "D3": 1, "D4": 4, "D5": 3}
-{"respondentId": 39, "D1": 3, "D2": 2, "D3": 3, "D4": 3, "D5": 1}
-{"respondentId": 40, "D1": 3, "D2": 1, "D3": 4, "D4": 4, "D5": 2}
-{"respondentId": 41, "D1": 2, "D2": 2, "D3": 3, "D4": 4, "D5": 2}
-{"respondentId": 42, "D1": 2, "D2": 2, "D3": 4, "D4": 5, "D5": 3}
-{"respondentId": 43, "D1": 4, "D2": 2, "D3": 4, "D4": 4, "D5": 3}
-{"respondentId": 44, "D1": 2, "D2": 1, "D3": 4, "D4": 2, "D5": 2}
-{"respondentId": 45, "D1": 1, "D2": 2, "D3": 4, "D4": 1, "D5": 1}
-{"respondentId": 46, "D1": 5, "D2": 2, "D3": 2, "D4": 4, "D5": 1}
-{"respondentId": 47, "D1": 5, "D2": 1, "D3": 1, "D4": 3, "D5": 2}
-{"respondentId": 48, "D1": 4, "D2": 1, "D3": 3, "D4": 4, "D5": 2}
-{"respondentId": 49, "D1": 5, "D2": 2, "D3": 3, "D4": 4, "D5": 1}
-{"respondentId": 50, "D1": 5, "D2": 2, "D3": 5, "D4": 2, "D5": 2}
-{"respondentId": 51, "D1": 1, "D2": 2, "D3": 3, "D4": 1, "D5": 1}
-{"respondentId": 52, "D1": 2, "D2": 2, "D3": 1, "D4": 1, "D5": 1}
-{"respondentId": 53, "D1": 4, "D2": 2, "D3": 3, "D4": 3, "D5": 2}
-{"respondentId": 54, "D1": 2, "D2": 3, "D3": 3, "D4": 3, "D5": 2}
-{"respondentId": 55, "D1": 2, "D2": 2, "D3": 3, "D4": 4, "D5": 3}
-{"respondentId": 56, "D1": 5, "D2": 1, "D3": 1, "D4": 4, "D5": 2}
-{"respondentId": 57, "D1": 3, "D2": 1, "D3": 1, "D4": 3, "D5": 1}
-{"respondentId": 58, "D1": 2, "D2": 2, "D3": 1, "D4": 3, "D5": 1}
-{"respondentId": 59, "D1": 4, "D2": 1, "D3": 3, "D4": 5, "D5": 2}
-{"respondentId": 60, "D1": 2, "D2": 1, "D3": 2, "D4": 3, "D5": 2}
-{"respondentId": 61, "D1": 1, "D2": 3, "D3": 3, "D4": 2, "D5": 2}
-{"respondentId": 62, "D1": 1, "D2": 2, "D3": 3, "D4": 4, "D5": 1}
-{"respondentId": 63, "D1": 2, "D2": 1, "D3": 2, "D4": 2, "D5": 3}
-{"respondentId": 64, "D1": 2, "D2": 2, "D3": 3, "D4": 2, "D5": 3}
-{"respondentId": 65, "D1": 1, "D2": 1, "D3": 1, "D4": 3, "D5": 2}
-{"respondentId": 66, "D1": 2, "D2": 2, "D3": 4, "D4": 2, "D5": 2}
-{"respondentId": 67, "D1": 3, "D2": 1, "D3": 3, "D4": 5, "D5": 3}
-{"respondentId": 68, "D1": 1, "D2": 1, "D3": 3, "D4": 4, "D5": 2}
-{"respondentId": 69, "D1": 2, "D2": 1, "D3": 2, "D4": 2, "D5": 2}
-{"respondentId": 70, "D1": 5, "D2": 1, "D3": 2, "D4": 4, "D5": 2}
-{"respondentId": 71, "D1": 5, "D2": 2, "D3": 4, "D4": 5, "D5": 3}
-{"respondentId": 72, "D1": 4, "D2": 1, "D3": 5, "D4": 3, "D5": 3}
-{"respondentId": 73, "D1": 5, "D2": 2, "D3": 5, "D4": 3, "D5": 1}
-{"respondentId": 74, "D1": 3, "D2": 2, "D3": 4, "D4": 2, "D5": 1}
-{"respondentId": 75, "D1": 1, "D2": 2, "D3": 6, "D4": 5, "D5": 2}
-{"respondentId": 76, "D1": 2, "D2": 1, "D3": 2, "D4": 5, "D5": 1}
-{"respondentId": 77, "D1": 3, "D2": 2, "D3": 1, "D4": 3, "D5": 5}
-{"respondentId": 78, "D1": 3, "D2": 2, "D3": 4, "D4": 2, "D5": 3}
-{"respondentId": 79, "D1": 6, "D2": 2, "D3": 1, "D4": 5, "D5": 3}
-{"respondentId": 80, "D1": 3, "D2": 1, "D3": 5, "D4": 2, "D5": 1}
-{"respondentId": 81, "D1": 1, "D2": 2, "D3": 1, "D4": 3, "D5": 3}
-{"respondentId": 82, "D1": 1, "D2": 1, "D3": 1, "D4": 2, "D5": 1}
-{"respondentId": 83, "D1": 1, "D2": 1, "D3": 2, "D4": 4, "D5": 1}
-{"respondentId": 84, "D1": 4, "D2": 1, "D3": 3, "D4": 4, "D5": 2}
-{"respondentId": 85, "D1": 2, "D2": 3, "D3": 4, "D4": 5, "D5": 5}
-{"respondentId": 86, "D1": 2, "D2": 1, "D3": 2, "D4": 3, "D5": 1}
-{"respondentId": 87, "D1": 4, "D2": 4, "D3": 6, "D4": 3, "D5": 3}
-{"respondentId": 88, "D1": 5, "D2": 1, "D3": 3, "D4": 5, "D5": 1}
-{"respondentId": 89, "D1": 3, "D2": 2, "D3": 4, "D4": 2, "D5": 1}
-{"respondentId": 90, "D1": 2, "D2": 2, "D3": 2, "D4": 3, "D5": 2}
-{"respondentId": 91, "D1": 3, "D2": 1, "D3": 4, "D4": 4, "D5": 3}
-{"respondentId": 92, "D1": 5, "D2": 1, "D3": 4, "D4": 5, "D5": 1}
-{"respondentId": 93, "D1": 2, "D2": 3, "D3": 3, "D4": 5, "D5": 1}
-{"respondentId": 94, "D1": 2, "D2": 2, "D3": 2, "D4": 3, "D5": 2}
-{"respondentId": 95, "D1": 5, "D2": 1, "D3": 2, "D4": 4, "D5": 2}
-{"respondentId": 96, "D1": 2, "D2": 1, "D3": 5, "D4": 2, "D5": 3}
-{"respondentId": 97, "D1": 4, "D2": 3, "D3": 4, "D4": 2, "D5": 1}
-{"respondentId": 98, "D1": 1, "D2": 2, "D3": 3, "D4": 4, "D5": 2}
-{"respondentId": 99, "D1": 4, "D2": 4, "D3": 2, "D4": 2, "D5": 3}
-{"respondentId": 100, "D1": 1, "D2": 2, "D3": 2, "D4": 4, "D5": 1}
-{"respondentId": 101, "D1": 3, "D2": 1, "D3": 2, "D4": 4, "D5": 2}
-{"respondentId": 102, "D1": 4, "D2": 2, "D3": 3, "D4": 4, "D5": 3}
-{"respondentId": 103, "D1": 5, "D2": 1, "D3": 2, "D4": 3, "D5": 2}
-{"respondentId": 104, "D1": 1, "D2": 3, "D3": 3, "D4": 5, "D5": 3}
-{"respondentId": 105, "D1": 4, "D2": 2, "D3": 2, "D4": 3, "D5": 3}
-{"respondentId": 106, "D1": 2, "D2": 1, "D3": 3, "D4": 4, "D5": 1}
-{"respondentId": 107, "D1": 4, "D2": 1, "D3": 2, "D4": 3, "D5": 1}
-{"respondentId": 108, "D1": 5, "D2": 2, "D3": 3, "D4": 3, "D5": 5}
-{"respondentId": 109, "D1": 3, "D2": 1, "D3": 3, "D4": 2, "D5": 2}
-{"respondentId": 110, "D1": 2, "D2": 1, "D3": 4, "D4": 4, "D5": 1}
-{"respondentId": 111, "D1": 4, "D2": 2, "D3": 4, "D4": 4, "D5": 2}
-{"respondentId": 112, "D1": 2, "D2": 2, "D3": 2, "D4": 3, "D5": 3}
-{"respondentId": 113, "D1": 5, "D2": 2, "D3": 3, "D4": 3, "D5": 1}
-{"respondentId": 114, "D1": 6, "D2": 1, "D3": 2, "D4": 4, "D5": 4}
-{"respondentId": 115, "D1": 1, "D2": 1, "D3": 1, "D4": 2, "D5": 1}
-{"respondentId": 116, "D1": 3, "D2": 2, "D3": 3, "D4": 3, "D5": 1}
-{"respondentId": 117, "D1": 4, "D2": 1, "D3": 2, "D4": 1, "D5": 1}
-{"respondentId": 118, "D1": 3, "D2": 1, "D3": 4, "D4": 3, "D5": 5}
-{"respondentId": 119, "D1": 1, "D2": 1, "D3": 2, "D4": 4, "D5": 1}
-{"respondentId": 120, "D1": 3, "D2": 2, "D3": 1, "D4": 2, "D5": 2}
-{"respondentId": 121, "D1": 3, "D2": 2, "D3": 2, "D4": 4, "D5": 2}
-{"respondentId": 122, "D1": 3, "D2": 1, "D3": 2, "D4": 4, "D5": 3}
-{"respondentId": 123, "D1": 1, "D2": 2, "D3": 3, "D4": 4, "D5": 2}
-{"respondentId": 124, "D1": 4, "D2": 2, "D3": 4, "D4": 4, "D5": 4}
-{"respondentId": 125, "D1": 2, "D2": 1, "D3": 3, "D4": 3, "D5": 3}
-{"respondentId": 126, "D1": 4, "D2": 1, "D3": 2, "D4": 5, "D5": 2}
-{"respondentId": 127, "D1": 3, "D2": 2, "D3": 3, "D4": 3, "D5": 2}
-{"respondentId": 128, "D1": 3, "D2": 1, "D3": 2, "D4": 5, "D5": 1}
-{"respondentId": 129, "D1": 2, "D2": 2, "D3": 3, "D4": 1, "D5": 1}
-{"respondentId": 130, "D1": 5, "D2": 2, "D3": 2, "D4": 3, "D5": 3}
-{"respondentId": 131, "D1": 1, "D2": 2, "D3": 1, "D4": 3, "D5": 3}
-{"respondentId": 132, "D1": 3, "D2": 2, "D3": 3, "D4": 6, "D5": 1}
-{"respondentId": 133, "D1": 3, "D2": 1, "D3": 2, "D4": 4, "D5": 2}
-{"respondentId": 134, "D1": 5, "D2": 2, "D3": 2, "D4": 3, "D5": 4}
-{"respondentId": 135, "D1": 2, "D2": 2, "D3": 4, "D4": 5, "D5": 2}
-{"respondentId": 136, "D1": 3, "D2": 1, "D3": 2, "D4": 4, "D5": 1}
-{"respondentId": 137, "D1": 1, "D2": 1, "D3": 2, "D4": 4, "D5": 1}
-{"respondentId": 138, "D1": 2, "D2": 2, "D3": 1, "D4": 4, "D5": 1}
-{"respondentId": 139, "D1": 4, "D2": 1, "D3": 4, "D4": 4, "D5": 2}
-{"respondentId": 140, "D1": 1, "D2": 2, "D3": 4, "D4": 5, "D5": 3}
-{"respondentId": 141, "D1": 1, "D2": 1, "D3": 1, "D4": 6, "D5": 2}
-{"respondentId": 142, "D1": 1, "D2": 1, "D3": 3, "D4": 6, "D5": 1}
-{"respondentId": 143, "D1": 2, "D2": 1, "D3": 1, "D4": 2, "D5": 2}
-{"respondentId": 144, "D1": 2, "D2": 2, "D3": 5, "D4": 1, "D5": 1}
-{"respondentId": 145, "D1": 3, "D2": 2, "D3": 3, "D4": 5, "D5": 1}
-{"respondentId": 146, "D1": 3, "D2": 1, "D3": 4, "D4": 5, "D5": 2}
-{"respondentId": 147, "D1": 2, "D2": 1, "D3": 2, "D4": 2, "D5": 3}
-{"respondentId": 148, "D1": 3, "D2": 2, "D3": 3, "D4": 2, "D5": 2}
-{"respondentId": 149, "D1": 3, "D2": 2, "D3": 3, "D4": 4, "D5": 1}
-{"respondentId": 150, "D1": 3, "D2": 2, "D3": 2, "D4": 2, "D5": 1}
-{"respondentId": 151, "D1": 4, "D2": 2, "D3": 2, "D4": 4, "D5": 3}
-{"respondentId": 152, "D1": 3, "D2": 2, "D3": 2, "D4": 6, "D5": 2}
-{"respondentId": 153, "D1": 4, "D2": 2, "D3": 5, "D4": 2, "D5": 1}
-{"respondentId": 154, "D1": 3, "D2": 1, "D3": 5, "D4": 4, "D5": 3}
-{"respondentId": 155, "D1": 3, "D2": 1, "D3": 2, "D4": 3, "D5": 1}
-{"respondentId": 156, "D1": 2, "D2": 1, "D3": 1, "D4": 4, "D5": 2}
-{"respondentId": 157, "D1": 3, "D2": 1, "D3": 3, "D4": 2, "D5": 1}
-{"respondentId": 158, "D1": 4, "D2": 1, "D3": 3, "D4": 3, "D5": 2}
-{"respondentId": 159, "D1": 1, "D2": 2, "D3": 3, "D4": 3, "D5": 2}
-{"respondentId": 160, "D1": 4, "D2": 1, "D3": 1, "D4": 3, "D5": 2}
-{"respondentId": 161, "D1": 2, "D2": 2, "D3": 3, "D4": 4, "D5": 1}
-{"respondentId": 162, "D1": 1, "D2": 1, "D3": 4, "D4": 4, "D5": 3}
-{"respondentId": 163, "D1": 2, "D2": 1, "D3": 3, "D4": 4, "D5": 2}
-{"respondentId": 164, "D1": 3, "D2": 1, "D3": 2, "D4": 2, "D5": 3}
-{"respondentId": 165, "D1": 1, "D2": 2, "D3": 4, "D4": 3, "D5": 2}
-{"respondentId": 166, "D1": 1, "D2": 1, "D3": 2, "D4": 3, "D5": 2}
-{"respondentId": 167, "D1": 3, "D2": 1, "D3": 1, "D4": 4, "D5": 4}
-{"respondentId": 168, "D1": 3, "D2": 2, "D3": 2, "D4": 2, "D5": 1}
-{"respondentId": 169, "D1": 2, "D2": 1, "D3": 1, "D4": 4, "D5": 1}
-{"respondentId": 170, "D1": 1, "D2": 1, "D3": 2, "D4": 5, "D5": 2}
-{"respondentId": 171, "D1": 1, "D2": 2, "D3": 2, "D4": 2, "D5": 1}
-{"respondentId": 172, "D1": 2, "D2": 2, "D3": 6, "D4": 4, "D5": 1}
-{"respondentId": 173, "D1": 3, "D2": 1, "D3": 4, "D4": 4, "D5": 2}
-{"respondentId": 174, "D1": 2, "D2": 2, "D3": 4, "D4": 2, "D5": 2}
-{"respondentId": 175, "D1": 1, "D2": 1, "D3": 4, "D4": 3, "D5": 2}
-{"respondentId": 176, "D1": 2, "D2": 1, "D3": 6, "D4": 3, "D5": 3}
-{"respondentId": 177, "D1": 1, "D2": 1, "D3": 4, "D4": 1, "D5": 1}
-{"respondentId": 178, "D1": 4, "D2": 2, "D3": 2, "D4": 6, "D5": 5}
-{"respondentId": 179, "D1": 6, "D2": 1, "D3": 3, "D4": 2, "D5": 2}
-{"respondentId": 180, "D1": 2, "D2": 2, "D3": 3, "D4": 5, "D5": 2}
-{"respondentId": 181, "D1": 4, "D2": 1, "D3": 4, "D4": 2, "D5": 1}
-{"respondentId": 182, "D1": 2, "D2": 2, "D3": 4, "D4": 1, "D5": 1}
-{"respondentId": 183, "D1": 2, "D2": 2, "D3": 3, "D4": 2, "D5": 2}
-{"respondentId": 184, "D1": 4, "D2": 2, "D3": 4, "D4": 2, "D5": 1}
-{"respondentId": 185, "D1": 1, "D2": 1, "D3": 2, "D4": 3, "D5": 2}
-{"respondentId": 186, "D1": 4, "D2": 1, "D3": 2, "D4": 2, "D5": 4}
-{"respondentId": 187, "D1": 5, "D2": 1, "D3": 4, "D4": 3, "D5": 1}
-{"respondentId": 188, "D1": 2, "D2": 3, "D3": 3, "D4": 2, "D5": 1}
-{"respondentId": 189, "D1": 1, "D2": 2, "D3": 2, "D4": 4, "D5": 2}
-{"respondentId": 190, "D1": 3, "D2": 1, "D3": 2, "D4": 5, "D5": 3}
-{"respondentId": 191, "D1": 2, "D2": 1, "D3": 4, "D4": 3, "D5": 2}
-{"respondentId": 192, "D1": 1, "D2": 1, "D3": 2, "D4": 3, "D5": 1}
-{"respondentId": 193, "D1": 3, "D2": 1, "D3": 4, "D4": 4, "D5": 1}
-{"respondentId": 194, "D1": 1, "D2": 2, "D3": 3, "D4": 5, "D5": 1}
-{"respondentId": 195, "D1": 3, "D2": 1, "D3": 3, "D4": 3, "D5": 2}
-{"respondentId": 196, "D1": 2, "D2": 2, "D3": 3, "D4": 4, "D5": 1}
-{"respondentId": 197, "D1": 2, "D2": 1, "D3": 1, "D4": 3, "D5": 4}
-{"respondentId": 198, "D1": 2, "D2": 1, "D3": 3, "D4": 6, "D5": 1}
-{"respondentId": 199, "D1": 6, "D2": 1, "D3": 3, "D4": 6, "D5": 1}
-{"respondentId": 200, "D1": 3, "D2": 1, "D3": 3, "D4": 6, "D5": 1}
-{"respondentId": 201, "D1": 4, "D2": 2, "D3": 5, "D4": 4, "D5": 1}
-{"respondentId": 202, "D1": 5, "D2": 1, "D3": 3, "D4": 1, "D5": 2}
-{"respondentId": 203, "D1": 4, "D2": 1, "D3": 2, "D4": 6, "D5": 2}
-{"respondentId": 204, "D1": 6, "D2": 2, "D3": 1, "D4": 3, "D5": 3}
-{"respondentId": 205, "D1": 1, "D2": 2, "D3": 4, "D4": 2, "D5": 1}
-{"respondentId": 206, "D1": 3, "D2": 2, "D3": 4, "D4": 2, "D5": 2}
-{"respondentId": 207, "D1": 5, "D2": 1, "D3": 2, "D4": 5, "D5": 3}
-{"respondentId": 208, "D1": 2, "D2": 1, "D3": 2, "D4": 3, "D5": 2}
-{"respondentId": 209, "D1": 1, "D2": 2, "D3": 1, "D4": 5, "D5": 1}
-{"respondentId": 210, "D1": 4, "D2": 1, "D3": 4, "D4": 4, "D5": 5}
-{"respondentId": 211, "D1": 5, "D2": 1, "D3": 3, "D4": 4, "D5": 3}
-{"respondentId": 212, "D1": 2, "D2": 2, "D3": 1, "D4": 2, "D5": 2}
-{"respondentId": 213, "D1": 3, "D2": 1, "D3": 4, "D4": 4, "D5": 2}
-{"respondentId": 214, "D1": 2, "D2": 2, "D3": 3, "D4": 4, "D5": 3}
-{"respondentId": 215, "D1": 2, "D2": 2, "D3": 4, "D4": 3, "D5": 1}
-{"respondentId": 216, "D1": 2, "D2": 2, "D3": 2, "D4": 3, "D5": 3}
-{"respondentId": 217, "D1": 1, "D2": 1, "D3": 2, "D4": 3, "D5": 2}
-{"respondentId": 218, "D1": 2, "D2": 1, "D3": 4, "D4": 2, "D5": 2}
-{"respondentId": 219, "D1": 2, "D2": 1, "D3": 4, "D4": 2, "D5": 1}
-{"respondentId": 220, "D1": 1, "D2": 2, "D3": 3, "D4": 2, "D5": 3}
-{"respondentId": 221, "D1": 4, "D2": 1, "D3": 3, "D4": 2, "D5": 1}
-{"respondentId": 222, "D1": 4, "D2": 1, "D3": 4, "D4": 3, "D5": 1}
-{"respondentId": 223, "D1": 3, "D2": 1, "D3": 1, "D4": 3, "D5": 2}
-{"respondentId": 224, "D1": 5, "D2": 1, "D3": 3, "D4": 3, "D5": 1}
-{"respondentId": 225, "D1": 6, "D2": 1, "D3": 4, "D4": 4, "D5": 4}
-{"respondentId": 226, "D1": 1, "D2": 2, "D3": 2, "D4": 2, "D5": 1}
-{"respondentId": 227, "D1": 4, "D2": 3, "D3": 3, "D4": 3, "D5": 2}
-{"respondentId": 228, "D1": 5, "D2": 2, "D3": 4, "D4": 5, "D5": 3}
-{"respondentId": 229, "D1": 2, "D2": 2, "D3": 4, "D4": 2, "D5": 3}
-{"respondentId": 230, "D1": 3, "D2": 2, "D3": 4, "D4": 3, "D5": 2}
-{"respondentId": 231, "D1": 3, "D2": 1, "D3": 3, "D4": 2, "D5": 1}
-{"respondentId": 232, "D1": 4, "D2": 1, "D3": 4, "D4": 5, "D5": 2}
-{"respondentId": 233, "D1": 2, "D2": 2, "D3": 6, "D4": 2, "D5": 2}
-{"respondentId": 234, "D1": 3, "D2": 2, "D3": 4, "D4": 3, "D5": 3}
-{"respondentId": 235, "D1": 2, "D2": 2, "D3": 4, "D4": 2, "D5": 1}
-{"respondentId": 236, "D1": 2, "D2": 1, "D3": 1, "D4": 4, "D5": 1}
-{"respondentId": 237, "D1": 6, "D2": 2, "D3": 4, "D4": 3, "D5": 3}
-{"respondentId": 238, "D1": 3, "D2": 1, "D3": 4, "D4": 3, "D5": 3}
-{"respondentId": 239, "D1": 1, "D2": 2, "D3": 1, "D4": 5, "D5": 2}
-{"respondentId": 240, "D1": 6, "D2": 2, "D3": 4, "D4": 5, "D5": 2}
-{"respondentId": 241, "D1": 1, "D2": 1, "D3": 4, "D4": 1, "D5": 1}
-{"respondentId": 242, "D1": 5, "D2": 2, "D3": 3, "D4": 4, "D5": 2}
-{"respondentId": 243, "D1": 6, "D2": 1, "D3": 4, "D4": 4, "D5": 1}
-{"respondentId": 244, "D1": 2, "D2": 2, "D3": 5, "D4": 3, "D5": 2}
-{"respondentId": 245, "D1": 2, "D2": 1, "D3": 5, "D4": 2, "D5": 1}
-{"respondentId": 246, "D1": 1, "D2": 1, "D3": 3, "D4": 4, "D5": 2}
-{"respondentId": 247, "D1": 4, "D2": 2, "D3": 4, "D4": 2, "D5": 2}
-{"respondentId": 248, "D1": 2, "D2": 2, "D3": 2, "D4": 2, "D5": 1}
-{"respondentId": 249, "D1": 2, "D2": 1, "D3": 3, "D4": 2, "D5": 4}
-{"respondentId": 250, "D1": 2, "D2": 2, "D3": 4, "D4": 3, "D5": 2}
-{"respondentId": 251, "D1": 3, "D2": 1, "D3": 3, "D4": 3, "D5": 2}
-{"respondentId": 252, "D1": 5, "D2": 2, "D3": 4, "D4": 3, "D5": 3}
-{"respondentId": 253, "D1": 2, "D2": 1, "D3": 4, "D4": 2, "D5": 3}
-{"respondentId": 254, "D1": 5, "D2": 2, "D3": 3, "D4": 1, "D5": 2}
-{"respondentId": 255, "D1": 4, "D2": 2, "D3": 3, "D4": 4, "D5": 2}
-{"respondentId": 256, "D1": 2, "D2": 1, "D3": 3, "D4": 1, "D5": 1}
-{"respondentId": 257, "D1": 4, "D2": 2, "D3": 3, "D4": 1, "D5": 2}
-{"respondentId": 258, "D1": 4, "D2": 2, "D3": 3, "D4": 4, "D5": 1}
-{"respondentId": 259, "D1": 2, "D2": 1, "D3": 5, "D4": 3, "D5": 2}
-{"respondentId": 260, "D1": 3, "D2": 1, "D3": 3, "D4": 2, "D5": 2}
-{"respondentId": 261, "D1": 2, "D2": 2, "D3": 4, "D4": 3, "D5": 1}
-{"respondentId": 262, "D1": 5, "D2": 1, "D3": 2, "D4": 4, "D5": 3}
-{"respondentId": 263, "D1": 6, "D2": 1, "D3": 2, "D4": 4, "D5": 1}
-{"respondentId": 264, "D1": 4, "D2": 1, "D3": 3, "D4": 3, "D5": 2}
-{"respondentId": 265, "D1": 5, "D2": 2, "D3": 2, "D4": 3, "D5": 1}
-{"respondentId": 266, "D1": 4, "D2": 1, "D3": 1, "D4": 2, "D5": 4}
-{"respondentId": 267, "D1": 1, "D2": 1, "D3": 4, "D4": 2, "D5": 1}
-{"respondentId": 268, "D1": 3, "D2": 1, "D3": 4, "D4": 2, "D5": 1}
-{"respondentId": 269, "D1": 1, "D2": 1, "D3": 2, "D4": 3, "D5": 1}
-{"respondentId": 270, "D1": 5, "D2": 3, "D3": 6, "D4": 4, "D5": 1}
-{"respondentId": 271, "D1": 2, "D2": 2, "D3": 1, "D4": 3, "D5": 2}
-{"respondentId": 272, "D1": 2, "D2": 2, "D3": 2, "D4": 2, "D5": 3}
-{"respondentId": 273, "D1": 2, "D2": 2, "D3": 4, "D4": 2, "D5": 1}
-{"respondentId": 274, "D1": 4, "D2": 2, "D3": 2, "D4": 3, "D5": 1}
-{"respondentId": 275, "D1": 6, "D2": 1, "D3": 4, "D4": 4, "D5": 1}
-{"respondentId": 276, "D1": 6, "D2": 1, "D3": 3, "D4": 3, "D5": 1}
-{"respondentId": 277, "D1": 4, "D2": 1, "D3": 3, "D4": 1, "D5": 1}
-{"respondentId": 278, "D1": 4, "D2": 2, "D3": 3, "D4": 1, "D5": 1}
-{"respondentId": 279, "D1": 3, "D2": 1, "D3": 4, "D4": 2, "D5": 1}
-{"respondentId": 280, "D1": 3, "D2": 2, "D3": 3, "D4": 4, "D5": 1}
-{"respondentId": 281, "D1": 1, "D2": 2, "D3": 1, "D4": 4, "D5": 3}
-{"respondentId": 282, "D1": 3, "D2": 2, "D3": 4, "D4": 2, "D5": 1}
-{"respondentId": 283, "D1": 5, "D2": 2, "D3": 2, "D4": 4, "D5": 2}
-{"respondentId": 284, "D1": 4, "D2": 2, "D3": 3, "D4": 4, "D5": 2}
-{"respondentId": 285, "D1": 3, "D2": 1, "D3": 4, "D4": 5, "D5": 4}
-{"respondentId": 286, "D1": 1, "D2": 1, "D3": 1, "D4": 4, "D5": 2}
-{"respondentId": 287, "D1": 1, "D2": 2, "D3": 1, "D4": 3, "D5": 2}
-{"respondentId": 288, "D1": 5, "D2": 1, "D3": 3, "D4": 3, "D5": 3}
-{"respondentId": 289, "D1": 2, "D2": 2, "D3": 3, "D4": 3, "D5": 2}
-{"respondentId": 290, "D1": 3, "D2": 2, "D3": 2, "D4": 3, "D5": 1}
-{"respondentId": 291, "D1": 1, "D2": 1, "D3": 4, "D4": 4, "D5": 2}
-{"respondentId": 292, "D1": 4, "D2": 2, "D3": 4, "D4": 1, "D5": 1}
-{"respondentId": 293, "D1": 2, "D2": 2, "D3": 5, "D4": 2, "D5": 1}
-{"respondentId": 294, "D1": 4, "D2": 4, "D3": 3, "D4": 3, "D5": 3}
-{"respondentId": 295, "D1": 1, "D2": 3, "D3": 4, "D4": 1, "D5": 2}
-{"respondentId": 296, "D1": 2, "D2": 1, "D3": 6, "D4": 3, "D5": 2}
-{"respondentId": 297, "D1": 4, "D2": 2, "D3": 3, "D4": 4, "D5": 4}
-{"respondentId": 298, "D1": 1, "D2": 2, "D3": 4, "D4": 3, "D5": 4}
-{"respondentId": 299, "D1": 4, "D2": 2, "D3": 4, "D4": 4, "D5": 1}
-{"respondentId": 300, "D1": 5, "D2": 2, "D3": 2, "D4": 4, "D5": 2}
-{"respondentId": 301, "D1": 4, "D2": 1, "D3": 2, "D4": 1, "D5": 1}
-{"respondentId": 302, "D1": 3, "D2": 1, "D3": 2, "D4": 4, "D5": 1}
-{"respondentId": 303, "D1": 2, "D2": 2, "D3": 3, "D4": 3, "D5": 3}
-{"respondentId": 304, "D1": 3, "D2": 2, "D3": 4, "D4": 3, "D5": 1}
-{"respondentId": 305, "D1": 3, "D2": 2, "D3": 3, "D4": 4, "D5": 1}
-{"respondentId": 306, "D1": 1, "D2": 1, "D3": 1, "D4": 2, "D5": 1}
-{"respondentId": 307, "D1": 5, "D2": 1, "D3": 3, "D4": 2, "D5": 1}
-{"respondentId": 308, "D1": 1, "D2": 1, "D3": 1, "D4": 2, "D5": 2}
-{"respondentId": 309, "D1": 2, "D2": 1, "D3": 2, "D4": 4, "D5": 3}
-{"respondentId": 310, "D1": 6, "D2": 1, "D3": 5, "D4": 4, "D5": 4}
-{"respondentId": 311, "D1": 2, "D2": 1, "D3": 2, "D4": 2, "D5": 1}
-{"respondentId": 312, "D1": 3, "D2": 2, "D3": 1, "D4": 2, "D5": 1}
-{"respondentId": 313, "D1": 6, "D2": 1, "D3": 3, "D4": 5, "D5": 1}
-{"respondentId": 314, "D1": 3, "D2": 4, "D3": 3, "D4": 4, "D5": 2}
-{"respondentId": 315, "D1": 1, "D2": 2, "D3": 2, "D4": 4, "D5": 1}
-{"respondentId": 316, "D1": 2, "D2": 2, "D3": 5, "D4": 3, "D5": 2}
-{"respondentId": 317, "D1": 3, "D2": 1, "D3": 4, "D4": 3, "D5": 1}
-{"respondentId": 318, "D1": 3, "D2": 2, "D3": 3, "D4": 5, "D5": 4}
-{"respondentId": 319, "D1": 2, "D2": 1, "D3": 5, "D4": 3, "D5": 1}
-{"respondentId": 320, "D1": 4, "D2": 1, "D3": 1, "D4": 4, "D5": 3}
-{"respondentId": 321, "D1": 5, "D2": 2, "D3": 2, "D4": 3, "D5": 1}
-{"respondentId": 322, "D1": 4, "D2": 2, "D3": 2, "D4": 2, "D5": 2}
-{"respondentId": 323, "D1": 1, "D2": 1, "D3": 4, "D4": 4, "D5": 2}
-{"respondentId": 324, "D1": 2, "D2": 1, "D3": 3, "D4": 3, "D5": 2}
-{"respondentId": 325, "D1": 1, "D2": 2, "D3": 6, "D4": 3, "D5": 1}
-{"respondentId": 326, "D1": 5, "D2": 1, "D3": 3, "D4": 4, "D5": 1}
-{"respondentId": 327, "D1": 1, "D2": 2, "D3": 3, "D4": 5, "D5": 2}
-{"respondentId": 328, "D1": 2, "D2": 2, "D3": 3, "D4": 4, "D5": 1}
-{"respondentId": 329, "D1": 3, "D2": 2, "D3": 4, "D4": 2, "D5": 1}
-{"respondentId": 330, "D1": 1, "D2": 1, "D3": 4, "D4": 5, "D5": 2}
-{"respondentId": 331, "D1": 1, "D2": 1, "D3": 4, "D4": 4, "D5": 1}
-{"respondentId": 332, "D1": 2, "D2": 1, "D3": 3, "D4": 3, "D5": 1}
-{"respondentId": 333, "D1": 2, "D2": 3, "D3": 2, "D4": 3, "D5": 2}
-{"respondentId": 334, "D1": 4, "D2": 2, "D3": 2, "D4": 3, "D5": 1}
-{"respondentId": 335, "D1": 2, "D2": 2, "D3": 3, "D4": 4, "D5": 1}
-{"respondentId": 336, "D1": 2, "D2": 2, "D3": 3, "D4": 2, "D5": 1}
-{"respondentId": 337, "D1": 4, "D2": 2, "D3": 4, "D4": 5, "D5": 2}
-{"respondentId": 338, "D1": 1, "D2": 1, "D3": 2, "D4": 3, "D5": 1}
-{"respondentId": 339, "D1": 3, "D2": 1, "D3": 3, "D4": 4, "D5": 5}
-{"respondentId": 340, "D1": 2, "D2": 1, "D3": 4, "D4": 3, "D5": 2}
-{"respondentId": 341, "D1": 1, "D2": 2, "D3": 3, "D4": 3, "D5": 1}
-{"respondentId": 342, "D1": 3, "D2": 1, "D3": 2, "D4": 2, "D5": 2}
-{"respondentId": 343, "D1": 3, "D2": 1, "D3": 2, "D4": 3, "D5": 2}
-{"respondentId": 344, "D1": 2, "D2": 2, "D3": 2, "D4": 3, "D5": 2}
-{"respondentId": 345, "D1": 3, "D2": 1, "D3": 2, "D4": 2, "D5": 1}
-{"respondentId": 346, "D1": 6, "D2": 1, "D3": 4, "D4": 4, "D5": 2}
-{"respondentId": 347, "D1": 4, "D2": 2, "D3": 2, "D4": 4, "D5": 2}
-{"respondentId": 348, "D1": 2, "D2": 1, "D3": 5, "D4": 3, "D5": 2}
-{"respondentId": 349, "D1": 6, "D2": 1, "D3": 2, "D4": 5, "D5": 3}
-{"respondentId": 350, "D1": 4, "D2": 2, "D3": 3, "D4": 2, "D5": 3}
-{"respondentId": 351, "D1": 1, "D2": 2, "D3": 1, "D4": 2, "D5": 3}
-{"respondentId": 352, "D1": 2, "D2": 1, "D3": 4, "D4": 4, "D5": 1}
-{"respondentId": 353, "D1": 4, "D2": 1, "D3": 6, "D4": 4, "D5": 2}
-{"respondentId": 354, "D1": 3, "D2": 2, "D3": 3, "D4": 2, "D5": 1}
-{"respondentId": 355, "D1": 1, "D2": 2, "D3": 2, "D4": 4, "D5": 1}
-{"respondentId": 356, "D1": 1, "D2": 1, "D3": 3, "D4": 5, "D5": 5}
-{"respondentId": 357, "D1": 4, "D2": 1, "D3": 2, "D4": 3, "D5": 2}
-{"respondentId": 358, "D1": 2, "D2": 2, "D3": 3, "D4": 3, "D5": 3}
-{"respondentId": 359, "D1": 4, "D2": 2, "D3": 3, "D4": 3, "D5": 2}
-{"respondentId": 360, "D1": 2, "D2": 1, "D3": 5, "D4": 5, "D5": 1}
-{"respondentId": 361, "D1": 2, "D2": 1, "D3": 3, "D4": 3, "D5": 1}
-{"respondentId": 362, "D1": 3, "D2": 1, "D3": 3, "D4": 4, "D5": 2}
-{"respondentId": 363, "D1": 5, "D2": 2, "D3": 3, "D4": 2, "D5": 2}
-{"respondentId": 364, "D1": 4, "D2": 1, "D3": 1, "D4": 4, "D5": 1}
-{"respondentId": 365, "D1": 2, "D2": 1, "D3": 4, "D4": 2, "D5": 1}
-{"respondentId": 366, "D1": 4, "D2": 2, "D3": 2, "D4": 3, "D5": 1}
-{"respondentId": 367, "D1": 3, "D2": 2, "D3": 3, "D4": 4, "D5": 3}
-{"respondentId": 368, "D1": 5, "D2": 2, "D3": 4, "D4": 5, "D5": 4}
-{"respondentId": 369, "D1": 3, "D2": 1, "D3": 1, "D4": 1, "D5": 2}
-{"respondentId": 370, "D1": 2, "D2": 1, "D3": 1, "D4": 1, "D5": 5}
-{"respondentId": 371, "D1": 4, "D2": 1, "D3": 4, "D4": 4, "D5": 1}
-{"respondentId": 372, "D1": 1, "D2": 2, "D3": 1, "D4": 2, "D5": 1}
-{"respondentId": 373, "D1": 3, "D2": 2, "D3": 4, "D4": 4, "D5": 5}
-{"respondentId": 374, "D1": 6, "D2": 2, "D3": 3, "D4": 5, "D5": 3}
-{"respondentId": 375, "D1": 1, "D2": 2, "D3": 3, "D4": 5, "D5": 2}
-{"respondentId": 376, "D1": 1, "D2": 1, "D3": 4, "D4": 3, "D5": 3}
-{"respondentId": 377, "D1": 3, "D2": 1, "D3": 4, "D4": 1, "D5": 4}
-{"respondentId": 378, "D1": 4, "D2": 1, "D3": 3, "D4": 3, "D5": 4}
-{"respondentId": 379, "D1": 3, "D2": 1, "D3": 3, "D4": 4, "D5": 3}
-{"respondentId": 380, "D1": 2, "D2": 2, "D3": 1, "D4": 2, "D5": 1}
-{"respondentId": 381, "D1": 2, "D2": 1, "D3": 1, "D4": 4, "D5": 2}
-{"respondentId": 382, "D1": 3, "D2": 1, "D3": 1, "D4": 3, "D5": 1}
-{"respondentId": 383, "D1": 3, "D2": 2, "D3": 2, "D4": 2, "D5": 1}
-{"respondentId": 384, "D1": 4, "D2": 2, "D3": 3, "D4": 1, "D5": 1}
-{"respondentId": 385, "D1": 4, "D2": 1, "D3": 2, "D4": 4, "D5": 4}
-{"respondentId": 386, "D1": 5, "D2": 2, "D3": 5, "D4": 1, "D5": 1}
-{"respondentId": 387, "D1": 3, "D2": 2, "D3": 2, "D4": 2, "D5": 1}
-{"respondentId": 388, "D1": 5, "D2": 1, "D3": 2, "D4": 4, "D5": 3}
-{"respondentId": 389, "D1": 1, "D2": 2, "D3": 3, "D4": 4, "D5": 1}
-{"respondentId": 390, "D1": 2, "D2": 2, "D3": 3, "D4": 4, "D5": 1}
-{"respondentId": 391, "D1": 3, "D2": 4, "D3": 2, "D4": 2, "D5": 2}
-{"respondentId": 392, "D1": 2, "D2": 1, "D3": 2, "D4": 5, "D5": 5}
-{"respondentId": 393, "D1": 3, "D2": 1, "D3": 4, "D4": 4, "D5": 1}
-{"respondentId": 394, "D1": 2, "D2": 2, "D3": 2, "D4": 3, "D5": 3}
-{"respondentId": 395, "D1": 2, "D2": 1, "D3": 3, "D4": 1, "D5": 1}
-{"respondentId": 396, "D1": 2, "D2": 1, "D3": 2, "D4": 2, "D5": 1}
-{"respondentId": 397, "D1": 3, "D2": 2, "D3": 2, "D4": 4, "D5": 2}
-{"respondentId": 398, "D1": 2, "D2": 1, "D3": 4, "D4": 2, "D5": 1}
-{"respondentId": 399, "D1": 1, "D2": 1, "D3": 4, "D4": 2, "D5": 1}
-{"respondentId": 400, "D1": 1, "D2": 1, "D3": 2, "D4": 6, "D5": 3}
+{"respondentId":1,"D1":1,"D2":2,"D3":2,"D4":"Maylands"}
+{"respondentId":2,"D1":2,"D2":2,"D3":1,"D4":"Claremont"}
+{"respondentId":3,"D1":2,"D2":6,"D3":1,"D4":"Swanbourne"}
+{"respondentId":4,"D1":1,"D2":4,"D3":2,"D4":"Wembley"}
+{"respondentId":5,"D1":2,"D2":3,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":6,"D1":1,"D2":6,"D3":2,"D4":"Cottesloe"}
+{"respondentId":7,"D1":1,"D2":2,"D3":2,"D4":"Fremantle"}
+{"respondentId":8,"D1":1,"D2":5,"D3":2,"D4":"Subiaco"}
+{"respondentId":9,"D1":1,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":10,"D1":1,"D2":5,"D3":1,"D4":"Claremont"}
+{"respondentId":11,"D1":1,"D2":5,"D3":1,"D4":"Swanbourne"}
+{"respondentId":12,"D1":1,"D2":4,"D3":4,"D4":"Melbourne"}
+{"respondentId":13,"D1":1,"D2":4,"D3":1,"D4":"Swanbourne"}
+{"respondentId":14,"D1":2,"D2":4,"D3":1,"D4":"Swanbourne"}
+{"respondentId":15,"D1":1,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":16,"D1":2,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":17,"D1":1,"D2":3,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":18,"D1":2,"D2":3,"D3":1,"D4":"Swanbourne"}
+{"respondentId":19,"D1":1,"D2":4,"D3":1,"D4":"Claremont"}
+{"respondentId":20,"D1":1,"D2":4,"D3":1,"D4":"Claremont"}
+{"respondentId":21,"D1":1,"D2":1,"D3":1,"D4":"Claremont"}
+{"respondentId":22,"D1":1,"D2":3,"D3":2,"D4":"City Beach"}
+{"respondentId":23,"D1":2,"D2":1,"D3":1,"D4":"Claremont"}
+{"respondentId":24,"D1":1,"D2":1,"D3":1,"D4":"Claremont"}
+{"respondentId":25,"D1":1,"D2":4,"D3":1,"D4":"Swanbourne"}
+{"respondentId":26,"D1":2,"D2":4,"D3":1,"D4":"Swanbourne"}
+{"respondentId":27,"D1":1,"D2":4,"D3":1,"D4":"Swanbourne"}
+{"respondentId":28,"D1":1,"D2":4,"D3":4,"D4":"Melbourne"}
+{"respondentId":29,"D1":1,"D2":6,"D3":2,"D4":"Nedlands"}
+{"respondentId":30,"D1":1,"D2":4,"D3":1,"D4":"Swanbourne"}
+{"respondentId":31,"D1":2,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":32,"D1":1,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":33,"D1":1,"D2":6,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":34,"D1":2,"D2":6,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":35,"D1":1,"D2":6,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":36,"D1":2,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":37,"D1":1,"D2":4,"D3":1,"D4":"Swanbourne"}
+{"respondentId":38,"D1":1,"D2":3,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":39,"D1":1,"D2":5,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":40,"D1":2,"D2":4,"D3":1,"D4":"Claremont"}
+{"respondentId":41,"D1":1,"D2":2,"D3":1,"D4":"Claremont"}
+{"respondentId":42,"D1":1,"D2":5,"D3":1,"D4":"Claremont"}
+{"respondentId":43,"D1":1,"D2":4,"D3":1,"D4":"Swanbourne"}
+{"respondentId":44,"D1":1,"D2":2,"D3":1,"D4":"Claremont"}
+{"respondentId":45,"D1":1,"D2":5,"D3":1,"D4":"Claremont"}
+{"respondentId":46,"D1":1,"D2":3,"D3":1,"D4":"Claremont"}
+{"respondentId":47,"D1":1,"D2":4,"D3":1,"D4":"Claremont"}
+{"respondentId":48,"D1":1,"D2":5,"D3":1,"D4":"Claremont"}
+{"respondentId":49,"D1":1,"D2":3,"D3":1,"D4":"Claremont"}
+{"respondentId":50,"D1":2,"D2":4,"D3":3,"D4":"Geraldton"}
+{"respondentId":51,"D1":1,"D2":3,"D3":3,"D4":"Geraldton"}
+{"respondentId":52,"D1":2,"D2":4,"D3":1,"D4":"Swanbourne"}
+{"respondentId":53,"D1":1,"D2":3,"D3":1,"D4":"Swanbourne"}
+{"respondentId":54,"D1":1,"D2":4,"D3":4,"D4":"Bowral"}
+{"respondentId":55,"D1":1,"D2":5,"D3":1,"D4":"Swanbourne"}
+{"respondentId":56,"D1":2,"D2":4,"D3":1,"D4":"Claremont"}
+{"respondentId":57,"D1":1,"D2":4,"D3":1,"D4":"Swanbourne"}
+{"respondentId":58,"D1":2,"D2":5,"D3":1,"D4":"Swanbourne"}
+{"respondentId":59,"D1":2,"D2":4,"D3":4,"D4":"Bowral"}
+{"respondentId":60,"D1":4,"D2":7,"D3":1,"D4":"Claremont"}
+{"respondentId":61,"D1":1,"D2":6,"D3":1,"D4":"Swanbourne"}
+{"respondentId":62,"D1":2,"D2":3,"D3":1,"D4":"Claremont"}
+{"respondentId":63,"D1":2,"D2":2,"D3":1,"D4":"Claremont"}
+{"respondentId":64,"D1":2,"D2":1,"D3":2,"D4":"Daglish"}
+{"respondentId":65,"D1":1,"D2":4,"D3":1,"D4":"Claremont"}
+{"respondentId":66,"D1":1,"D2":3,"D3":2,"D4":"Cottesloe"}
+{"respondentId":67,"D1":2,"D2":3,"D3":2,"D4":"Cottesloe"}
+{"respondentId":68,"D1":1,"D2":3,"D3":2,"D4":"Karrakatta"}
+{"respondentId":69,"D1":1,"D2":5,"D3":1,"D4":"Claremont"}
+{"respondentId":70,"D1":2,"D2":3,"D3":1,"D4":"Swanbourne"}
+{"respondentId":71,"D1":1,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":72,"D1":2,"D2":5,"D3":1,"D4":"Claremont"}
+{"respondentId":73,"D1":2,"D2":4,"D3":1,"D4":"Claremont"}
+{"respondentId":74,"D1":2,"D2":6,"D3":1,"D4":"Swanbourne"}
+{"respondentId":75,"D1":1,"D2":4,"D3":1,"D4":"Claremont"}
+{"respondentId":76,"D1":4,"D2":7,"D3":1,"D4":"Swanbourne"}
+{"respondentId":77,"D1":1,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":78,"D1":2,"D2":3,"D3":1,"D4":"Claremont"}
+{"respondentId":79,"D1":2,"D2":1,"D3":1,"D4":"Claremont"}
+{"respondentId":80,"D1":1,"D2":4,"D3":5,"D4":"Great Britain"}
+{"respondentId":81,"D1":1,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":82,"D1":2,"D2":4,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":83,"D1":1,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":84,"D1":1,"D2":1,"D3":2,"D4":"Wembley"}
+{"respondentId":85,"D1":1,"D2":5,"D3":2,"D4":"Tuart Hill"}
+{"respondentId":86,"D1":2,"D2":4,"D3":1,"D4":"Claremont"}
+{"respondentId":87,"D1":1,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":88,"D1":1,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":89,"D1":1,"D2":3,"D3":5,"D4":"New Zealand"}
+{"respondentId":90,"D1":1,"D2":2,"D3":2,"D4":"Mt Pleasant"}
+{"respondentId":91,"D1":2,"D2":4,"D3":2,"D4":"Greenfields"}
+{"respondentId":92,"D1":1,"D2":1,"D3":1,"D4":""}
+{"respondentId":93,"D1":2,"D2":4,"D3":1,"D4":"Swanbourne"}
+{"respondentId":94,"D1":2,"D2":1,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":95,"D1":2,"D2":1,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":96,"D1":1,"D2":4,"D3":1,"D4":"Swanbourne"}
+{"respondentId":97,"D1":1,"D2":3,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":98,"D1":3,"D2":4,"D3":1,"D4":"Claremont"}
+{"respondentId":99,"D1":1,"D2":6,"D3":2,"D4":"Mt Hawthorn"}
+{"respondentId":100,"D1":1,"D2":5,"D3":1,"D4":"Claremont"}
+{"respondentId":101,"D1":2,"D2":4,"D3":1,"D4":"Claremont"}
+{"respondentId":102,"D1":2,"D2":5,"D3":1,"D4":"Swanbourne"}
+{"respondentId":103,"D1":2,"D2":1,"D3":1,"D4":"Claremont"}
+{"respondentId":104,"D1":1,"D2":5,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":105,"D1":1,"D2":5,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":106,"D1":1,"D2":6,"D3":1,"D4":"Swanbourne"}
+{"respondentId":107,"D1":2,"D2":3,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":108,"D1":2,"D2":3,"D3":1,"D4":"Claremont"}
+{"respondentId":109,"D1":1,"D2":6,"D3":1,"D4":"Swanbourne"}
+{"respondentId":110,"D1":1,"D2":4,"D3":1,"D4":"Swanbourne"}
+{"respondentId":111,"D1":2,"D2":4,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":112,"D1":1,"D2":5,"D3":2,"D4":"Marmion"}
+{"respondentId":113,"D1":4,"D2":7,"D3":1,"D4":"Swanbourne"}
+{"respondentId":114,"D1":1,"D2":6,"D3":2,"D4":"Daglish"}
+{"respondentId":115,"D1":1,"D2":6,"D3":1,"D4":""}
+{"respondentId":116,"D1":2,"D2":6,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":117,"D1":1,"D2":3,"D3":1,"D4":"Claremont"}
+{"respondentId":118,"D1":2,"D2":4,"D3":1,"D4":"Swanbourne"}
+{"respondentId":119,"D1":1,"D2":4,"D3":1,"D4":"Swanbourne"}
+{"respondentId":120,"D1":1,"D2":6,"D3":1,"D4":"Swanbourne"}
+{"respondentId":121,"D1":1,"D2":6,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":122,"D1":2,"D2":2,"D3":1,"D4":"Claremont"}
+{"respondentId":123,"D1":2,"D2":6,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":124,"D1":2,"D2":3,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":125,"D1":1,"D2":6,"D3":1,"D4":"Swanbourne"}
+{"respondentId":126,"D1":1,"D2":5,"D3":1,"D4":"Claremont"}
+{"respondentId":127,"D1":1,"D2":3,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":128,"D1":2,"D2":4,"D3":1,"D4":""}
+{"respondentId":129,"D1":2,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":130,"D1":1,"D2":4,"D3":1,"D4":"Claremont"}
+{"respondentId":131,"D1":2,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":132,"D1":2,"D2":4,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":133,"D1":1,"D2":5,"D3":3,"D4":"Bunbury"}
+{"respondentId":134,"D1":1,"D2":3,"D3":1,"D4":"Nedlands"}
+{"respondentId":135,"D1":2,"D2":6,"D3":3,"D4":"Bunbury"}
+{"respondentId":136,"D1":1,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":137,"D1":1,"D2":3,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":138,"D1":2,"D2":5,"D3":1,"D4":"Claremont"}
+{"respondentId":139,"D1":2,"D2":3,"D3":1,"D4":"wembley"}
+{"respondentId":140,"D1":1,"D2":2,"D3":2,"D4":"Kinross"}
+{"respondentId":141,"D1":2,"D2":6,"D3":1,"D4":"Swanbourne"}
+{"respondentId":142,"D1":2,"D2":2,"D3":2,"D4":"Duncraig"}
+{"respondentId":143,"D1":1,"D2":2,"D3":2,"D4":"Yokine"}
+{"respondentId":144,"D1":2,"D2":2,"D3":2,"D4":"Yokine"}
+{"respondentId":145,"D1":1,"D2":2,"D3":2,"D4":"Duncraig"}
+{"respondentId":146,"D1":1,"D2":6,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":147,"D1":2,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":148,"D1":2,"D2":4,"D3":1,"D4":"Swanbourne"}
+{"respondentId":149,"D1":1,"D2":3,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":150,"D1":2,"D2":3,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":151,"D1":2,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":152,"D1":2,"D2":3,"D3":2,"D4":"Fremantle"}
+{"respondentId":153,"D1":2,"D2":3,"D3":1,"D4":"Swanbourne"}
+{"respondentId":154,"D1":1,"D2":3,"D3":2,"D4":"Beaconsfield"}
+{"respondentId":155,"D1":1,"D2":3,"D3":1,"D4":"Swanbourne"}
+{"respondentId":156,"D1":2,"D2":4,"D3":1,"D4":"Swanbourne"}
+{"respondentId":157,"D1":2,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":158,"D1":1,"D2":6,"D3":5,"D4":"Great Britain"}
+{"respondentId":159,"D1":2,"D2":6,"D3":5,"D4":"England"}
+{"respondentId":160,"D1":2,"D2":3,"D3":1,"D4":"Claremont"}
+{"respondentId":161,"D1":1,"D2":5,"D3":1,"D4":""}
+{"respondentId":162,"D1":1,"D2":3,"D3":1,"D4":"Claremont"}
+{"respondentId":163,"D1":1,"D2":6,"D3":1,"D4":""}
+{"respondentId":164,"D1":1,"D2":6,"D3":2,"D4":"Cottesloe"}
+{"respondentId":165,"D1":1,"D2":4,"D3":2,"D4":"Dalkeith"}
+{"respondentId":166,"D1":2,"D2":5,"D3":1,"D4":"Claremont"}
+{"respondentId":167,"D1":2,"D2":5,"D3":2,"D4":"Dalkeith"}
+{"respondentId":168,"D1":1,"D2":5,"D3":2,"D4":"North Perth"}
+{"respondentId":169,"D1":1,"D2":5,"D3":2,"D4":"South Perth"}
+{"respondentId":170,"D1":1,"D2":4,"D3":1,"D4":"Claremont"}
+{"respondentId":171,"D1":2,"D2":6,"D3":1,"D4":"Swanbourne"}
+{"respondentId":172,"D1":1,"D2":6,"D3":1,"D4":"Swanbourne"}
+{"respondentId":173,"D1":1,"D2":4,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":174,"D1":2,"D2":6,"D3":4,"D4":"Melbourne"}
+{"respondentId":175,"D1":1,"D2":6,"D3":4,"D4":"Melbourne"}
+{"respondentId":176,"D1":2,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":177,"D1":2,"D2":3,"D3":1,"D4":"Swanbourne"}
+{"respondentId":178,"D1":1,"D2":4,"D3":1,"D4":"Claremont"}
+{"respondentId":179,"D1":1,"D2":1,"D3":1,"D4":"Claremont"}
+{"respondentId":180,"D1":1,"D2":2,"D3":2,"D4":"Applecross"}
+{"respondentId":181,"D1":2,"D2":6,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":182,"D1":1,"D2":6,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":183,"D1":1,"D2":6,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":184,"D1":1,"D2":4,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":185,"D1":2,"D2":5,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":186,"D1":1,"D2":5,"D3":2,"D4":"Daglish"}
+{"respondentId":187,"D1":1,"D2":4,"D3":1,"D4":"Swanbourne"}
+{"respondentId":188,"D1":1,"D2":6,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":189,"D1":1,"D2":6,"D3":1,"D4":"Swanbourne"}
+{"respondentId":190,"D1":1,"D2":5,"D3":1,"D4":"Nedlands"}
+{"respondentId":191,"D1":3,"D2":6,"D3":1,"D4":"Nedlands"}
+{"respondentId":192,"D1":1,"D2":6,"D3":1,"D4":"Swanbourne"}
+{"respondentId":193,"D1":1,"D2":3,"D3":2,"D4":"Myaree"}
+{"respondentId":194,"D1":1,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":195,"D1":2,"D2":4,"D3":1,"D4":"Swanbourne"}
+{"respondentId":196,"D1":1,"D2":5,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":197,"D1":1,"D2":5,"D3":1,"D4":"Swanbourne"}
+{"respondentId":198,"D1":1,"D2":4,"D3":1,"D4":"Swanbourne"}
+{"respondentId":199,"D1":2,"D2":5,"D3":1,"D4":"Claremont"}
+{"respondentId":200,"D1":2,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":201,"D1":1,"D2":5,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":202,"D1":1,"D2":6,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":203,"D1":1,"D2":6,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":204,"D1":1,"D2":5,"D3":1,"D4":"Claremont"}
+{"respondentId":205,"D1":1,"D2":5,"D3":1,"D4":"Claremont"}
+{"respondentId":206,"D1":1,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":207,"D1":1,"D2":5,"D3":2,"D4":"Floreat"}
+{"respondentId":208,"D1":2,"D2":4,"D3":3,"D4":"Kalgoorlie"}
+{"respondentId":209,"D1":1,"D2":4,"D3":3,"D4":"Kalgoorlie"}
+{"respondentId":210,"D1":1,"D2":4,"D3":1,"D4":"Swanbourne"}
+{"respondentId":211,"D1":2,"D2":5,"D3":1,"D4":"Swanbourne"}
+{"respondentId":212,"D1":1,"D2":5,"D3":1,"D4":"South Fremantle"}
+{"respondentId":213,"D1":2,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":214,"D1":2,"D2":4,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":215,"D1":1,"D2":3,"D3":1,"D4":"Swanbourne"}
+{"respondentId":216,"D1":1,"D2":3,"D3":1,"D4":"Claremont"}
+{"respondentId":217,"D1":1,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":218,"D1":1,"D2":3,"D3":1,"D4":"Claremont"}
+{"respondentId":219,"D1":1,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":220,"D1":2,"D2":5,"D3":1,"D4":"Claremont"}
+{"respondentId":221,"D1":1,"D2":6,"D3":1,"D4":"Swanbourne"}
+{"respondentId":222,"D1":2,"D2":6,"D3":1,"D4":"Swanbourne"}
+{"respondentId":223,"D1":2,"D2":6,"D3":4,"D4":"Sydney"}
+{"respondentId":224,"D1":2,"D2":3,"D3":1,"D4":"Claremont"}
+{"respondentId":225,"D1":2,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":226,"D1":2,"D2":5,"D3":1,"D4":"Swanbourne"}
+{"respondentId":227,"D1":1,"D2":4,"D3":1,"D4":"Swanbourne"}
+{"respondentId":228,"D1":1,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":229,"D1":1,"D2":6,"D3":1,"D4":"Swanbourne"}
+{"respondentId":230,"D1":1,"D2":5,"D3":1,"D4":"Claremont"}
+{"respondentId":231,"D1":2,"D2":2,"D3":1,"D4":"Claremont"}
+{"respondentId":232,"D1":1,"D2":4,"D3":1,"D4":"Claremont"}
+{"respondentId":233,"D1":2,"D2":5,"D3":1,"D4":"Swanbourne"}
+{"respondentId":234,"D1":1,"D2":2,"D3":1,"D4":"Claremont"}
+{"respondentId":235,"D1":2,"D2":2,"D3":1,"D4":"Claremont"}
+{"respondentId":236,"D1":2,"D2":4,"D3":1,"D4":"Claremont"}
+{"respondentId":237,"D1":1,"D2":5,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":238,"D1":2,"D2":5,"D3":1,"D4":""}
+{"respondentId":239,"D1":1,"D2":3,"D3":1,"D4":"Swanbourne"}
+{"respondentId":240,"D1":1,"D2":4,"D3":1,"D4":"Claremont"}
+{"respondentId":241,"D1":2,"D2":5,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":242,"D1":1,"D2":4,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":243,"D1":2,"D2":3,"D3":2,"D4":"Peppermint Grove"}
+{"respondentId":244,"D1":1,"D2":1,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":245,"D1":2,"D2":3,"D3":1,"D4":"Claremont"}
+{"respondentId":246,"D1":1,"D2":4,"D3":1,"D4":"Swanbourne"}
+{"respondentId":247,"D1":1,"D2":3,"D3":1,"D4":"Claremont"}
+{"respondentId":248,"D1":2,"D2":4,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":249,"D1":2,"D2":6,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":250,"D1":1,"D2":4,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":251,"D1":1,"D2":4,"D3":1,"D4":"Claremont"}
+{"respondentId":252,"D1":1,"D2":5,"D3":1,"D4":"Claremont"}
+{"respondentId":253,"D1":1,"D2":1,"D3":2,"D4":"Nedlands"}
+{"respondentId":254,"D1":1,"D2":3,"D3":1,"D4":"Claremont"}
+{"respondentId":255,"D1":2,"D2":3,"D3":1,"D4":"Swanbourne"}
+{"respondentId":256,"D1":1,"D2":3,"D3":1,"D4":"Swanbourne"}
+{"respondentId":257,"D1":1,"D2":6,"D3":1,"D4":"Swanbourne"}
+{"respondentId":258,"D1":1,"D2":6,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":259,"D1":1,"D2":2,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":260,"D1":1,"D2":3,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":261,"D1":1,"D2":1,"D3":1,"D4":"Claremont"}
+{"respondentId":262,"D1":1,"D2":5,"D3":1,"D4":""}
+{"respondentId":263,"D1":2,"D2":4,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":264,"D1":1,"D2":4,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":265,"D1":1,"D2":6,"D3":2,"D4":"City Beach"}
+{"respondentId":266,"D1":2,"D2":6,"D3":2,"D4":"City Beach"}
+{"respondentId":267,"D1":1,"D2":5,"D3":1,"D4":"Claremont"}
+{"respondentId":268,"D1":2,"D2":2,"D3":2,"D4":"Inglewood"}
+{"respondentId":269,"D1":1,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":270,"D1":2,"D2":1,"D3":1,"D4":"Swanbourne"}
+{"respondentId":271,"D1":2,"D2":5,"D3":4,"D4":"NSW"}
+{"respondentId":272,"D1":1,"D2":6,"D3":1,"D4":"Swanbourne"}
+{"respondentId":273,"D1":1,"D2":6,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":274,"D1":2,"D2":6,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":275,"D1":2,"D2":6,"D3":1,"D4":"Swanbourne"}
+{"respondentId":276,"D1":2,"D2":3,"D3":1,"D4":"Claremont"}
+{"respondentId":277,"D1":1,"D2":3,"D3":1,"D4":"Claremont"}
+{"respondentId":278,"D1":1,"D2":5,"D3":2,"D4":"Mosman Park"}
+{"respondentId":279,"D1":1,"D2":4,"D3":1,"D4":"Claremont"}
+{"respondentId":280,"D1":2,"D2":6,"D3":1,"D4":"Swanbourne"}
+{"respondentId":281,"D1":1,"D2":5,"D3":2,"D4":"Cottesloe"}
+{"respondentId":282,"D1":1,"D2":6,"D3":1,"D4":"Swanbourne"}
+{"respondentId":283,"D1":1,"D2":5,"D3":1,"D4":""}
+{"respondentId":284,"D1":1,"D2":5,"D3":1,"D4":"Claremont"}
+{"respondentId":285,"D1":2,"D2":5,"D3":4,"D4":"Wagga Wagga"}
+{"respondentId":286,"D1":2,"D2":5,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":287,"D1":1,"D2":3,"D3":2,"D4":"Nedlands"}
+{"respondentId":288,"D1":1,"D2":6,"D3":2,"D4":"West Leederville"}
+{"respondentId":289,"D1":1,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":290,"D1":1,"D2":6,"D3":2,"D4":"City Beach"}
+{"respondentId":291,"D1":1,"D2":3,"D3":2,"D4":"City Beach"}
+{"respondentId":292,"D1":2,"D2":5,"D3":1,"D4":"Swanbourne"}
+{"respondentId":293,"D1":1,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":294,"D1":1,"D2":3,"D3":2,"D4":"Cottesloe"}
+{"respondentId":295,"D1":1,"D2":6,"D3":2,"D4":"Melville"}
+{"respondentId":296,"D1":2,"D2":2,"D3":2,"D4":"Perth"}
+{"respondentId":297,"D1":1,"D2":4,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":298,"D1":1,"D2":6,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":299,"D1":1,"D2":5,"D3":1,"D4":"Claremont"}
+{"respondentId":300,"D1":4,"D2":7,"D3":2,"D4":"Mariginup"}
+{"respondentId":301,"D1":2,"D2":5,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":302,"D1":2,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":303,"D1":1,"D2":4,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":304,"D1":1,"D2":4,"D3":2,"D4":"City Beach"}
+{"respondentId":305,"D1":1,"D2":1,"D3":1,"D4":"Swanbourne"}
+{"respondentId":306,"D1":1,"D2":3,"D3":2,"D4":"Maylands"}
+{"respondentId":307,"D1":3,"D2":2,"D3":2,"D4":"Hamilton Hill"}
+{"respondentId":308,"D1":1,"D2":6,"D3":2,"D4":"Nedlands"}
+{"respondentId":309,"D1":1,"D2":5,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":310,"D1":2,"D2":4,"D3":1,"D4":"Claremont"}
+{"respondentId":311,"D1":1,"D2":4,"D3":1,"D4":"Claremont"}
+{"respondentId":312,"D1":2,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":313,"D1":2,"D2":3,"D3":1,"D4":"Swanbourne"}
+{"respondentId":314,"D1":1,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":315,"D1":1,"D2":4,"D3":2,"D4":"Doubleview"}
+{"respondentId":316,"D1":2,"D2":4,"D3":2,"D4":"Doubleview"}
+{"respondentId":317,"D1":2,"D2":5,"D3":1,"D4":"Swanbourne"}
+{"respondentId":318,"D1":1,"D2":5,"D3":1,"D4":"Swanbourne"}
+{"respondentId":319,"D1":2,"D2":4,"D3":1,"D4":"Claremont"}
+{"respondentId":320,"D1":1,"D2":4,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":321,"D1":1,"D2":5,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":322,"D1":2,"D2":4,"D3":1,"D4":"Claremont"}
+{"respondentId":323,"D1":2,"D2":5,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":324,"D1":2,"D2":6,"D3":2,"D4":"Cottesloe"}
+{"respondentId":325,"D1":1,"D2":2,"D3":2,"D4":"Subiaco"}
+{"respondentId":326,"D1":2,"D2":5,"D3":1,"D4":"Swanbourne"}
+{"respondentId":327,"D1":1,"D2":4,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":328,"D1":2,"D2":5,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":329,"D1":2,"D2":4,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":330,"D1":1,"D2":5,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":331,"D1":2,"D2":4,"D3":1,"D4":"Claremont"}
+{"respondentId":332,"D1":1,"D2":5,"D3":2,"D4":"City Beach"}
+{"respondentId":333,"D1":1,"D2":5,"D3":1,"D4":"Claremont"}
+{"respondentId":334,"D1":2,"D2":3,"D3":1,"D4":"Claremont"}
+{"respondentId":335,"D1":1,"D2":5,"D3":1,"D4":"Swanbourne"}
+{"respondentId":336,"D1":2,"D2":3,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":337,"D1":1,"D2":6,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":338,"D1":2,"D2":4,"D3":1,"D4":"Claremont"}
+{"respondentId":339,"D1":1,"D2":5,"D3":1,"D4":"Swanbourne"}
+{"respondentId":340,"D1":1,"D2":2,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":341,"D1":1,"D2":4,"D3":1,"D4":""}
+{"respondentId":342,"D1":1,"D2":3,"D3":1,"D4":"Swanbourne"}
+{"respondentId":343,"D1":2,"D2":3,"D3":1,"D4":"Swanbourne"}
+{"respondentId":344,"D1":1,"D2":5,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":345,"D1":1,"D2":4,"D3":1,"D4":"Claremont"}
+{"respondentId":346,"D1":1,"D2":4,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":347,"D1":2,"D2":4,"D3":1,"D4":"Claremont"}
+{"respondentId":348,"D1":1,"D2":5,"D3":1,"D4":"Claremont"}
+{"respondentId":349,"D1":1,"D2":5,"D3":1,"D4":"Swanbourne"}
+{"respondentId":350,"D1":1,"D2":4,"D3":1,"D4":"Swanbourne"}
+{"respondentId":351,"D1":1,"D2":4,"D3":1,"D4":"Claremont"}
+{"respondentId":352,"D1":1,"D2":1,"D3":2,"D4":"Subiaco"}
+{"respondentId":353,"D1":1,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":354,"D1":1,"D2":3,"D3":1,"D4":"Claremont"}
+{"respondentId":355,"D1":2,"D2":2,"D3":2,"D4":"Joondanna"}
+{"respondentId":356,"D1":2,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":357,"D1":1,"D2":5,"D3":1,"D4":"Claremont"}
+{"respondentId":358,"D1":1,"D2":5,"D3":1,"D4":"Claremont"}
+{"respondentId":359,"D1":1,"D2":2,"D3":1,"D4":"Claremont"}
+{"respondentId":360,"D1":1,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":361,"D1":1,"D2":2,"D3":1,"D4":"Claremont"}
+{"respondentId":362,"D1":1,"D2":2,"D3":1,"D4":"Claremont"}
+{"respondentId":363,"D1":1,"D2":3,"D3":1,"D4":"Claremont"}
+{"respondentId":364,"D1":2,"D2":4,"D3":2,"D4":"Cottesloe"}
+{"respondentId":365,"D1":1,"D2":4,"D3":2,"D4":"Cottesloe"}
+{"respondentId":366,"D1":2,"D2":3,"D3":1,"D4":"Swanbourne"}
+{"respondentId":367,"D1":1,"D2":6,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":368,"D1":2,"D2":4,"D3":1,"D4":"Claremont"}
+{"respondentId":369,"D1":1,"D2":4,"D3":1,"D4":"Claremont"}
+{"respondentId":370,"D1":2,"D2":3,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":371,"D1":1,"D2":4,"D3":1,"D4":"Claremont"}
+{"respondentId":372,"D1":1,"D2":2,"D3":1,"D4":"Swanbourne"}
+{"respondentId":373,"D1":1,"D2":5,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":374,"D1":2,"D2":5,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":375,"D1":1,"D2":5,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":376,"D1":1,"D2":3,"D3":5,"D4":"USA"}
+{"respondentId":377,"D1":1,"D2":5,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":378,"D1":1,"D2":5,"D3":3,"D4":"Geraldton"}
+{"respondentId":379,"D1":4,"D2":5,"D3":3,"D4":"Geraldton"}
+{"respondentId":380,"D1":2,"D2":4,"D3":1,"D4":"Claremont"}
+{"respondentId":381,"D1":2,"D2":2,"D3":2,"D4":"Subiaco"}
+{"respondentId":382,"D1":1,"D2":3,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":383,"D1":2,"D2":6,"D3":1,"D4":"Mt Claremont"}
+{"respondentId":384,"D1":2,"D2":5,"D3":1,"D4":"Swanbourne"}
+{"respondentId":385,"D1":2,"D2":4,"D3":1,"D4":"Swanbourne"}
+{"respondentId":386,"D1":2,"D2":4,"D3":1,"D4":"Claremont"}
+{"respondentId":387,"D1":1,"D2":6,"D3":1,"D4":"Claremont"}
+{"respondentId":388,"D1":2,"D2":4,"D3":2,"D4":"City Beach"}
+{"respondentId":389,"D1":1,"D2":5,"D3":1,"D4":"Swanbourne"}
+{"respondentId":390,"D1":1,"D2":4,"D3":1,"D4":"Claremont"}
+{"respondentId":391,"D1":1,"D2":5,"D3":1,"D4":"Swanbourne"}
+{"respondentId":392,"D1":1,"D2":5,"D3":1,"D4":"Swanbourne"}
+{"respondentId":393,"D1":2,"D2":5,"D3":2,"D4":"Floreat"}
