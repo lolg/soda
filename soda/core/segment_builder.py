@@ -13,8 +13,10 @@ from soda.core.config import SegmentBuilderConfig, ZoneClassificationRules
 from soda.core.models import (
     Segment,
     SegmentAssignments,
+    SegmentAssignmentsMap,
     SegmentationMetrics,
     SegmentModel,
+    SegmentModelWithAssignments,
     SegmentZones,
     ZoneCategory,
     ZoneOutcome,
@@ -153,6 +155,8 @@ class SegmentBuilder:
             total_outcomes = len(segment_outcomes_df)
             for zone_category in zones_data.values():
                 zone_category.pct = round(len(zone_category.outcomes) / total_outcomes * 100, 1)
+
+            
             
             # Create SegmentZones object
             segment_zones = SegmentZones(
@@ -172,6 +176,25 @@ class SegmentBuilder:
             )
 
         return SegmentModel(segments=segments)
+
+    @property
+    def model_with_assignments(self) -> SegmentModelWithAssignments:
+        self._check_fitted()
+
+        model = self.model
+
+        # Build assignments map
+        assignments_map = {}
+        for segment_id in {s.segment_id for s in model.segments}:
+            respondent_ids = self.assignments.get_respondents(segment_id)
+            assignments_map[str(segment_id)] = respondent_ids
+        
+        segment_assignments = SegmentAssignmentsMap(assignments=assignments_map)
+
+        return SegmentModelWithAssignments(
+            segments=model.segments,
+            segment_assignments=segment_assignments
+    )
 
     @property
     def metrics(self) -> SegmentationMetrics:

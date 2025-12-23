@@ -1,0 +1,70 @@
+[
+  {
+    "id": "D1",
+    "name": "age_group",
+    "type": "categorical",
+    "options": {
+      "1": "18-24",
+      "2": "25-34",
+      "3": "35-44",
+      "4": "45-54",
+      "5": "55-64",
+      "6": "65+"
+    }
+  },
+  {
+    "id": "D2",
+    "name": "gender",
+    "type": "categorical",
+    "options": {
+      "1": "Female",
+      "2": "Male",
+      "3": "Non-binary",
+      "4": "Prefer not to say"
+    },
+    "missing_codes": [
+      "4"
+    ]
+  },
+  {
+    "id": "D3",
+    "name": "income_level",
+    "type": "categorical",
+    "options": {
+      "1": "Under $30k",
+      "2": "$30k-$60k",
+      "3": "$60k-$100k",
+      "4": "$100k-$150k",
+      "5": "Over $150k",
+      "6": "Prefer not to say"
+    },
+    "missing_codes": [
+      "6"
+    ]
+  },
+  {
+    "id": "D4",
+    "name": "shopping_frequency",
+    "type": "categorical",
+    "options": {
+      "1": "Daily",
+      "2": "Several times per week",
+      "3": "Weekly",
+      "4": "Monthly",
+      "5": "A few times per year",
+      "6": "Rarely"
+    }
+  },
+  {
+    "id": "D5",
+    "name": "tech_comfort",
+    "type": "categorical",
+    "options": {
+      "1": "Very comfortable",
+      "2": "Somewhat comfortable",
+      "3": "Neutral",
+      "4": "Somewhat uncomfortable",
+      "5": "Very uncomfortable"
+    }
+  }
+]

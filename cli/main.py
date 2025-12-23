@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from soda.core.config import OrchestrationConfig, RulesConfig
+from soda.core.encoders.compact_encoder import CompactArrayEncoder
 from soda.core.loaders.outcomes_loader import OutcomesLoader
 from soda.core.loaders.responses_loader import ResponsesLoader
 from soda.core.models import Outcomes, SegmentModel
@@ -167,14 +168,14 @@ def cmd_segment(args):
     segmenter.fit(responses_df)
     
     # Output the full segment model as JSON
-    output_dir = Path(args.output)
-    output_dir.mkdir(parents=True, exist_ok=True)
     
-    model_path = output_dir / 'segments.json'
-    with open(model_path, 'w') as f:
-        f.write(segmenter.model.model_dump_json(indent=2))
+    output_path = Path(args.output)
+    with open(output_path, 'w') as f:
+        data = segmenter.model_with_assignments.model_dump()
+        json = CompactArrayEncoder().encode(data)
+        f.write(json)
     
-    logger.info(f"Wrote final model: {model_path}")
+    logger.info(f"Wrote final model: {output_path}")
     logger.info("Done")
 
 def cmd_enrich(args):
