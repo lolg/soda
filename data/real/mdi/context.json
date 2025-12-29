@@ -1,0 +1,21 @@
+{
+    "business_type": "municipal_parks",
+    "budget": "$2M annually",
+    "timeline": "18 months", 
+    "team_size": 12,
+    "constraints": [
+      "environmental review required",
+      "council approval needed",
+      "heritage protection compliance"
+    ],
+    "priorities": {
+      "primary": "resident satisfaction",
+      "secondary": "cost efficiency",
+      "tertiary": "environmental sustainability"
+    },
+    "market_context": {
+      "competitors": ["private recreation centers", "state parks"],
+      "regulations": ["disability access requirements", "noise ordinances"],
+      "location": "Perth, Western Australia"
+    }
+  }

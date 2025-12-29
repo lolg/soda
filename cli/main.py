@@ -1,6 +1,7 @@
 """Command-line interface for Soda segmentation analysis."""
 
 import argparse
+import asyncio
 import json
 import logging
 import sys
@@ -20,6 +21,9 @@ from soda.core.orchestrator import Orchestrator
 from soda.core.schema import DataKey
 from soda.core.segment_builder import SegmentBuilder
 from soda.core.selection import SegmentationSelector
+from soda.synthesis.config import SynthesisConfig
+from soda.synthesis.factory import AgentFactory
+from soda.synthesis.models import AgentInput, BusinessContext
 
 logging.basicConfig(
     level=logging.INFO,
@@ -63,6 +67,13 @@ def parse_args() -> argparse.Namespace:
     enrich_parser.add_argument('--codebook', help='Path to codebook.json file (required with --demographics)') 
     enrich_parser.add_argument('--output', '-o', help='Output file (default: overwrite input)') 
     enrich_parser.set_defaults(func=cmd_enrich)
+
+    # Synthesize commands
+    synthesize_parser = subparsers.add_parser('synthesize', help='Test AI synthesis')
+    synthesize_parser.add_argument('segments_file', help='Path to enriched segments.json')
+    synthesize_parser.add_argument('--context', required=True, help='Path to context.json')
+    synthesize_parser.add_argument('--config', required=True, help='Path to config.yaml')
+    synthesize_parser.set_defaults(func=cmd_synthesize)
     
     return parser.parse_args()
 
@@ -406,6 +417,34 @@ def _enrich_with_demographics(segment_model: SegmentModelWithAssignments, respon
     
     return segment_model
 
+def cmd_synthesize(args):
+
+    config_path = args.config
+    config = SynthesisConfig.from_file(config_path)
+
+     # Load segments
+    with open(args.segments_file, 'r') as f:
+        segments_data = json.load(f)
+    segments = SegmentModelWithAssignments.model_validate(segments_data)
+    
+    # Load context
+    with open(args.context, 'r') as f:
+        context_data = json.load(f)
+    context = BusinessContext.model_validate(context_data)
+    
+    # Create input
+    agent_input = AgentInput(segments=segments, context=context)
+
+    factory = AgentFactory(config)
+    analyst = factory.create_data_analyst()
+
+     # Run analysis
+    result = asyncio.run(analyst.process(agent_input))
+    
+    print(f"Agent: {result.agent_name}")
+    print(f"Confidence: {result.confidence}")
+    print(f"Analysis:\n{result.content}")
+
 def main():
     args = parse_args()
     
@@ -417,6 +456,8 @@ def main():
         cmd_segment(args)
     elif args.command == 'enrich':
         cmd_enrich(args)     
+    elif args.command == 'synthesize':
+        cmd_synthesize(args)     
     else:
         logger.error(f"Unknown command: {args.command}")
         sys.exit(1)

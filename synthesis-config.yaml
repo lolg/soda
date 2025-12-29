@@ -1,0 +1,50 @@
+# synthesis-config.yaml - LLM and agent configuration
+
+metadata:
+  version: "1.1.0"
+  description: "Synthesis configuration"
+
+synthesis:
+  providers:
+    anthropic:
+      api_key_env: "ANTHROPIC_API_KEY" 
+      default_model: "claude-4-sonnet-20250514"
+    openai:
+      api_key_env: "OPENAI_API_KEY"
+      default_model: "gpt-4"
+    gemini:
+      api_key_env: "GEMINI_API_KEY" 
+      default_model: "gemini-pro"
+  
+  agents:
+    data_analyst:
+      provider: "anthropic"
+      system_prompt: "soda/synthesis/prompts/data_analyst/system.md"
+      user_prompt: "soda/synthesis/prompts/data_analyst/user.md"
+      llm_config:
+        temperature: 0.3
+        max_tokens: 2500
+    
+    strategy_generator:
+      provider: "anthropic"
+      system_prompt: "prompts/strategy_generator/system.md"
+      user_prompt: "prompts/strategy_generator/user.md"
+      llm_config:
+        temperature: 0.7
+        max_tokens: 3000
+    
+    devils_advocate:
+      provider: "openai"
+      system_prompt: "prompts/devils_advocate/system.md"
+      user_prompt: "prompts/devils_advocate/critique.md" 
+      llm_config:
+        temperature: 0.8
+        max_tokens: 2000
+    
+    synthesis_judge:
+      provider: "gemini"
+      system_prompt: "prompts/synthesis_judge/system.md"
+      user_prompt: "prompts/synthesis_judge/synthesis.md"
+      llm_config:
+        temperature: 0.5
+        max_tokens: 1500
