@@ -1,54 +1,51 @@
 # Segment Analysis Task
 
-You are provided with customer segment data and business context to analyze using ODI methodology.
+Analyze the provided segment data using ODI methodology and surface key insights.
 
 ## Business Context
-The following JSON contains your business constraints and priorities:
 ```json
 {{context_json}}
 ```
 
-This includes budget, timeline, team size, constraints, and strategic priorities.
-
-## Customer Segment Data
-The following JSON contains enriched customer segments with ODI zone analysis:
+## Customer Segment Data  
 ```json
 {{segments_json}}
 ```
 
-This data includes:
-- **Segments**: Customer groups with size percentages and demographics
-- **Zones**: ODI classification (underserved, overserved, table_stakes, appropriate) 
-- **Outcomes**: Specific customer outcomes with importance, satisfaction, and opportunity scores
-- **Demographics**: Age, gender, location breakdowns per segment
-
-## Analysis Structure
+## Analysis Required
 
 ### 1. Segment Overview
-- Total segments and their relative sizes (cite percentages)
+- Segment sizes and demographic profiles
 - Primary job-to-be-done for each segment
-- Key demographic insights that affect strategy
 
-### 2. Opportunity Landscape  
+### 2. Opportunity Landscape Analysis
 - Highest opportunity outcomes per segment (cite scores)
 - Cross-segment opportunity comparison
-- Strategic urgency assessment based on opportunity math
+- Most critical unmet needs
 
-### 3. Zone Distribution Analysis
+### 3. Zone Distribution Insights
 For each segment:
-- **Underserved outcomes**: Innovation opportunities with opportunity scores
-- **Overserved outcomes**: Cost reduction candidates  
-- **Table stakes outcomes**: Critical maintenance items
-- **Strategic classification**: Disruptive/Differentiated/Dominant/Sustaining
+- **Underserved outcomes**: Innovation opportunities with scores
+- **Overserved outcomes**: Potential over-investments
+- **Table stakes outcomes**: Critical maintenance areas
+- **Segment classification**: Strategic pattern (Disruptive/Differentiated/Dominant/Sustaining), see rules below.
 
-### 4. Resource Allocation Insights
-- Priority segments based on size × opportunity
-- Solution types needed (premium vs basic vs cost reduction)
-- Implementation risks and business constraints
-- Demographic considerations for targeting
+## Strategic Classification Rules
+Apply these zone distribution thresholds to classify each segment:
 
-## Key Requirements
-- Be specific with numbers (opportunity scores, percentages)
-- Use ODI terminology precisely
-- Focus on actionable insights
-- Consider business context constraints
+- **DISRUPTIVE**: Overserved ≥40% AND Underserved ≤10% (focus on cost reduction)
+- **DIFFERENTIATED**: Underserved ≥15% (focus on innovation/premium solutions)  
+- **DOMINANT**: Underserved ≥10% AND Overserved ≥10% (balanced approach)
+- **SUSTAINING**: Default pattern (incremental improvements)
+
+Apply rules in order - first match determines classification.
+
+### 4. Key Constraints & Considerations
+- Business constraints that affect feasibility
+- Demographic factors that affect implementation
+- Risk areas requiring attention
+
+## Requirements
+- Focus on insights, not recommendations
+- Use specific opportunity scores and percentages  
+- Apply ODI terminology precisely

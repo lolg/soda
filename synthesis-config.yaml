@@ -35,8 +35,7 @@ synthesis:
     
     devils_advocate:
       provider: "openai"
-      system_prompt: "prompts/devils_advocate/system.md"
-      user_prompt: "prompts/devils_advocate/critique.md" 
+      system_prompt: "soda/synthesis/prompts/devils_advocate/system.md"
       llm_config:
         temperature: 0.8
         max_tokens: 2000

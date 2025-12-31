@@ -2,6 +2,7 @@ import os
 
 from soda.synthesis.clients.anthropic_client import AnthropicClient
 from soda.synthesis.clients.base_client import LLMClient
+from soda.synthesis.clients.openai_client import OpenAIClient
 
 
 class ClientFactory:
@@ -17,5 +18,7 @@ class ClientFactory:
         
         if provider == "anthropic":
             return AnthropicClient(api_key=api_key, model=model)
+        elif provider == "openai":
+            return OpenAIClient(api_key=api_key, model=model)
         else:
             raise ValueError(f"Unsupported provider: {provider}")

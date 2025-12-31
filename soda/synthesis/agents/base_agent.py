@@ -1,11 +1,10 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List
 
-from soda.synthesis.clients.base_client import LLMClient
-from soda.synthesis.models import (
-    AgentInput,
-    AgentOutput,
-)
+from soda.synthesis.clients.base_client import LLMClient, LLMMessage
+from soda.synthesis.models import AgentInput, AgentOutput
 
 
 class BaseAgent(ABC):
@@ -36,7 +35,40 @@ class BaseAgent(ABC):
             AgentOutput with analysis, strategies, critiques, etc.
         """
         pass
+
+    async def chat(self, conversation: List[LLMMessage]) -> AgentOutput:
+        """Handle conversation-based interaction."""
     
+        try:
+            response = await self.client.chat(
+                messages=conversation,
+                max_tokens=self.client.default_max_tokens,
+                temperature=self.client.default_temperature
+            )
+            
+            return AgentOutput(
+                agent_name=self.name,
+                content=response.content,
+                confidence=0.0,
+                timestamp=datetime.now()
+            )
+        
+        except Exception as e:
+            raise RuntimeError(f"{self.name} chat failed: {str(e)}")
+    
+    def _load_prompt(self, prompt_path: str) -> str:
+        """Load prompt from file path."""
+        # Resolve relative path from current working directory
+        full_path = Path.cwd() / prompt_path
+        
+        with open(full_path, 'r', encoding='utf-8') as f:
+            return f.read().strip()
+    
+    def _substitute_variables(self, template: str, **variables) -> str:
+        """Replace variables in template."""
+        for key, value in variables.items():
+            template = template.replace(f"{{{{{key}}}}}", str(value))
+        return template
     
     def _validate_agent_input(self, agent_input: AgentInput) -> None:
         """Validate agent input before processing."""

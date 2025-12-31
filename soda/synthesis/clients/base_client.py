@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 
 class LLMProvider(Enum):
@@ -10,6 +10,11 @@ class LLMProvider(Enum):
     OPENAI = "openai"
     GOOGLE = "google"
 
+@dataclass  
+class LLMMessage:
+    """Standardized message format."""
+    role: str  # "system", "user", "assistant"
+    content: str
 
 @dataclass
 class LLMResponse:
@@ -54,6 +59,16 @@ class LLMClient(ABC):
     def provider(self) -> LLMProvider:
         """Return the provider type."""
         pass
+
+    @abstractmethod
+    async def chat(
+        self,
+        messages: List[LLMMessage],
+        max_tokens: Optional[int] = None,
+        temperature: Optional[float] = None
+    ) -> LLMResponse:
+        """Generate response for a conversation."""
+        pass
     
     @abstractmethod
     async def complete(
@@ -65,6 +80,10 @@ class LLMClient(ABC):
     ) -> LLMResponse:
         """Generate a completion for a single prompt."""
         pass
+
+    def create_message(self, role: str, content: str) -> LLMMessage:
+        """Create an LLMMessage instance."""
+        return LLMMessage(role=role, content=content)
     
     def get_model_info(self) -> Dict[str, Any]:
         """Return model information."""

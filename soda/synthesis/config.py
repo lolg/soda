@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 import yaml
 from pydantic import BaseModel
@@ -16,7 +16,7 @@ class ModelConfig(BaseModel):
 class AgentConfig(BaseModel):
     provider: str
     system_prompt: str
-    user_prompt: str
+    user_prompt: Optional[str] = None
     llm_config: ModelConfig
 
 class SynthesisSection(BaseModel):
