@@ -27,8 +27,8 @@ synthesis:
     
     strategy_generator:
       provider: "anthropic"
-      system_prompt: "prompts/strategy_generator/system.md"
-      user_prompt: "prompts/strategy_generator/user.md"
+      system_prompt: "soda/synthesis/prompts/strategy_generator/system.md"
+      user_prompt: "soda/synthesis/prompts/strategy_generator/user.md"
       llm_config:
         temperature: 0.7
         max_tokens: 3000

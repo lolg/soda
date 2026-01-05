@@ -1,7 +1,6 @@
 """Command-line interface for Soda segmentation analysis."""
 
 import argparse
-import asyncio
 import json
 import logging
 import sys
@@ -21,9 +20,6 @@ from soda.core.orchestrator import Orchestrator
 from soda.core.schema import DataKey
 from soda.core.segment_builder import SegmentBuilder
 from soda.core.selection import SegmentationSelector
-from soda.synthesis.config import SynthesisConfig
-from soda.synthesis.factory import AgentFactory
-from soda.synthesis.models import AgentInput, BusinessContext
 
 logging.basicConfig(
     level=logging.INFO,
@@ -417,71 +413,6 @@ def _enrich_with_demographics(segment_model: SegmentModelWithAssignments, respon
     
     return segment_model
 
-def cmd_synthesize(args):
-
-    config_path = args.config
-    config = SynthesisConfig.from_file(config_path)
-
-     # Load segments
-    with open(args.segments_file, 'r') as f:
-        segments_data = json.load(f)
-    segments = SegmentModelWithAssignments.model_validate(segments_data)
-    
-    # Load context
-    with open(args.context, 'r') as f:
-        context_data = json.load(f)
-    context = BusinessContext.model_validate(context_data)
-    
-    # Create input
-    agent_input = AgentInput(segments=segments, context=context)
-
-    # Create analyst
-    factory = AgentFactory(config)
-    analyst = factory.create_data_analyst()
-
-    # Create devil's advocate
-    advocate = factory.create_devils_advocate()
-
-    async def run_conversation():
-        # Step 1: DataAnalyst initial analysis
-        print("🔍 DataAnalyst: Running initial analysis...")
-        analyst_result = await analyst.process(agent_input)
-        print(f"Analysis complete. Length: {len(analyst_result.content)} chars")
-        
-        # Step 2: DevilsAdvocate challenge
-        agent_input.add_previous_output(analyst_result)
-        print("⚔️  DevilsAdvocate: Challenging analysis...")
-        advocate_result = await advocate.process(agent_input)
-        print(f"Challenge complete. Length: {len(advocate_result.content)} chars")
-        
-        # Step 3: DataAnalyst responds to challenge
-        print("🔍 DataAnalyst: Responding to challenges...")
-        response_conversation = [
-            analyst.client.create_message("system", analyst.system_prompt),
-            analyst.client.create_message("user", f"Your original analysis:\n{analyst_result.content}"),
-            analyst.client.create_message("assistant", "I provided this analysis."),
-            analyst.client.create_message("user", f"Challenges received:\n{advocate_result.content}\n\nPlease address these challenges. Either clarify your methodology, revise your analysis if valid, or defend your conclusions with additional evidence.")
-        ]
-        
-        analyst_response = await analyst.chat(response_conversation)
-        print(f"Response complete. Length: {len(analyst_response.content)} chars")
-        
-        # Print all results
-        print("\n" + "="*60)
-        print("1. ORIGINAL ANALYSIS:")
-        print(analyst_result.content)
-        print("\n" + "="*60)
-        print("2. DEVILS ADVOCATE CHALLENGE:")
-        print(advocate_result.content)
-        print("\n" + "="*60)
-        print("3. ANALYST RESPONSE:")
-        print(analyst_response.content)
-
-    asyncio.run(run_conversation())
-    
-    # print(f"Agent: {result.agent_name}")
-    # print(f"Confidence: {result.confidence}")
-    # print(f"Analysis:\n{result.content}")
 
 def main():
     args = parse_args()

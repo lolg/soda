@@ -1,156 +1,132 @@
-# Juno
+Step 2: LLM generates hypotheses + strategy options (not “the answer”)
 
-Open-source ODI (Outcome-Driven Innovation) segmentation tool for product teams. Discovers outcome-based market segments from survey data.
+Prompt it to:
+	•	propose 3–5 explanations for why each underserved outcome is underserved
+	•	propose solution directions (not detailed projects)
+	•	list assumptions + risks + what data would validate each
 
-## What it does
+Step 3: Verifier pass (this is where “agentic” helps)
 
-Juno takes survey responses (importance + satisfaction ratings on outcomes) and:
+A “Verifier” (can be the same model) checks:
+	•	every number/claim maps to the input artifacts
+	•	no invented budgets/timelines unless explicitly labeled “assumption”
+	•	every initiative cites which outcome_ids it addresses
 
-1. Runs PCA to identify key differentiating outcomes
-2. Clusters respondents into segments
-3. Calculates satisfaction, importance and opportunity scores for each outcome for each segment (Importance + max(Importance - Satisfaction, 0))
-4. Runs multiple configurations to determine the best segment solution
-5. Outputs the best segment solution for each segment count (2, 3, 4, etc.) based on silhouette score
+This is the part that stops the “fake expert” problem.
 
-## Why use it
+The real way to get “tacit knowledge”
 
-- Discover outcome-based segments with different unmet needs
-- Build opportunity landscapes showing underserved, overserved, table stakes, and appropriate outcomes
-- Determine optimal strategy type for each segment (Differentiated, Disruptive, Dominant, etc.)
-- Prioritize the biggest opportunities in the largest segments
-- Match products to segments where they'll win
-- Make evidence-based strategy decisions, not assumptions
+You won’t get it from “more agents.” You get it from more grounding:
+	•	Put domain doctrine into context.json (your own playbook):
+	•	how municipalities decide,
+	•	what usually fails,
+	•	what’s politically feasible,
+	•	standard intervention patterns,
+	•	what “good” looks like.
+	•	Or add RAG over your library (internal notes, prior reports, case studies you’re allowed to use).
+	•	And force outputs to be traceable to that material.
 
-## Installation
-```bash
-git clone https://github.com/lolg/juno.git
-cd juno
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-pip install -e .
-```
+That’s how you get closer to “Ulwick in a pocket” without fooling yourself.
 
+Bottom line
+	•	Keep the deterministic quant triage. That’s your backbone.
+	•	Use LLMs for nuance, but only inside guardrails (structured output + verifier).
+	•	“Agents” are worth it only if they’re doing tool use + iteration + verification. Otherwise, it’s just prompts in costume.
 
-## Usage
-```bash
-juno responses.jsonl -o ./output
-```
+If you want, I can propose a concrete output schema for “Insight Hypotheses” + “Strategy Options” + “Evidence Links” that makes hallucinations obvious and makes Soda feel genuinely professional.
 
-**Options:**
-- `-c, --config` — Path to orchestration config JSON (optional)
-- `-o, --output` — Output directory (default: ./output)
-- `-v, --verbose` — Enable verbose logging
+Yes, an LLM could control that orchestrator — but in your case I wouldn’t make it the primary controller. Not because it’s impossible, but because you already have a clean, testable decision problem and the LLM would mostly add variance.
 
-## Input Format
+Here’s the crisp boundary:
 
-`responses.jsonl` — One JSON object per line:
-```jsonl
-{"respondentId": 1, "outcomeId": 1, "importance": 4, "satisfaction": 3}
-{"respondentId": 1, "outcomeId": 2, "importance": 5, "satisfaction": 2}
-{"respondentId": 2, "outcomeId": 1, "importance": 3, "satisfaction": 4}
-```
+When letting an LLM control the quant search makes sense
 
-**Fields:**
-- `respondentId`: Integer identifier for respondent
-- `outcomeId`: Integer identifier for outcome
-- `importance`: Rating 1-5
-- `satisfaction`: Rating 1-5
+It makes sense if you want the controller to:
+	•	adaptively explore the parameter space (not just grid search),
+	•	decide why a run is “good” based on interpretability and usefulness, not just geometry,
+	•	incorporate “soft” criteria like “segments are explainable”, “needs are differentiated”, “no segment is just ‘everyone’”.
 
-**Minimum:** ~30 respondents, 5+ outcomes  
-**Recommended:** 60+ respondents per expected segment
+That’s real value. But it requires hard, measurable proxies for those “soft” criteria.
 
-## Output
-```
-output/
-├── summary.json      # Comparison across all solutions
-├── segments_2.json   # Best 2-segment model
-├── segments_3.json   # Best 3-segment model
-└── segments_4.json   # Best 4-segment model
-```
+Why your current approach is incomplete (and how to fix it without LLMs)
 
-**Example `summary.json`:**
-```json
-{
-  "generated_at": "2025-01-27T14:30:00Z",
-  "input_file": "responses.jsonl",
-  "solutions": [
-    {
-      "num_segments": 2,
-      "silhouette_score": 0.42,
-      "segment_sizes": [58.5, 41.5],
-      "combined_score": 0.68,
-      "output_file": "segments_2.json"
-    }
-  ],
-  "recommended": 3
-}
-```
+Right now you optimize for silhouette + balance, and you have a min segment size rule. That’s good, but it’s missing “is this segmentation meaningful for ODI decisions?”
 
-**Example `segments_2.json`:**
-```json
-{
-  "segments": [
-    {
-      "segment_id": 0,
-      "size_pct": 58.5,
-      "outcomes": [
-        {
-          "outcome_id": 1,
-          "sat_tb": 72.2,
-          "imp_tb": 85.7,
-          "opportunity": 9.92
-        }
-      ]
-    },
-    {
-      "segment_id": 1,
-      "size_pct": 41.5,
-      "outcomes": [
-        {
-          "outcome_id": 1,
-          "sat_tb": 76.7,
-          "imp_tb": 77.3,
-          "opportunity": 7.79
-        }
-      ]
-    }
-  ]
-}
-```
+You can add deterministic checks on the produced segments.json for each run and include them in scoring. For example:
 
-## Configuration
+Add segmentation quality metrics derived from segments.json
+	1.	Opportunity separation
 
-Default parameters work for most cases. To customize, create a config JSON:
-```json
-{
-  "parameters": {
-    "num_segments": [2, 3, 4],
-    "max_cross_loading": [0.36, 0.40],
-    "min_primary_loading": [0.40, 0.44],
-    "random_state": [3, 6, 10, 12]
-  },
-  "constraints": [
-    {"type": "less_than", "left": "max_cross_loading", "right": "min_primary_loading"}
-  ],
-  "scoring": {
-    "silhouette_weight": 0.6,
-    "balance_weight": 0.4
-  }
-}
-```
+	•	Do the segments have meaningfully different underserved outcomes?
+	•	Metric: Jaccard overlap of top-N underserved outcomes between segments (lower overlap = better).
 
-## Run with example data
-```bash
-juno data/real/mdi/responses.jsonl
-```
+	2.	Actionability / ODI signal
 
-See data/real/mdi/README.md for more information about this dataset. 
+	•	Metric: number of underserved outcomes above threshold per segment (too few = weak segment signal, too many = “everything is broken”).
 
+	3.	Stability
 
-## Background
+	•	Run repeated seeds, check how stable assignments are.
+	•	Metric: adjusted Rand index (ARI) across runs (higher = more stable).
 
-Based on Tony Ulwick's Outcome-Driven Innovation methodology. For more on ODI, see [Strategyn](https://strategyn.com/).
+	4.	Interpretability of PCA factors
 
-## License
+	•	You already have cross-loading constraints; good.
+	•	Add: “# of outcomes with primary loading >= threshold” per factor.
 
-MIT
+	5.	Segment compactness and separation
+
+	•	Silhouette is one; also consider Davies–Bouldin or Calinski–Harabasz (optional).
+
+If you add these, you’ll already be “industry standard” without agentic complexity.
+
+The best use of an LLM here (if you want one)
+
+Use it as a judge, not a controller.
+
+Pattern:
+	1.	Your orchestrator runs candidates.
+	2.	For each candidate, you compute a deterministic scorecard:
+	•	silhouette
+	•	size balance
+	•	min segment size
+	•	overlap of underserved sets
+	•	count of underserved per segment
+	•	stability estimate (if you do multi-seed)
+	3.	Then you optionally ask an LLM:
+	•	“Given these 3 candidates and their scorecards + top underserved outcomes, pick the most actionable segmentation and explain why.”
+
+That gives you “tacit judgement” while keeping the system robust because:
+	•	the LLM can’t silently change the math,
+	•	and you can always fall back to deterministic rules.
+
+Would a fully LLM-controlled search be “more correct”?
+
+Not usually.
+
+LLMs are weak at:
+	•	consistently optimizing over many runs,
+	•	adhering to constraints over long loops,
+	•	making reproducible choices.
+
+Unless you wrap it in strong guardrails, it’ll pick a run for a persuasive story, not for reliable segment structure.
+
+Concrete recommendation for your soda-rules.yaml
+
+Keep your current grid search, but add a second-stage selection that looks at segments.json properties.
+
+Example composite scoring (all deterministic):
+	•	score = 0.45 * silhouette_norm + 0.20 * balance_norm + 0.15 * (1 - underserved_overlap_norm) + 0.10 * underserved_signal_norm + 0.10 * stability_norm
+
+Then (optional):
+	•	LLM as tie-breaker among top 2–3 candidates.
+
+One sharp critique of your current rule set
+
+Your constraints are focused on factor loadings (good), but your selection rules don’t currently enforce the ODI goal:
+
+“Segments should produce different opportunity landscapes.”
+
+If two segments both highlight the same underserved outcomes, that segmentation is less useful even if silhouette is great.
+
+So: segment usefulness should be part of selection.

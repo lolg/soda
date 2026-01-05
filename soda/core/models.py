@@ -1,7 +1,7 @@
 """Core models and data structures for segmentation and zone analysis."""
 
 from enum import StrEnum
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 import pandas as pd
 from pydantic import BaseModel, ConfigDict, model_validator
@@ -211,3 +211,13 @@ class Codebook(BaseModel):
     def get_categorical_dimensions(self) -> list[DimensionDefinition]:
         """Get only categorical dimensions."""
         return [dim for dim in self.dimensions if dim.type == "categorical"]
+
+class BusinessContext(BaseModel):
+    """Business context for strategic decision making."""
+    business_type: str
+    budget: str
+    timeline: str
+    team_size: int
+    constraints: List[str] = []
+    priorities: Dict[str, str] = {}
+    market_context: Optional[Dict[str, Any]] = None
