@@ -14,6 +14,8 @@ from soda.core.loaders.outcomes_loader import OutcomesLoader
 from soda.core.loaders.respondents_loader import RespondentsLoader
 from soda.core.loaders.responses_loader import ResponsesLoader
 from soda.core.models import SegmentModelWithAssignments
+from synthesis import SynthesisState
+from synthesis.agent import run_synthesis
 
 logging.basicConfig(
     level=logging.INFO,
@@ -55,12 +57,16 @@ def parse_args() -> argparse.Namespace:
     enrich_parser.add_argument('--outcomes', type=str, help='Path to outcomes.json file')
     enrich_parser.add_argument('--demographics', help='Path to respondents.jsonl file')  
     enrich_parser.add_argument('--codebook', help='Path to codebook.json file (required with --demographics)') 
-    enrich_parser.add_argument('--output', '-o', help='Output file (default: overwrite input)') 
+    enrich_parser.add_argument('--output', '-o', help='Output file (default: overwrite input)')
     enrich_parser.set_defaults(func=cmd_enrich)
 
+    # Add to argparse (in parse_args)
+    synthesize_parser = subparsers.add_parser('synthesize', help='LLM-guided naming and strategy assignment')
+    synthesize_parser.add_argument('segments_file', help='Path to segments.json file')
+    synthesize_parser.add_argument('--rules', type=str, default=None, help='Path to business rules YAML')
+    synthesize_parser.add_argument('-o', '--output', type=str, default='synthesis.json', help='Output file')
     
     return parser.parse_args()
-
 
 def cmd_segment(args):
     """Handle 'segment' command - full ODI segmentation pipeline."""
@@ -135,6 +141,28 @@ def cmd_enrich(args):
     
     print(f"Enriched segments saved to {output_file}")
 
+def cmd_synthesize(args):
+    """LLM-guided segment naming and strategy assignment."""
+
+    # Load segments
+    with open(args.segments_file, 'r') as f:
+        data = json.load(f)
+    
+    if "segment_assignments" not in data:
+        raise ValueError("Segment assignments missing from segment model")
+    
+    segment_model = SegmentModelWithAssignments.model_validate(data)
+
+     # Create state
+    state = SynthesisState(segment_model)
+    
+    run_synthesis(state)
+    
+    # For now, just print summary
+    print("Summary:", state.get_summary())
+    print()
+    print("Progress:", state.get_progress())
+
 
 def main():
     args = parse_args()
@@ -147,6 +175,8 @@ def main():
         cmd_segment(args)
     elif args.command == 'enrich':
         cmd_enrich(args) 
+    elif args.command == 'synthesize':
+        cmd_synthesize(args) 
     else:
         logger.error(f"Unknown command: {args.command}")
         sys.exit(1)
