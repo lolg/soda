@@ -5,7 +5,7 @@ But not all respondents think alike.
     - Others might care more about reliability or ease of use.
 
 So, by clustering respondents based on their opportunity profiles, we can identify segments of people
-who share the same unmet needs. That’s the practical goal of this step:
+who share the same unmet needs. That's the practical goal of this step:
 
 “Find groups of customers who feel underserved in similar ways.”
 

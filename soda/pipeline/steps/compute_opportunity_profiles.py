@@ -8,7 +8,7 @@
     | 3            | 5                    | 4                    |        
 
     We then add the matching satisfaction values. These values are NOT standardized —
-    they remain as the original 1–5 survey ratings.
+    they remain as the original 1-5 survey ratings.
 
     | RespondentID | OutcomeSat_7 | OutcomeSat_12 | OutcomeImp_3 | OutcomeImp_4 |
     |--------------|--------------|---------------|--------------|--------------|

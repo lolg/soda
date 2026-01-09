@@ -18,8 +18,8 @@ orchestration:
       rationale: "Prevents outcomes from loading heavily on multiple factors"
       
 selection_rules:
-  min_segment_size_percent: 10.0
-  min_silhouette: 0.20
+  min_segment_size_percent: 8.0
+  min_silhouette: 0.15
   silhouette_weight: 0.6
   balance_weight: 0.4
 

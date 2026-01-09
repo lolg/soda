@@ -36,13 +36,13 @@ T2B is basically a “share of enthusiasts” measure — it answers the questio
 
 The results are in the form:
 
-| SegmentID | OutcomeID | Sat_T2B | Imp_T2B |
-------------|---------------------|---------|
-| 0         | 12        | 23.4    | 76.2    |
-| ...       | ...       | ...     | ...     |
-| 1         | 7         | 36.3    | 58.4    |   
-| ...       | ...       | ...     | ...     |
-| 2         | 23        | 56.4    | 54.3    |
+| SegmentID | OutcomeID | Sat_T2B | Imp_T2B | OPP_TB |
+------------|---------------------|---------|--------|
+| 0         | 12        | 72.2    | 85.7    | 9.92   |
+| ...       | ...       | ...     | ...     |	     |
+| 1         | 7         | 72.6    | 38.7    | 3.87   |
+| ...       | ...       | ...     | ...     |		 |
+| 2         | 23        | 70.0    | 53.9    | 5.39   | 
 
 Top-2-Box threshold (that is, importance/satisfaction values of 4 or 5)
 
