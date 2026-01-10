@@ -6,7 +6,7 @@ import logging
 import sys
 from pathlib import Path
 
-from api import enrich, segment
+from soda.api import enrich, segment
 from soda.core.config import RulesConfig
 from soda.core.encoders.compact_encoder import CompactArrayEncoder
 from soda.core.loaders.codebook_loader import CodebookLoader
@@ -14,8 +14,8 @@ from soda.core.loaders.outcomes_loader import OutcomesLoader
 from soda.core.loaders.respondents_loader import RespondentsLoader
 from soda.core.loaders.responses_loader import ResponsesLoader
 from soda.core.models import SegmentModelWithAssignments
-from synthesis import SynthesisState
-from synthesis.agent import run_synthesis
+from soda.synthesis import SynthesisState
+from soda.synthesis.agent import run_synthesis
 
 logging.basicConfig(
     level=logging.INFO,
