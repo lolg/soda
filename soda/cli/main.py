@@ -14,8 +14,7 @@ from soda.core.loaders.outcomes_loader import OutcomesLoader
 from soda.core.loaders.respondents_loader import RespondentsLoader
 from soda.core.loaders.responses_loader import ResponsesLoader
 from soda.core.models import SegmentModelWithAssignments
-from soda.synthesis import SynthesisState
-from soda.synthesis.agent import run_synthesis
+from soda.api.name import name, NameSuggestions
 
 logging.basicConfig(
     level=logging.INFO,
@@ -61,10 +60,10 @@ def parse_args() -> argparse.Namespace:
     enrich_parser.set_defaults(func=cmd_enrich)
 
     # Add to argparse (in parse_args)
-    synthesize_parser = subparsers.add_parser('synthesize', help='LLM-guided naming and strategy assignment')
-    synthesize_parser.add_argument('segments_file', help='Path to segments.json file')
-    synthesize_parser.add_argument('--rules', type=str, default=None, help='Path to business rules YAML')
-    synthesize_parser.add_argument('-o', '--output', type=str, default='synthesis.json', help='Output file')
+    name_parser = subparsers.add_parser('name', help='LLM-guided segment naming assignment')
+    name_parser.add_argument('segments_file', help='Path to segments.json file that includes segments, outcome names, demographics')
+    name_parser.add_argument('--rules', type=str, default=None, help='Path to business rules YAML')
+    name_parser.add_argument('-o', '--output', type=str, default='synthesis.json', help='Output file')
     
     return parser.parse_args()
 
@@ -141,27 +140,31 @@ def cmd_enrich(args):
     
     print(f"Enriched segments saved to {output_file}")
 
-def cmd_synthesize(args):
-    """LLM-guided segment naming and strategy assignment."""
-
-    # Load segments
+def cmd_name(args):
+    """Name segments interactively."""
     with open(args.segments_file, 'r') as f:
         data = json.load(f)
     
-    if "segment_assignments" not in data:
-        raise ValueError("Segment assignments missing from segment model")
-    
     segment_model = SegmentModelWithAssignments.model_validate(data)
-
-     # Create state
-    state = SynthesisState(segment_model)
     
-    run_synthesis(state)
+    def on_input(suggestions: NameSuggestions, segment) -> str:
+        """CLI callback - display options, get user input."""
+        print(f"\n{'='*50}")
+        print(f"Segment {segment.segment_id} ({segment.size_pct:.1f}%)")
+        print(f"{'='*50}")
+        print(f"\n{suggestions.summary}\n")
+        for i, opt in enumerate(suggestions.options, 1):
+            print(f"  [{i}] {opt}")
+        return input("\n> ").strip()
     
-    # For now, just print summary
-    print("Summary:", state.get_summary())
-    print()
-    print("Progress:", state.get_progress())
+    segment_model = name(segment_model, on_input)
+    
+    # Save
+    output = args.output or args.segments_file
+    with open(output, 'w') as f:
+        f.write(CompactArrayEncoder().encode(segment_model.model_dump(exclude_none=True)))
+    
+    print(f"\nSaved to {output}")
 
 
 def main():
@@ -175,8 +178,8 @@ def main():
         cmd_segment(args)
     elif args.command == 'enrich':
         cmd_enrich(args) 
-    elif args.command == 'synthesize':
-        cmd_synthesize(args) 
+    elif args.command == 'name':
+        cmd_name(args) 
     else:
         logger.error(f"Unknown command: {args.command}")
         sys.exit(1)
