@@ -8,6 +8,7 @@ from pathlib import Path
 
 from soda.api import enrich, segment
 from soda.core.config import RulesConfig
+from soda.core.models import Segment
 from soda.core.encoders.compact_encoder import CompactArrayEncoder
 from soda.core.loaders.codebook_loader import CodebookLoader
 from soda.core.loaders.outcomes_loader import OutcomesLoader
@@ -15,6 +16,7 @@ from soda.core.loaders.respondents_loader import RespondentsLoader
 from soda.core.loaders.responses_loader import ResponsesLoader
 from soda.core.models import SegmentModelWithAssignments
 from soda.api.name import name, NameSuggestions
+from soda.api.strategy import strategy
 
 logging.basicConfig(
     level=logging.INFO,
@@ -44,13 +46,13 @@ def parse_args() -> argparse.Namespace:
         required=True
     )
     
-    # Segment commands
+    # Segment command
     segment_parser = subparsers.add_parser('segment', help='Run ODI segmentation analysis')
     segment_parser.add_argument('responses', type=str, help='Path to responses.jsonl file')
     segment_parser.add_argument('--rules', type=str, default=None, help='Path to business rules YAML file')
     segment_parser.add_argument('-o', '--output', type=str, default='./output', help='Output directory (default: ./output)')
 
-    # Enrich commands
+    # Enrich command
     enrich_parser = subparsers.add_parser('enrich', help='Enrich segments with additional data')
     enrich_parser.add_argument('segments_file', help='Path to segments.json file')
     enrich_parser.add_argument('--outcomes', type=str, help='Path to outcomes.json file')
@@ -59,11 +61,17 @@ def parse_args() -> argparse.Namespace:
     enrich_parser.add_argument('--output', '-o', help='Output file (default: overwrite input)')
     enrich_parser.set_defaults(func=cmd_enrich)
 
-    # Add to argparse (in parse_args)
+    # Naming command
     name_parser = subparsers.add_parser('name', help='LLM-guided segment naming assignment')
     name_parser.add_argument('segments_file', help='Path to segments.json file that includes segments, outcome names, demographics')
     name_parser.add_argument('--rules', type=str, default=None, help='Path to business rules YAML')
     name_parser.add_argument('-o', '--output', type=str, default='synthesis.json', help='Output file')
+
+    # Strategy command
+    strategy_parser = subparsers.add_parser('strategy', help='Assign strategies to segments')
+    strategy_parser.add_argument('segments_file', help='Path to segments.json with named segments')
+    strategy_parser.add_argument('--rules', type=str, default='soda-rules.yaml', help='Path to rules YAML')
+    strategy_parser.add_argument('-o', '--output', type=str, help='Output file (default: overwrite input)')
     
     return parser.parse_args()
 
@@ -166,6 +174,46 @@ def cmd_name(args):
     
     print(f"\nSaved to {output}")
 
+def cmd_strategy(args):
+    """Assign strategies to segments interactively."""
+    with open(args.segments_file, 'r') as f:
+        data = json.load(f)
+    
+    segment_model = SegmentModelWithAssignments.model_validate(data)
+
+    if args.rules:
+        logger.info(f"Loading rules from {args.rules}")
+        rules = RulesConfig.from_file(args.rules)
+    else:
+        raise ValueError("Rules must be provided for strategy analysis.")
+    
+    def on_question(text: str, segment: Segment) -> bool:
+        """CLI callback - ask viability question."""
+        print(f"\n[{segment.name}]")
+        print(f"  {text}")
+        answer = input("  (y/n) > ").strip().lower()
+        return answer in ('y', 'yes')
+    
+    def on_choice(viable: list[str], segment: Segment) -> str:
+        """CLI callback - choose between viable strategies."""
+        print(f"\n[{segment.name}] Multiple strategies are viable:")
+        for i, s in enumerate(viable, 1):
+            print(f"  [{i}] {s}")
+        choice = input("\n> ").strip()
+        if choice.isdigit() and 1 <= int(choice) <= len(viable):
+            return viable[int(choice) - 1]
+        return choice
+    
+    segment_model = strategy(segment_model, rules.strategies, on_question, on_choice)
+    
+    # Save
+    output = args.output or args.segments_file
+    with open(output, 'w') as f:
+        f.write(CompactArrayEncoder().encode(segment_model.model_dump(exclude_none=True)))
+    
+    print(f"\nSaved to {output}")
+
+
 
 def main():
     args = parse_args()
@@ -180,6 +228,8 @@ def main():
         cmd_enrich(args) 
     elif args.command == 'name':
         cmd_name(args) 
+    elif args.command == 'strategy':
+        cmd_strategy(args) 
     else:
         logger.error(f"Unknown command: {args.command}")
         sys.exit(1)

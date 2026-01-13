@@ -75,12 +75,56 @@ class ZoneClassificationRules(BaseModel):
     importance_threshold: float = 60.0    
     satisfaction_threshold: float = 50.0
 
+class StrategyQuestion(BaseModel):
+    """A viability question for a strategy."""
+    id: str
+    text: str
+
+class StrategyDefinition(BaseModel):
+    """Definition of a single strategy."""
+    description: str
+    conditions: list[str] = []  # e.g. ["has_underserved", "has_overserved"]
+    questions: list[StrategyQuestion] = []
+    default: bool = False  # sustaining is default when nothing else
+
+class StrategyConfig(BaseModel):
+    """Configuration for strategy assignment."""
+    strategies: dict[str, StrategyDefinition] = {}
+    
+    def get_possible(self, has_underserved: bool, has_overserved: bool) -> list[str]:
+        """Return strategies whose conditions are met."""
+        possible = []
+        for name, defn in self.strategies.items():
+            if defn.default:
+                continue
+            
+            meets_conditions = True
+            for cond in defn.conditions:
+                if cond == "has_underserved" and not has_underserved:
+                    meets_conditions = False
+                elif cond == "has_overserved" and not has_overserved:
+                    meets_conditions = False
+            
+            if meets_conditions:
+                possible.append(name)
+        
+        return possible if possible else [self.get_default()]
+    
+    def get_default(self) -> str:
+        """Return the default strategy name."""
+        for name, defn in self.strategies.items():
+            if defn.default:
+                return name
+        return "sustaining"
+
+
 class RulesConfig(BaseModel):
     """Comprehensive ODI business rules configuration."""
     metadata: dict = {}
     orchestration: OrchestrationConfig
     selection_rules: SelectionRulesConfig
     zone_rules: ZoneClassificationRules
+    strategies: StrategyConfig = None
     
     @classmethod
     def from_file(cls, path: str) -> RulesConfig:
@@ -97,12 +141,22 @@ class RulesConfig(BaseModel):
         orchestration_data = data.get('orchestration', {})
         selection_rules_data = data.get('selection_rules', {}) 
         zone_rules_data = data.get('zone_classification', {})
+        strategies_data = data.get('strategies', {})
+
+        # Parse strategies if present
+        strategies = None
+        if strategies_data:
+            strategies = StrategyConfig(strategies={
+            name: StrategyDefinition(**defn) 
+            for name, defn in strategies_data.items()
+        })
         
         return cls(
             metadata=data.get('metadata', {}),
             orchestration=OrchestrationConfig(**orchestration_data) if orchestration_data else OrchestrationConfig.default(),
             selection_rules=SelectionRulesConfig(**selection_rules_data) if selection_rules_data else SelectionRulesConfig(),
-            zone_rules = ZoneClassificationRules(**zone_rules_data) if zone_rules_data else ZoneClassificationRules()
+            zone_rules = ZoneClassificationRules(**zone_rules_data) if zone_rules_data else ZoneClassificationRules(),
+            strategies=strategies
         )
     
     @classmethod 

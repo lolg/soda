@@ -48,6 +48,13 @@ class SegmentZones(BaseModel):
     table_stakes: ZoneCategory
     appropriate: ZoneCategory
 
+class StrategyAssignment(BaseModel):
+    name: str
+    viable_options: list[str] = []
+    viability_answers: dict[str, bool] = {}
+    reasoning: str | None = None
+    warning: str | None = None
+
 class Segment(BaseModel):
     """Represents a segment with its size and associated outcomes."""
     segment_id: int
@@ -55,6 +62,7 @@ class Segment(BaseModel):
     size_pct: float
     zones: SegmentZones
     demographics: Optional[dict] = None
+    strategy: StrategyAssignment | None = None
 
     model_config = ConfigDict(
         json_schema_extra={"exclude_none": True}
