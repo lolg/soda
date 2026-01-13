@@ -1,22 +1,24 @@
 """Synthesis state for tracking agent decisions."""
 
+from pydantic import BaseModel
+
 from soda.core.models import SegmentModelWithAssignments
+from soda.synthesis.models import NameSuggestions
 
 
-class SynthesisState:
+class SynthesisState(BaseModel):
     """Holds segment data and tracks synthesis decisions.
     
-    The agent reads segment data and records decisions via tools.
-    This class is the shared state those tools operate on.
+    Pydantic model for easy serialization to/from JSON.
     """
     
-    def __init__(self, segment_model: SegmentModelWithAssignments):
-        self.segment_model = segment_model
-        
-        # Decisions tracked by segment_id
-        self.names: dict[int, str] = {}
-        self.viability_answers: dict[int, dict[str, bool]] = {}
-        self.strategies: dict[int, str] = {}
+    segment_model: SegmentModelWithAssignments
+    names: dict[int, str] = {}
+    viability_answers: dict[int, dict[str, bool]] = {}
+    strategies: dict[int, str] = {}
+    
+    # Pending UI state
+    pending: NameSuggestions | None = None
     
     @property
     def segments(self):
@@ -106,7 +108,7 @@ class SynthesisState:
         """Get all viability answers for a segment."""
         return self.viability_answers.get(segment_id, {})
     
-    def to_dict(self) -> dict:
+    def to_output(self) -> dict:
         """Export for synthesis.json."""
         segments_output = []
         

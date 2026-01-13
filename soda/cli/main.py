@@ -89,7 +89,7 @@ def cmd_segment(args):
     # Output the full segment model as JSON
     output_path = Path(args.output)
     with open(output_path, 'w') as f:
-        data = segments.model_dump()
+        data = segments.model_dump(exclude_none=True)
         json_data = CompactArrayEncoder().encode(data)
         f.write(json_data)
     
@@ -135,7 +135,7 @@ def cmd_enrich(args):
     # Save enriched segments
     output_file = args.output or args.segments_file
     with open(output_file, 'w') as f:
-        data = segment_model.model_dump()
+        data = segment_model.model_dump(exclude_none=True)
         json_data = CompactArrayEncoder().encode(data)
         f.write(json_data)
     

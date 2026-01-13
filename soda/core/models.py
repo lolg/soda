@@ -27,10 +27,14 @@ class SegmentOutcome(BaseModel):
 class ZoneOutcome(BaseModel):
     """Outcome data within a zone (no zone field needed since placement indicates zone)."""
     outcome_id: int
-    description: Optional[str] = None  # Added for enrichment
+    description: Optional[str] = None
     sat_tb: float
     imp_tb: float
     opportunity: float
+
+    model_config = ConfigDict(
+        json_schema_extra={"exclude_none": True}
+    )
 
 class ZoneCategory(BaseModel):
     """A zone category with percentage and outcomes."""
@@ -47,9 +51,14 @@ class SegmentZones(BaseModel):
 class Segment(BaseModel):
     """Represents a segment with its size and associated outcomes."""
     segment_id: int
+    name: str | None = None
     size_pct: float
     zones: SegmentZones
     demographics: Optional[dict] = None
+
+    model_config = ConfigDict(
+        json_schema_extra={"exclude_none": True}
+    )
 
 class SegmentModel(BaseModel):
     """A structured representation of all segments, each with outcomes and metrics."""
