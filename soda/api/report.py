@@ -41,8 +41,6 @@ def create_report_tools(
 ) -> list[FunctionTool]:
     """Tools for report generation."""
     
-    report_content: dict = {"markdown": None}
-    
     def get_report_data() -> dict:
         """Get all segment data needed for the report."""
         print("[TOOL] get_report_data called")
@@ -112,16 +110,6 @@ def create_report_tools(
             "total_segments": len(segment_model.segments),
             "segments": segments_data
         }
-    
-    def save_report(markdown: str) -> str:
-        """Save the markdown report to file."""
-        print(f"[TOOL] save_report called, length: {len(markdown)}")
-        report_content["markdown"] = markdown
-        
-        with open(output_path, 'w') as f:
-            f.write(markdown)
-        
-        return f"Report saved to {output_path}"
     
     return [
         FunctionTool.from_defaults(

@@ -3,7 +3,7 @@
 import asyncio
 from typing import Callable
 
-from llama_index.core.agent.workflow import AgentWorkflow
+from llama_index.core.agent import ReActAgent
 from llama_index.core.tools import FunctionTool
 from llama_index.llms.anthropic import Anthropic
 from pydantic import BaseModel
@@ -151,11 +151,11 @@ async def _name_async(
     llm = Anthropic(model="claude-sonnet-4-20250514")
     tools = create_naming_tools(segment_model, on_input)
     
-    agent = AgentWorkflow.from_tools_or_functions(
-        tools_or_functions=tools,
+    agent = ReActAgent(
+        tools=tools,
         llm=llm,
-        system_prompt=SYSTEM_PROMPT + "\n\n" + NAMING_PROMPT,
-    )
+        system_prompt=SYSTEM_PROMPT + "\n\n" + NAMING_PROMPT
+        )
     
     response = await agent.run(user_msg="Name all unnamed segments")
     print(f"Agent response: {response}")
