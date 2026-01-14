@@ -48,6 +48,32 @@ class SegmentZones(BaseModel):
     table_stakes: ZoneCategory
     appropriate: ZoneCategory
 
+    def total_outcomes(self) -> int:
+        """
+        Returns the total number of outcomes across all zone categories.
+        """
+        return (
+            len(self.underserved.outcomes)
+            + len(self.overserved.outcomes)
+            + len(self.table_stakes.outcomes)
+            + len(self.appropriate.outcomes)
+        )
+
+    def get_total_outcomes_by_zone(self, zone_type: ZoneType) -> int:
+        """
+        Returns the total number of outcomes for the given zone type.
+        """
+        if zone_type == ZoneType.UNDERSERVED:
+            return len(self.underserved.outcomes)
+        elif zone_type == ZoneType.OVERSERVED:
+            return len(self.overserved.outcomes)
+        elif zone_type == ZoneType.TABLE_STAKES:
+            return len(self.table_stakes.outcomes)
+        elif zone_type == ZoneType.APPROPRIATELY_SERVED:
+            return len(self.appropriate.outcomes)
+        else:
+            raise ValueError(f"Unknown zone type: {zone_type}")
+
 class StrategyAssignment(BaseModel):
     name: str
     viable_options: list[str] = []

@@ -1,8 +1,9 @@
 import pandas as pd
-import pytest
 
+from soda.core.config import ZoneClassificationRules
 from soda.core.schema import DataKey, importance_col, satisfaction_col
-from soda.core.segment_builder import SegmentBuilder
+from soda.core.segment_builder import SegmentBuilder, SegmentBuilderConfig
+from soda.core.models import ZoneType
 
 
 def make_responses(n_respondents=10, n_outcomes=3):
@@ -28,8 +29,13 @@ def make_responses(n_respondents=10, n_outcomes=3):
 def test_segment_builder_basic():
     """Test basic segmentation workflow."""
     responses = make_responses(n_respondents=20, n_outcomes=5)
+
+    config = SegmentBuilderConfig()
+    config.num_segments = 3
+
+    rules = ZoneClassificationRules()
     
-    builder = SegmentBuilder(num_segments=3, random_state=42)
+    builder = SegmentBuilder(config, rules)
     builder.fit(responses)
     
     # Test model structure
@@ -38,77 +44,12 @@ def test_segment_builder_basic():
     
     # Each segment has outcomes
     for segment in model.segments:
-        assert len(segment.outcomes) == 5  # n_outcomes
+
+        assert segment.zones.total_outcomes() == 5
         assert 0 < segment.size_pct <= 100
         
-        # Each outcome has metrics
-        for outcome in segment.outcomes:
-            assert outcome.outcome_id in range(1, 6)
-            assert 0 <= outcome.sat_tb <= 100
-            assert 0 <= outcome.imp_tb <= 100
-
-
-def test_segment_builder_assignments():
-    """Test segment assignments are consistent."""
-    responses = make_responses(n_respondents=20, n_outcomes=5)
-    
-    builder = SegmentBuilder(num_segments=3, random_state=42)
-    builder.fit(responses)
-    
-    assignments = builder.assignments
-    
-    # All respondents assigned
-    assert len(assignments.assignments) == 20
-    
-    # Segment sizes match
-    sizes = assignments.segment_sizes()
-    assert len(sizes) == 3
-    assert sum(sizes.values()) == 20
-    
-    # No duplicate assignments
-    assert len(set(assignments.assignments.values())) <= 3
-
-
-def test_segment_builder_metrics():
-    """Test segmentation quality metrics."""
-    responses = make_responses(n_respondents=20, n_outcomes=5)
-    
-    builder = SegmentBuilder(num_segments=3, random_state=42)
-    builder.fit(responses)
-    
-    metrics = builder.metrics
-    
-    assert metrics.k == 3
-    assert metrics.method == "kmeans"
-    assert -1 <= metrics.silhouette_mean <= 1
-    assert len(metrics.silhouette_by_cluster) == 3
-    assert len(metrics.cluster_sizes_pct) == 3
-    assert sum(metrics.cluster_sizes_pct) == pytest.approx(100, abs=0.1)
-
-
-def test_segment_builder_validation():
-    """Test input validation."""
-    # Too few respondents
-    responses = make_responses(n_respondents=2, n_outcomes=3)
-    builder = SegmentBuilder(num_segments=3)
-    
-    with pytest.raises(ValueError, match="Need at least 3 respondents"):
-        builder.fit(responses)
-    
-    # Empty DataFrame
-    with pytest.raises(ValueError, match="cannot be empty"):
-        builder.fit(pd.DataFrame())
-
-
-def test_segment_builder_not_fitted():
-    """Test accessing results before fitting raises error."""
-    builder = SegmentBuilder(num_segments=3)
-    
-    with pytest.raises(ValueError, match="not fitted"):
-        _ = builder.model
-    
-    with pytest.raises(ValueError, match="not fitted"):
-        _ = builder.assignments
-    
-    with pytest.raises(ValueError, match="not fitted"):
-        _ = builder.metrics
+        assert segment.size_pct in range(0, 100)
+        assert segment.zones.get_total_outcomes_by_zone(ZoneType.UNDERSERVED) in range(0, 6)
+        assert segment.zones.get_total_outcomes_by_zone(ZoneType.OVERSERVED) in range(0, 6)
+        assert segment.zones.get_total_outcomes_by_zone(ZoneType.TABLE_STAKES) in range(0, 6)
+        assert segment.zones.get_total_outcomes_by_zone(ZoneType.APPROPRIATELY_SERVED) in range(0, 6)

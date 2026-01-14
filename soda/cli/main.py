@@ -17,6 +17,7 @@ from soda.core.loaders.responses_loader import ResponsesLoader
 from soda.core.models import SegmentModelWithAssignments
 from soda.api.name import name, NameSuggestions
 from soda.api.strategy import strategy
+from soda.api.report import report
 
 logging.basicConfig(
     level=logging.INFO,
@@ -72,7 +73,12 @@ def parse_args() -> argparse.Namespace:
     strategy_parser.add_argument('segments_file', help='Path to segments.json with named segments')
     strategy_parser.add_argument('--rules', type=str, default='soda-rules.yaml', help='Path to rules YAML')
     strategy_parser.add_argument('-o', '--output', type=str, help='Output file (default: overwrite input)')
-    
+
+    # Report
+    report_parser = subparsers.add_parser('report', help='Generate ODI segmentation report')
+    report_parser.add_argument('segments_file', help='Path to segments.json with names and strategies')
+    report_parser.add_argument('-o', '--output', type=str, default='report.md', help='Output file (default: report.md)')
+
     return parser.parse_args()
 
 def cmd_segment(args):
@@ -213,7 +219,17 @@ def cmd_strategy(args):
     
     print(f"\nSaved to {output}")
 
-
+def cmd_report(args):
+    """Generate ODI segmentation report."""
+    with open(args.segments_file, 'r') as f:
+        data = json.load(f)
+    
+    segment_model = SegmentModelWithAssignments.model_validate(data)
+    
+    output_path = Path(args.output)
+    report(segment_model, output_path)
+    
+    print(f"\nReport saved to {output_path}")
 
 def main():
     args = parse_args()
@@ -229,7 +245,9 @@ def main():
     elif args.command == 'name':
         cmd_name(args) 
     elif args.command == 'strategy':
-        cmd_strategy(args) 
+        cmd_strategy(args)
+    elif args.command == 'report':
+        cmd_report(args)     
     else:
         logger.error(f"Unknown command: {args.command}")
         sys.exit(1)
