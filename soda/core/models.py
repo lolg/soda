@@ -74,6 +74,13 @@ class SegmentZones(BaseModel):
         else:
             raise ValueError(f"Unknown zone type: {zone_type}")
 
+class NameAssignment(BaseModel):
+    """Audit trail for segment naming decisions."""
+    chosen_at: str                       # ISO 8601 timestamp (UTC)
+    source: str                          # "human_selection" | "human_custom"
+    options_presented: list[str]         # the AI-suggested options shown to user
+    chosen_option: int | None = None     # 1-indexed option picked, None if custom
+
 class StrategyAssignment(BaseModel):
     name: str
     viable_options: list[str] = []
@@ -85,6 +92,7 @@ class Segment(BaseModel):
     """Represents a segment with its size and associated outcomes."""
     segment_id: int
     name: str | None = None
+    naming: NameAssignment | None = None
     size_pct: float
     zones: SegmentZones
     demographics: Optional[dict] = None

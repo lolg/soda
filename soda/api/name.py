@@ -1,6 +1,7 @@
 """High-level naming API."""
 
 import asyncio
+from datetime import datetime, timezone
 from typing import Callable
 
 from llama_index.core.agent import ReActAgent
@@ -8,7 +9,7 @@ from llama_index.core.tools import FunctionTool
 from llama_index.llms.anthropic import Anthropic
 from pydantic import BaseModel
 
-from soda.core.models import SegmentModelWithAssignments, Segment
+from soda.core.models import NameAssignment, SegmentModelWithAssignments, Segment
 
 
 class NameSuggestions(BaseModel):
@@ -37,30 +38,16 @@ You MUST call request_user_choice to present options to the user. Do not output 
 Continue until all segments are named."""
 
 
-def get_segment_details(segment_model: SegmentModelWithAssignments, segment_id: int) -> dict:
-    """Get detailed info about a segment."""
-    seg = next(s for s in segment_model.segments if s.segment_id == segment_id)
-    return {
-        "segment_id": segment_id,
-        "size_pct": seg.size_pct,
-        "demographics": seg.demographics or {},
-        "underserved_outcomes": [
-            {"id": o.outcome_id, "description": o.description}
-            for o in seg.zones.underserved.outcomes[:5]
-        ],
-        "overserved_outcomes": [
-            {"id": o.outcome_id, "description": o.description}
-            for o in seg.zones.overserved.outcomes[:5]
-        ],
-    }
-
-
 def create_naming_tools(
     segment_model: SegmentModelWithAssignments,
     on_input: Callable[[NameSuggestions, Segment], str]
 ) -> list[FunctionTool]:
     """Tools for naming phase."""
-    
+
+    # Shared context between request_user_choice and record_segment_name
+    # so the audit trail can capture what options were presented.
+    _naming_context: dict[int, dict] = {}
+
     def get_segments_overview() -> dict:
         """Get overview of all segments - which need naming."""
         return {
@@ -98,16 +85,45 @@ def create_naming_tools(
         suggestions = NameSuggestions(summary=summary, options=options)
         segment = next(s for s in segment_model.segments if s.segment_id == segment_id)
         choice = on_input(suggestions, segment)
-        
-        # Resolve choice to name
+
+        # Resolve choice to name and track which option (if any) was picked
         if choice.isdigit() and 1 <= int(choice) <= len(options):
-            return options[int(choice) - 1]
-        return choice
+            chosen_option = int(choice)
+            resolved_name = options[chosen_option - 1]
+        else:
+            chosen_option = None
+            resolved_name = choice
+
+        _naming_context[segment_id] = {
+            "options_presented": options,
+            "chosen_option": chosen_option,
+        }
+
+        return resolved_name
     
     def record_segment_name(segment_id: int, name: str) -> str:
         """Record the chosen name for a segment."""
         seg = next(s for s in segment_model.segments if s.segment_id == segment_id)
         seg.name = name
+
+        # Build audit trail from context captured in request_user_choice
+        ctx = _naming_context.pop(segment_id, None)
+        if ctx:
+            chosen_option = ctx["chosen_option"]
+            source = "human_selection" if chosen_option else "human_custom"
+            options_presented = ctx["options_presented"]
+        else:
+            chosen_option = None
+            source = "human_custom"
+            options_presented = []
+
+        seg.naming = NameAssignment(
+            chosen_at=datetime.now(timezone.utc).isoformat(),
+            source=source,
+            options_presented=options_presented,
+            chosen_option=chosen_option,
+        )
+
         return f"Recorded name '{name}' for segment {segment_id}"
     
     return [
@@ -134,7 +150,7 @@ def create_naming_tools(
     ]
 
 
-async def _name_async(
+async def _name_segments_async(
     segment_model: SegmentModelWithAssignments,
     on_input: Callable[[NameSuggestions, Segment], str]
 ) -> SegmentModelWithAssignments:
@@ -162,9 +178,9 @@ async def _name_async(
 
     return segment_model
 
-def name(
+def name_segments(
     segment_model: SegmentModelWithAssignments,
     on_input: Callable[[NameSuggestions, Segment], str]
 ) -> SegmentModelWithAssignments:
     """Name unnamed segments. Sync wrapper."""
-    return asyncio.run(_name_async(segment_model, on_input))
+    return asyncio.run(_name_segments_async(segment_model, on_input))

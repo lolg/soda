@@ -15,7 +15,7 @@ from soda.core.loaders.outcomes_loader import OutcomesLoader
 from soda.core.loaders.respondents_loader import RespondentsLoader
 from soda.core.loaders.responses_loader import ResponsesLoader
 from soda.core.models import SegmentModelWithAssignments
-from soda.api.name import name, NameSuggestions
+from soda.api.name import name_segments, NameSuggestions
 from soda.api.strategy import strategy
 from soda.api.report import report
 
@@ -171,7 +171,7 @@ def cmd_name(args):
             print(f"  [{i}] {opt}")
         return input("\n> ").strip()
     
-    segment_model = name(segment_model, on_input)
+    segment_model = name_segments(segment_model, on_input)
     
     # Save
     output = args.output or args.segments_file

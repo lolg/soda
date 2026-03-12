@@ -135,7 +135,7 @@ async def _report_async(
     
     print(f"Generating report for {len(segment_model.segments)} segments...")
     
-    llm = Anthropic(model="claude-sonnet-4-20250514", max_tokens=8192)
+    llm = Anthropic(model="claude-sonnet-4-20250514", max_tokens=16384)
     tools = create_report_tools(segment_model, output_path)
     
     agent = FunctionAgent(
