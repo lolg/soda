@@ -75,12 +75,6 @@ class ZoneClassificationRules(BaseModel):
     importance_threshold: float = 60.0    
     satisfaction_threshold: float = 50.0
 
-class SegmentClassificationRules(BaseModel):
-    min_underserved_pct: float = 15.0      
-    min_overserved_pct: float = 20.0       
-    min_opportunity_score: float = 15.0    
-    top_n_outcomes: int = 3              
-
 class StrategyQuestion(BaseModel):
     """A viability question for a strategy."""
     id: str
@@ -175,7 +169,6 @@ class RulesConfig(BaseModel):
     orchestration: OrchestrationConfig
     selection_rules: SelectionRulesConfig
     zone_rules: ZoneClassificationRules
-    segment_rules:SegmentClassificationRules
     
     @classmethod
     def from_file(cls, path: str) -> RulesConfig:
@@ -192,14 +185,12 @@ class RulesConfig(BaseModel):
         orchestration_data = data.get('orchestration', {})
         selection_rules_data = data.get('selection_rules', {}) 
         zone_rules_data = data.get('zone_classification', {})
-        segment_rules_data = data.get('segment_classification', {})
         
         return cls(
             metadata=data.get('metadata', {}),
             orchestration=OrchestrationConfig(**orchestration_data) if orchestration_data else OrchestrationConfig.default(),
             selection_rules=SelectionRulesConfig(**selection_rules_data) if selection_rules_data else SelectionRulesConfig(),
             zone_rules = ZoneClassificationRules(**zone_rules_data) if zone_rules_data else ZoneClassificationRules(),
-            segment_rules = SegmentClassificationRules(**segment_rules_data) if segment_rules_data else SegmentClassificationRules()
         )
     
     @classmethod 

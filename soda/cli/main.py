@@ -15,7 +15,7 @@ from soda.core.loaders.outcomes_loader import OutcomesLoader
 from soda.core.loaders.respondents_loader import RespondentsLoader
 from soda.core.loaders.responses_loader import ResponsesLoader
 from soda.core.models import SegmentModelWithAssignments
-from soda.api.strategy import strategy
+from soda.api.name import NameSuggestions, name_segments
 from soda.api.report import report
 
 logging.basicConfig(
@@ -60,6 +60,12 @@ def parse_args() -> argparse.Namespace:
     enrich_parser.add_argument('--codebook', help='Path to codebook.json file (required with --demographics)') 
     enrich_parser.add_argument('--output', '-o', help='Output file (default: overwrite input)')
     enrich_parser.set_defaults(func=cmd_enrich)
+
+     # Naming command
+    name_parser = subparsers.add_parser('name', help='LLM-guided segment naming assignment')
+    name_parser.add_argument('segments_file', help='Path to segments.json file that includes segments, outcome names, demographics')
+    name_parser.add_argument('--rules', type=str, default=None, help='Path to business rules YAML')
+    name_parser.add_argument('-o', '--output', type=str, default='synthesis.json', help='Output file')
 
     # Strategy command
     strategy_parser = subparsers.add_parser('strategy', help='Assign strategies to segments')
@@ -147,6 +153,32 @@ def cmd_enrich(args):
     
     print(f"Enriched segments saved to {output_file}")
 
+def cmd_name(args):
+    """Name segments interactively."""
+    with open(args.segments_file, 'r') as f:
+        data = json.load(f)
+    
+    segment_model = SegmentModelWithAssignments.model_validate(data)
+    
+    def on_input(suggestions: NameSuggestions, segment) -> str:
+        """CLI callback - display options, get user input."""
+        print(f"\n{'='*50}")
+        print(f"Segment {segment.segment_id} ({segment.size_pct:.1f}%)")
+        print(f"{'='*50}")
+        print(f"\n{suggestions.summary}\n")
+        for i, opt in enumerate(suggestions.options, 1):
+            print(f"  [{i}] {opt}")
+        return input("\n> ").strip()
+    
+    segment_model = name_segments(segment_model, on_input)
+    
+    # Save
+    output = args.output or args.segments_file
+    with open(output, 'w') as f:
+        f.write(CompactArrayEncoder().encode(segment_model.model_dump(exclude_none=True)))
+    
+    print(f"\nSaved to {output}")
+
 def cmd_strategy(args):
     """Assign strategies to segments interactively."""
     with open(args.segments_file, 'r') as f:
@@ -210,8 +242,8 @@ def main():
         cmd_segment(args)
     elif args.command == 'enrich':
         cmd_enrich(args) 
-    elif args.command == 'strategy':
-        cmd_strategy(args)
+    elif args.command == 'name':
+        cmd_name(args)
     elif args.command == 'report':
         cmd_report(args)     
     else:
