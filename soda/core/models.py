@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Optional
 
 import pandas as pd
 from pydantic import BaseModel, ConfigDict, model_validator
+from soda.core.strategy_models import SegmentSignals, StrategyResult
 
 
 class ZoneType(StrEnum):
@@ -81,6 +82,8 @@ class Segment(BaseModel):
     size_pct: float
     zones: SegmentZones
     demographics: Optional[dict] = None
+    signals: SegmentSignals | None = None
+    strategy: StrategyResult | None = None
 
     model_config = ConfigDict(
         json_schema_extra={"exclude_none": True}

@@ -75,6 +75,12 @@ class ZoneClassificationRules(BaseModel):
     importance_threshold: float = 60.0    
     satisfaction_threshold: float = 50.0
 
+class StrategyClassificationRules(BaseModel):
+    meaningful_underserved_breadth: float = 15
+    meaningful_underserved_intensity: float = 15
+    meaningful_overserved_breadth: float = 20
+    weight_dominance_ratio: float = 3.0
+
 class StrategyQuestion(BaseModel):
     """A viability question for a strategy."""
     id: str
@@ -169,6 +175,7 @@ class RulesConfig(BaseModel):
     orchestration: OrchestrationConfig
     selection_rules: SelectionRulesConfig
     zone_rules: ZoneClassificationRules
+    strategy_rules: StrategyClassificationRules
     
     @classmethod
     def from_file(cls, path: str) -> RulesConfig:
@@ -185,12 +192,15 @@ class RulesConfig(BaseModel):
         orchestration_data = data.get('orchestration', {})
         selection_rules_data = data.get('selection_rules', {}) 
         zone_rules_data = data.get('zone_classification', {})
+        strategy_rules_data = data.get('strategy_classification', {})
         
         return cls(
             metadata=data.get('metadata', {}),
             orchestration=OrchestrationConfig(**orchestration_data) if orchestration_data else OrchestrationConfig.default(),
             selection_rules=SelectionRulesConfig(**selection_rules_data) if selection_rules_data else SelectionRulesConfig(),
             zone_rules = ZoneClassificationRules(**zone_rules_data) if zone_rules_data else ZoneClassificationRules(),
+            strategy_rules = StrategyClassificationRules(**strategy_rules_data) if strategy_rules_data else StrategyClassificationRules(),
+
         )
     
     @classmethod 
@@ -199,7 +209,9 @@ class RulesConfig(BaseModel):
         return cls(
             metadata={'version': '1.0.0', 'description': 'Default SODA rules'},
             orchestration=OrchestrationConfig.default(),
-            selection_rules=SelectionRulesConfig()
+            selection_rules=SelectionRulesConfig(),
+            zone_rules=ZoneClassificationRules(),
+            strategy_rules = StrategyClassificationRules()
         )
 
 

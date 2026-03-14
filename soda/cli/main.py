@@ -17,6 +17,7 @@ from soda.core.loaders.responses_loader import ResponsesLoader
 from soda.core.models import SegmentModelWithAssignments
 from soda.api.name import NameSuggestions, name_segments
 from soda.api.report import report
+from soda.api.classify import classify_segments
 
 logging.basicConfig(
     level=logging.INFO,
@@ -64,8 +65,13 @@ def parse_args() -> argparse.Namespace:
      # Naming command
     name_parser = subparsers.add_parser('name', help='LLM-guided segment naming assignment')
     name_parser.add_argument('segments_file', help='Path to segments.json file that includes segments, outcome names, demographics')
-    name_parser.add_argument('--rules', type=str, default=None, help='Path to business rules YAML')
     name_parser.add_argument('-o', '--output', type=str, default='synthesis.json', help='Output file')
+
+    # Classify command
+    classify_parser = subparsers.add_parser('classify', help='Classify segments for strategy selection')
+    classify_parser.add_argument('segments_file', help='Path to segments.json with named segments')
+    classify_parser.add_argument('--rules', type=str, default=None, help='Path to rules YAML (for thresholds)')
+    classify_parser.add_argument('-o', '--output', type=str, help='Output file (default: overwrite input)')
 
     # Strategy command
     strategy_parser = subparsers.add_parser('strategy', help='Assign strategies to segments')
@@ -179,6 +185,27 @@ def cmd_name(args):
     
     print(f"\nSaved to {output}")
 
+def cmd_classify(args):
+    """Classify segments for strategy selection."""
+    with open(args.segments_file, 'r') as f:
+        data = json.load(f)
+
+    segment_model = SegmentModelWithAssignments.model_validate(data)
+
+    if args.rules:
+        rules = RulesConfig.from_file(args.rules)
+    else:
+        rules = RulesConfig.default()
+
+    segment_model = classify_segments(segment_model, rules)
+
+    output = args.output or args.segments_file
+    with open(output, 'w') as f:
+        f.write(CompactArrayEncoder().encode(segment_model.model_dump(exclude_none=True)))
+
+    print(f"\nSaved to {output}")
+
+
 def cmd_strategy(args):
     """Assign strategies to segments interactively."""
     with open(args.segments_file, 'r') as f:
@@ -244,6 +271,8 @@ def main():
         cmd_enrich(args) 
     elif args.command == 'name':
         cmd_name(args)
+    elif args.command == 'classify':
+        cmd_classify(args)
     elif args.command == 'report':
         cmd_report(args)     
     else:
