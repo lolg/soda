@@ -1,12 +1,8 @@
-"""High-level naming API."""
-
-import asyncio
+from dataclasses import dataclass
 from typing import Callable
 
-from llama_index.core.agent import ReActAgent
-from llama_index.core.tools import FunctionTool
-from llama_index.llms.anthropic import Anthropic
 from pydantic import BaseModel
+from pydantic_ai import Agent, ModelRetry, RunContext
 
 from soda.core.models import SegmentModelWithAssignments, Segment
 
@@ -15,14 +11,22 @@ class NameSuggestions(BaseModel):
     summary: str
     options: list[str]
 
-SYSTEM_PROMPT = """You are an expert in Outcome-Driven Innovation (ODI) and Jobs-to-be-Done (JTBD) methodology.
+
+@dataclass
+class NamingDeps:
+    """Dependencies injected into the agent's tools."""
+    segment_model: SegmentModelWithAssignments
+    on_input: Callable[[NameSuggestions, Segment], str]
+
+
+INSTRUCTIONS = """You are an expert in Outcome-Driven Innovation (ODI) and Jobs-to-be-Done (JTBD) methodology.
 
 You help product teams analyze and name market segments based on customer outcome data. You understand:
 - Underserved outcomes indicate opportunity for differentiation
 - Overserved outcomes indicate potential for disruption or cost reduction
-- Segment demographics help characterize who the customers are"""
+- Segment demographics help characterize who the customers are
 
-NAMING_PROMPT = """Name all unnamed segments. For each:
+Name all unnamed segments. For each:
 1. Call get_segments_overview to see which need naming
 2. Call get_segment_details for the segment
 3. Call request_user_choice with your suggestions
@@ -31,9 +35,34 @@ NAMING_PROMPT = """Name all unnamed segments. For each:
 Continue until all segments are named."""
 
 
-def get_segment_details(segment_model: SegmentModelWithAssignments, segment_id: int) -> dict:
-    """Get detailed info about a segment."""
-    seg = next(s for s in segment_model.segments if s.segment_id == segment_id)
+naming_agent = Agent(
+    'anthropic:claude-sonnet-4-20250514',
+    deps_type=NamingDeps,
+    instructions=INSTRUCTIONS,
+)
+
+
+@naming_agent.tool
+def get_segments_overview(ctx: RunContext[NamingDeps]) -> dict:
+    """Get overview of all segments showing which need naming."""
+    return {
+        "total_segments": len(ctx.deps.segment_model.segments),
+        "segments": [
+            {
+                "id": s.segment_id,
+                "size_pct": s.size_pct,
+                "name": s.name,
+                "needs_naming": s.name is None,
+            }
+            for s in ctx.deps.segment_model.segments
+        ],
+    }
+
+
+@naming_agent.tool
+def get_segment_details(ctx: RunContext[NamingDeps], segment_id: int) -> dict:
+    """Get detailed info about a segment including demographics and outcomes."""
+    seg = next(s for s in ctx.deps.segment_model.segments if s.segment_id == segment_id)
     return {
         "segment_id": segment_id,
         "size_pct": seg.size_pct,
@@ -49,127 +78,73 @@ def get_segment_details(segment_model: SegmentModelWithAssignments, segment_id: 
     }
 
 
-def create_naming_tools(
-    segment_model: SegmentModelWithAssignments,
-    on_input: Callable[[NameSuggestions, Segment], str]
-) -> list[FunctionTool]:
-    """Tools for naming phase."""
-    
-    def get_segments_overview() -> dict:
-        """Get overview of all segments - which need naming."""
-        return {
-            "total_segments": len(segment_model.segments),
-            "segments": [
-                {
-                    "id": s.segment_id,
-                    "size_pct": s.size_pct,
-                    "name": s.name,
-                    "needs_naming": s.name is None
-                }
-                for s in segment_model.segments
-            ]
-        }
-    
-    def get_segment_details_tool(segment_id: int) -> dict:
-        """Get detailed information about a segment."""
-        seg = next(s for s in segment_model.segments if s.segment_id == segment_id)
-        return {
-            "segment_id": segment_id,
-            "size_pct": seg.size_pct,
-            "demographics": seg.demographics or {},
-            "underserved_outcomes": [
-                {"id": o.outcome_id, "description": o.description}
-                for o in seg.zones.underserved.outcomes[:5]
-            ],
-            "overserved_outcomes": [
-                {"id": o.outcome_id, "description": o.description}
-                for o in seg.zones.overserved.outcomes[:5]
-            ],
-        }
-    
-    def request_user_choice(segment_id: int, summary: str, options: list[str]) -> str:
-        """Present naming options to user and get their choice."""
-        if len(options) != 3:
-            return f"ERROR: You must provide exactly 3 options. You provided {len(options)}. Call this tool again with exactly 3 options."
-        
-        suggestions = NameSuggestions(summary=summary, options=options)
-        segment = next(s for s in segment_model.segments if s.segment_id == segment_id)
-        choice = on_input(suggestions, segment)
-        
-        if choice.isdigit() and 1 <= int(choice) <= len(options):
-            return options[int(choice) - 1]
-        return choice
-    
-    def record_segment_name(segment_id: int, name: str) -> str:
-        """Record the chosen name for a segment."""
-        seg = next(s for s in segment_model.segments if s.segment_id == segment_id)
-        seg.name = name
-        return f"Recorded name '{name}' for segment {segment_id}"
-    
-    return [
-        FunctionTool.from_defaults(
-            fn=get_segments_overview, 
-            name="get_segments_overview",
-            description="Get overview of all segments showing which need naming."
-        ),
-        FunctionTool.from_defaults(
-            fn=get_segment_details_tool, 
-            name="get_segment_details",
-            description="Get detailed info about a segment including demographics and outcomes."
-        ),
-        FunctionTool.from_defaults(
-            fn=request_user_choice, 
-            name="request_user_choice",
-            description=(
-                "REQUIRED: Present naming options to user and get their choice. "
-                "You MUST provide EXACTLY 3 options. "
-                "Names must describe how/why the segment uniquely struggles to get the job done "
-                "(e.g. 'healthy gums, small filling'). "
-                "NEVER use demographic-based names (gender, age, location). "
-                "NEVER use personal names (e.g. 'Brenda', 'Fred'). "
-                "Args: segment_id (int), summary (str), options (list of exactly 3 name strings). "
-                "Returns the chosen name."
-            )
-        ),
-        FunctionTool.from_defaults(
-            fn=record_segment_name, 
-            name="record_segment_name",
-            description="Record the final chosen name for a segment."
-        ),
-    ]
+@naming_agent.tool(retries=2)
+def request_user_choice(
+    ctx: RunContext[NamingDeps],
+    segment_id: int,
+    summary: str,
+    options: list[str],
+) -> str:
+    """Present naming options to user and get their choice.
 
+    You MUST provide EXACTLY 3 options.
+    Names must be short outcome-state labels that capture the segment's
+    distinguishing satisfaction pattern — what's working and what's not.
+    Use the format: '[outcome state], [outcome state]'
+    Examples: 'healthy gums, small filling', 'strong signal, poor battery',
+    'fast onboarding, slow support'.
+    Do NOT use full sentences, need statements, or persona descriptions.
+    NEVER use demographic-based names (gender, age, location).
+    NEVER use personal names (e.g. 'Brenda', 'Fred').
+    NEVER using terms like underserved, overserved
 
-async def _name_segments_async(
-    segment_model: SegmentModelWithAssignments,
-    on_input: Callable[[NameSuggestions, Segment], str]
-) -> SegmentModelWithAssignments:
-    """Name all unnamed segments - agent controls the loop."""
-    
-    unnamed = [s for s in segment_model.segments if s.name is None]
-    if not unnamed:
-        print("All segments already named. Nothing to do.")
-        return segment_model
-    
-    print(f"{len(unnamed)} segment(s) need naming...")
+    Args:
+        ctx: Agent context with dependencies.
+        segment_id: The segment to name.
+        summary: Brief summary of what makes this segment distinctive.
+        options: List of exactly 3 name suggestions.
 
-    llm = Anthropic(model="claude-sonnet-4-20250514")
-    tools = create_naming_tools(segment_model, on_input)
-    
-    agent = ReActAgent(
-        tools=tools,
-        llm=llm,
-        system_prompt=SYSTEM_PROMPT + "\n\n" + NAMING_PROMPT
+    Returns:
+        The chosen name.
+    """
+    if len(options) != 3:
+        raise ModelRetry(
+            f"You must provide exactly 3 options, you provided {len(options)}. Try again."
+        )
+
+    suggestions = NameSuggestions(summary=summary, options=options)
+    segment = next(
+        s for s in ctx.deps.segment_model.segments if s.segment_id == segment_id
     )
-    
-    response = await agent.run(user_msg="Name all unnamed segments")
-    print(f"Agent response: {response}")
+    choice = ctx.deps.on_input(suggestions, segment)
 
-    return segment_model
+    if choice.isdigit() and 1 <= int(choice) <= len(options):
+        return options[int(choice) - 1]
+    return choice
+
+
+@naming_agent.tool
+def record_segment_name(ctx: RunContext[NamingDeps], segment_id: int, name: str) -> str:
+    """Record the final chosen name for a segment."""
+    seg = next(s for s in ctx.deps.segment_model.segments if s.segment_id == segment_id)
+    seg.name = name
+    return f"Recorded name '{name}' for segment {segment_id}"
 
 
 def name_segments(
     segment_model: SegmentModelWithAssignments,
-    on_input: Callable[[NameSuggestions, Segment], str]
+    on_input: Callable[[NameSuggestions, Segment], str],
 ) -> SegmentModelWithAssignments:
-    """Name unnamed segments. Sync wrapper."""
-    return asyncio.run(_name_segments_async(segment_model, on_input))
+    """Name unnamed segments."""
+    unnamed = [s for s in segment_model.segments if s.name is None]
+    if not unnamed:
+        print("All segments already named. Nothing to do.")
+        return segment_model
+
+    print(f"{len(unnamed)} segment(s) need naming...")
+
+    deps = NamingDeps(segment_model=segment_model, on_input=on_input)
+    result = naming_agent.run_sync("Name all unnamed segments", deps=deps)
+    print(f"Agent response: {result.output}")
+
+    return segment_model
