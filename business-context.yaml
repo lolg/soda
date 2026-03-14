@@ -1,0 +1,28 @@
+# business-context.yaml
+
+entity_type: local council
+
+# Job statement formula: verb + object (noun) + contextual clarifier
+#
+# Write from the customer's perspective, not the company's.
+#   BAD:  "maintain park facilities" (company perspective)
+#   BAD:  "have a nice time at the park" (too vague, outcome embedded)
+#   BAD:  "walk the dog" (too narrow — one step in the job)
+#   GOOD: "enjoy outdoor recreation in a local public space"
+#
+# Test: Can and will the organisation address this job
+# from beginning to end over time? If not, it's too broad.
+# Does a competitor risk getting more of the job done on a
+# single platform? If yes, it's too narrow.
+core_jtbd: enjoy outdoor recreation in a local public space
+
+market_size: 200000
+price_anchor: "$4.2M annual parks maintenance budget"
+
+constraints: >
+  Heritage-listed site. State government grant funding cycle.
+  No capacity for rate increases before 2027.
+
+competitive_context: >
+  Three other regional parks within 15km. Two have dedicated
+  off-leash dog areas. None have recently upgraded infrastructure.

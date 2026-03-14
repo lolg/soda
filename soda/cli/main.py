@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 from soda.api import enrich, segment
-from soda.core.config import RulesConfig
+from soda.core.config import RulesConfig, StrategyConfig
 from soda.core.models import Segment
 from soda.core.encoders.compact_encoder import CompactArrayEncoder
 from soda.core.loaders.codebook_loader import CodebookLoader
@@ -15,9 +15,11 @@ from soda.core.loaders.outcomes_loader import OutcomesLoader
 from soda.core.loaders.respondents_loader import RespondentsLoader
 from soda.core.loaders.responses_loader import ResponsesLoader
 from soda.core.models import SegmentModelWithAssignments
-from soda.api.name import name_segments, NameSuggestions
+from soda.api.persona import build_personas
 from soda.api.strategy import strategy
 from soda.api.report import report
+from soda.core.models import SegmentPersona
+from soda.core.segment_classifier import classify_segment
 
 logging.basicConfig(
     level=logging.INFO,
@@ -62,16 +64,21 @@ def parse_args() -> argparse.Namespace:
     enrich_parser.add_argument('--output', '-o', help='Output file (default: overwrite input)')
     enrich_parser.set_defaults(func=cmd_enrich)
 
-    # Naming command
-    name_parser = subparsers.add_parser('name', help='LLM-guided segment naming assignment')
-    name_parser.add_argument('segments_file', help='Path to segments.json file that includes segments, outcome names, demographics')
-    name_parser.add_argument('--rules', type=str, default=None, help='Path to business rules YAML')
-    name_parser.add_argument('-o', '--output', type=str, default='synthesis.json', help='Output file')
+    # Classify command
+    classify_parser = subparsers.add_parser('classify', help='Classify each segments')
+    classify_parser.add_argument('segments_file', help='Path to enriched segments.json file')
+    classify_parser.add_argument('--rules', type=str, default=None, help='Path to business rules YAML file')
+    classify_parser.add_argument('-o', '--output', type=str, default=None, help='Output file (default: overwrite input)')
+
+    # Persona command
+    persona_parser = subparsers.add_parser('persona', help='Build ODI personas for segments')
+    persona_parser.add_argument('segments_file', help='Path to enriched segments.json file')
+    persona_parser.add_argument('-o', '--output', type=str, default=None, help='Output file (default: overwrite input)')
 
     # Strategy command
     strategy_parser = subparsers.add_parser('strategy', help='Assign strategies to segments')
     strategy_parser.add_argument('segments_file', help='Path to segments.json with named segments')
-    strategy_parser.add_argument('--rules', type=str, default='soda-rules.yaml', help='Path to rules YAML')
+    strategy_parser.add_argument('--rules', type=str, default='strategy-rules.yaml', help='Path to strategy rules YAML')
     strategy_parser.add_argument('-o', '--output', type=str, help='Output file (default: overwrite input)')
 
     # Report
@@ -154,69 +161,117 @@ def cmd_enrich(args):
     
     print(f"Enriched segments saved to {output_file}")
 
-def cmd_name(args):
-    """Name segments interactively."""
+
+def cmd_classify(args):
+    """Classify segments for strategy selection."""
+ 
     with open(args.segments_file, 'r') as f:
         data = json.load(f)
-    
+
+    if args.rules:
+        logger.info(f"Loading rules from {args.rules}")
+        rules = RulesConfig.from_file(args.rules)
+    else:
+        logger.info("Using default rules")
+        rules = RulesConfig.default()
+ 
     segment_model = SegmentModelWithAssignments.model_validate(data)
-    
-    def on_input(suggestions: NameSuggestions, segment) -> str:
-        """CLI callback - display options, get user input."""
-        print(f"\n{'='*50}")
-        print(f"Segment {segment.segment_id} ({segment.size_pct:.1f}%)")
-        print(f"{'='*50}")
-        print(f"\n{suggestions.summary}\n")
-        for i, opt in enumerate(suggestions.options, 1):
-            print(f"  [{i}] {opt}")
-        return input("\n> ").strip()
-    
-    segment_model = name_segments(segment_model, on_input)
-    
+ 
+    # Classify each segment
+    for seg in segment_model.segments:
+        seg.classification = classify_segment(
+            seg,
+            min_underserved_pct=rules.segment_rules.min_underserved_pct,
+            min_overserved_pct=rules.segment_rules.min_overserved_pct,
+            min_opportunity=rules.segment_rules.min_opportunity_score,
+            top_n=rules.segment_rules.top_n_outcomes
+        )
+ 
+    # Log summary
+    for seg in segment_model.segments:
+        c = seg.classification
+        name = seg.name or f"Segment {seg.segment_id}"
+        logger.info(
+            f"{name} ({seg.size_pct:.1f}%): {c.classification.value} | "
+            f"balance={c.under_over_balance:+.2f} | "
+            f"candidates={c.strategy_candidates}"
+        )
+ 
+    # Save
+    output_file = args.output or args.segments_file
+    with open(output_file, 'w') as f:
+        f.write(CompactArrayEncoder().encode(
+            segment_model.model_dump(exclude_none=True)
+        ))
+ 
+    logger.info(f"Classified segments saved to {output_file}")
+
+def cmd_persona(args):
+    """Build ODI personas for segments interactively."""
+    with open(args.segments_file, 'r') as f:
+        data = json.load(f)
+
+    segment_model = SegmentModelWithAssignments.model_validate(data)
+
+    def on_review(persona_draft: SegmentPersona, segment: Segment) -> str:
+        """CLI callback - show summary and suggested name, get approval or override."""
+        print(f"\n{'='*60}")
+        print(f"  Segment {segment.segment_id} ({segment.size_pct:.1f}%)")
+        print(f"{'='*60}")
+        print(f"\n  {persona_draft.narrative}")
+        print(f"\n  Suggested name: {persona_draft.name}")
+        print(f"\n{'='*60}")
+        print("  [Enter] Approve  |  Type a new name to override")
+        choice = input("\n> ").strip()
+        return choice if choice else "approve"
+
+    segment_model = build_personas(segment_model, on_review)
+
     # Save
     output = args.output or args.segments_file
     with open(output, 'w') as f:
         f.write(CompactArrayEncoder().encode(segment_model.model_dump(exclude_none=True)))
-    
+
     print(f"\nSaved to {output}")
 
 def cmd_strategy(args):
     """Assign strategies to segments interactively."""
     with open(args.segments_file, 'r') as f:
         data = json.load(f)
-    
+
     segment_model = SegmentModelWithAssignments.model_validate(data)
 
-    if args.rules:
-        logger.info(f"Loading rules from {args.rules}")
+    # Load strategy config — try standalone file first, fall back to embedded in RulesConfig
+    logger.info(f"Loading strategy rules from {args.rules}")
+    try:
+        strategy_config = StrategyConfig.from_file(args.rules)
+    except Exception:
         rules = RulesConfig.from_file(args.rules)
-    else:
-        raise ValueError("Rules must be provided for strategy analysis.")
-    
+        strategy_config = rules.strategies
+
+    if not strategy_config or not strategy_config.strategies:
+        raise ValueError("No strategy configuration found in rules file.")
+
     def on_question(text: str, segment: Segment) -> bool:
-        """CLI callback - ask viability question."""
+        """CLI callback — ask viability question."""
         print(f"\n[{segment.name}]")
         print(f"  {text}")
         answer = input("  (y/n) > ").strip().lower()
         return answer in ('y', 'yes')
-    
-    def on_choice(viable: list[str], segment: Segment) -> str:
-        """CLI callback - choose between viable strategies."""
-        print(f"\n[{segment.name}] Multiple strategies are viable:")
-        for i, s in enumerate(viable, 1):
-            print(f"  [{i}] {s}")
-        choice = input("\n> ").strip()
-        if choice.isdigit() and 1 <= int(choice) <= len(viable):
-            return viable[int(choice) - 1]
-        return choice
-    
-    segment_model = strategy(segment_model, rules.strategies, on_question, on_choice)
-    
+
+    def on_context(question: str) -> str:
+        """CLI callback — ask business context question (free text)."""
+        print("\n[Business Context]")
+        print(f"  {question}")
+        return input("  > ").strip()
+
+    segment_model = strategy(segment_model, strategy_config, on_question, on_context)
+
     # Save
     output = args.output or args.segments_file
     with open(output, 'w') as f:
         f.write(CompactArrayEncoder().encode(segment_model.model_dump(exclude_none=True)))
-    
+
     print(f"\nSaved to {output}")
 
 def cmd_report(args):
@@ -242,8 +297,10 @@ def main():
         cmd_segment(args)
     elif args.command == 'enrich':
         cmd_enrich(args) 
-    elif args.command == 'name':
-        cmd_name(args) 
+    elif args.command == 'classify':
+        cmd_classify(args) 
+    elif args.command == 'persona':
+        cmd_persona(args)
     elif args.command == 'strategy':
         cmd_strategy(args)
     elif args.command == 'report':

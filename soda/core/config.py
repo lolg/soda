@@ -75,41 +75,92 @@ class ZoneClassificationRules(BaseModel):
     importance_threshold: float = 60.0    
     satisfaction_threshold: float = 50.0
 
+class SegmentClassificationRules(BaseModel):
+    min_underserved_pct: float = 15.0      
+    min_overserved_pct: float = 20.0       
+    min_opportunity_score: float = 15.0    
+    top_n_outcomes: int = 3              
+
 class StrategyQuestion(BaseModel):
     """A viability question for a strategy."""
     id: str
     text: str
+    why: str | None = None  # Strategic context — used by LLM to frame the question
+
+class BusinessContextQuestion(BaseModel):
+    """A business context question asked before segment analysis."""
+    id: str
+    text: str
+    answer: str | None = None  # Pre-filled answer — skips interactive prompt if set
 
 class StrategyDefinition(BaseModel):
     """Definition of a single strategy."""
     description: str
-    conditions: list[str] = []  # e.g. ["has_underserved", "has_overserved"]
+    conditions: list[str] = []  # e.g. ["has_underserved", "has_overserved", "no_underserved", "no_overserved"]
     questions: list[StrategyQuestion] = []
     default: bool = False  # sustaining is default when nothing else
+
+class DecisionNode(BaseModel):
+    """A node in the strategy decision tree.
+
+    condition nodes: auto-evaluated against segment data, branch yes/no
+    strategy nodes: ask viability questions, on success → result, on fail → next node
+    """
+    type: Literal["condition", "strategy"]
+    # Condition node fields
+    check: str | None = None       # e.g. "has_underserved"
+    on_yes: str | None = None      # node ID to follow
+    on_no: str | None = None       # node ID to follow
+    # Strategy node fields
+    strategy: str | None = None    # strategy name from strategies dict
+    on_fail: str | None = None     # node ID or terminal strategy name (e.g. "sustaining")
+
 
 class StrategyConfig(BaseModel):
     """Configuration for strategy assignment."""
     strategies: dict[str, StrategyDefinition] = {}
-    
-    def get_possible(self, has_underserved: bool, has_overserved: bool) -> list[str]:
-        """Return strategies whose conditions are met."""
-        possible = []
-        for name, defn in self.strategies.items():
-            if defn.default:
-                continue
-            
-            meets_conditions = True
-            for cond in defn.conditions:
-                if cond == "has_underserved" and not has_underserved:
-                    meets_conditions = False
-                elif cond == "has_overserved" and not has_overserved:
-                    meets_conditions = False
-            
-            if meets_conditions:
-                possible.append(name)
-        
-        return possible if possible else [self.get_default()]
-    
+    business_context: list[BusinessContextQuestion] = []
+    decision_tree: dict[str, DecisionNode] = {}
+
+    @classmethod
+    def from_file(cls, path: str) -> "StrategyConfig":
+        """Load strategy config from a standalone YAML/JSON file."""
+        file_path = Path(path)
+
+        with open(file_path, 'r') as f:
+            if file_path.suffix.lower() in ['.yml', '.yaml']:
+                data = yaml.safe_load(f)
+            else:
+                data = json.load(f)
+
+        # Parse strategies
+        strategies_data = data.get('strategies', {})
+        strategies = {
+            name: StrategyDefinition(**defn)
+            for name, defn in strategies_data.items()
+        }
+
+        # Parse business context questions
+        context_data = data.get('business_context', {})
+        context_questions = []
+        if context_data and 'questions' in context_data:
+            context_questions = [
+                BusinessContextQuestion(**q) for q in context_data['questions']
+            ]
+
+        # Parse decision tree
+        tree_data = data.get('decision_tree', {})
+        decision_tree = {
+            name: DecisionNode(**node_defn)
+            for name, node_defn in tree_data.items()
+        }
+
+        return cls(
+            strategies=strategies,
+            business_context=context_questions,
+            decision_tree=decision_tree,
+        )
+
     def get_default(self) -> str:
         """Return the default strategy name."""
         for name, defn in self.strategies.items():
@@ -124,7 +175,7 @@ class RulesConfig(BaseModel):
     orchestration: OrchestrationConfig
     selection_rules: SelectionRulesConfig
     zone_rules: ZoneClassificationRules
-    strategies: StrategyConfig = None
+    segment_rules:SegmentClassificationRules
     
     @classmethod
     def from_file(cls, path: str) -> RulesConfig:
@@ -141,22 +192,14 @@ class RulesConfig(BaseModel):
         orchestration_data = data.get('orchestration', {})
         selection_rules_data = data.get('selection_rules', {}) 
         zone_rules_data = data.get('zone_classification', {})
-        strategies_data = data.get('strategies', {})
-
-        # Parse strategies if present
-        strategies = None
-        if strategies_data:
-            strategies = StrategyConfig(strategies={
-            name: StrategyDefinition(**defn) 
-            for name, defn in strategies_data.items()
-        })
+        segment_rules_data = data.get('segment_classification', {})
         
         return cls(
             metadata=data.get('metadata', {}),
             orchestration=OrchestrationConfig(**orchestration_data) if orchestration_data else OrchestrationConfig.default(),
             selection_rules=SelectionRulesConfig(**selection_rules_data) if selection_rules_data else SelectionRulesConfig(),
             zone_rules = ZoneClassificationRules(**zone_rules_data) if zone_rules_data else ZoneClassificationRules(),
-            strategies=strategies
+            segment_rules = SegmentClassificationRules(**segment_rules_data) if segment_rules_data else SegmentClassificationRules()
         )
     
     @classmethod 

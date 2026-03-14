@@ -1,0 +1,186 @@
+# strategy-rules.yaml - ODI Strategy Assignment Rules
+# Note:
+# business_context answers can be commented-out to force interactive prompts
+
+metadata:
+  version: "2.0.0"
+  description: "ODI strategy assignment rules with decision tree"
+
+business_context:
+  questions:
+    - id: company_type
+      text: "What type of organisation are you? (e.g., startup, enterprise, government, non-profit)"
+      answer: "enterprise"
+    - id: capabilities
+      text: "What are your core capabilities and technology advantages?"
+      answer: "market reputation, established distribution"
+    - id: constraints
+      text: "What constraints do you operate under? (budget, regulatory, timeline, team size)"
+      answer: "budget and team size"
+    - id: competitive_position
+      text: "How would you describe your competitive position in this market?"
+      answer: "price leader"
+
+strategies:
+  differentiated:
+    description: "Premium product addressing underserved needs — charge more for better outcomes"
+    questions:
+      - id: premium_pricing
+        text: "Can you charge a premium price in this market for a superior solution?"
+        why: >
+          Differentiated strategy requires premium pricing to fund investment
+          in addressing unmet needs. If the market won't bear a premium,
+          the economics of differentiation don't work.
+      - id: deliver_improvement
+        text: "Can you deliver meaningful improvement (20%+) on the top underserved outcomes?"
+        why: >
+          The value proposition depends on measurably better outcomes.
+          A 20%+ improvement is the threshold where customers notice and
+          are willing to switch. Less than that and you're just sustaining.
+      - id: competitive_moat
+        text: "Do you have capabilities or IP that make this improvement hard to copy?"
+        why: >
+          Without defensibility, competitors will match your improvements
+          and erode the premium. The moat determines how long the
+          differentiated position can be sustained.
+      - id: segment_reach
+        text: "Can you effectively reach and serve this specific customer segment?"
+        why: >
+          Even a great product fails if you can't get it to the target
+          customers. Channel fit and go-to-market capability determine
+          whether the opportunity is capturable.
+
+  disruptive:
+    description: "Simpler/cheaper product that sacrifices overserved features — lower cost, good enough"
+    questions:
+      - id: lower_price
+        text: "Can you offer a meaningfully lower price point (30%+ less) than current solutions?"
+        why: >
+          Disruption requires a price point low enough to open new market
+          segments or force incumbents to respond. 30% is the threshold
+          where customers seriously reconsider their current solution.
+      - id: simpler_solution
+        text: "Can you deliver a simpler solution that deliberately sacrifices overserved outcomes?"
+        why: >
+          The core of disruption is deliberately NOT doing things the
+          market currently overprovides. This requires the discipline to
+          strip features customers don't actually value.
+      - id: new_market_access
+        text: "Would a lower-cost solution open up new customer segments currently priced out?"
+        why: >
+          The biggest disruptive opportunity is non-consumption — people
+          who can't afford the current solution. If there's no untapped
+          demand, disruption has limited upside.
+      - id: cost_structure
+        text: "Can you build a fundamentally different cost structure to sustain the lower price?"
+        why: >
+          A lower price that erodes margins is not disruptive, it's just
+          discounting. True disruption requires structural cost advantage
+          (different technology, channel, or business model).
+
+  dominant:
+    description: "Better AND cheaper — rare breakthrough requiring both"
+    questions:
+      - id: breakthrough_technology
+        text: "Do you have a breakthrough technology or approach that enables both better performance AND lower cost?"
+        why: >
+          Dominant strategy is the rarest — it requires a paradigm shift
+          that makes the better/cheaper tradeoff obsolete. Without a
+          genuine breakthrough, attempting both usually means achieving neither.
+      - id: platform_shift
+        text: "Is there a platform shift (technology, regulatory, market) that makes this possible now?"
+        why: >
+          Dominant strategies typically emerge during technology or market
+          transitions (cloud, mobile, AI, regulatory change). The timing
+          question determines if the window of opportunity exists.
+      - id: execution_capability
+        text: "Do you have the resources and capability to execute on both fronts simultaneously?"
+        why: >
+          Even with the right technology and timing, dominant strategy
+          demands massive execution capability — addressing unmet needs
+          while simultaneously reducing cost. Few organisations can do both.
+
+  discrete:
+    description: "Restricted/niche strategy — focus on a narrow slice where you can win"
+    questions:
+      - id: niche_identified
+        text: "Have you identified a specific niche within this segment you can dominate?"
+        why: >
+          In a market where needs are generally met, broad competition is
+          a losing game. The only viable path is finding a narrow slice
+          where you can be the definitive solution.
+      - id: relationship_advantage
+        text: "Do you have a relationship or distribution advantage in this niche?"
+        why: >
+          Without a structural advantage (existing relationships, unique
+          channel access), entering a niche is just another startup bet.
+          The advantage determines defensibility.
+      - id: defensible_position
+        text: "Can you build a defensible position that larger competitors won't attack?"
+        why: >
+          A niche is only valuable if it's too small or specialised for
+          large competitors to bother pursuing. If it's attractive enough
+          for them to enter, it's not defensible.
+
+  sustaining:
+    description: "Incremental improvements — default when no clear opportunity or capability"
+    questions: []
+    default: true
+
+# Decision tree — flat graph with node references
+# Node types:
+#   condition: auto-evaluated against segment data, branches yes/no
+#   strategy:  asks viability questions, on success → result, on fail → next node
+# Terminal values (not node IDs): strategy names like "sustaining"
+decision_tree:
+  start:
+    type: condition
+    check: has_underserved
+    on_yes: check_overserved_both
+    on_no: check_overserved_only
+
+  check_overserved_both:
+    type: condition
+    check: has_overserved
+    on_yes: try_dominant              # Both underserved + overserved
+    on_no: try_diff_only             # Underserved only
+
+  check_overserved_only:
+    type: condition
+    check: has_overserved
+    on_yes: try_disrupt_only         # Overserved only
+    on_no: try_discrete              # Neither
+
+  # --- BOTH path: dominant → differentiated → disruptive → sustaining ---
+  try_dominant:
+    type: strategy
+    strategy: dominant
+    on_fail: try_diff_then_disrupt
+
+  try_diff_then_disrupt:
+    type: strategy
+    strategy: differentiated
+    on_fail: try_disrupt_final
+
+  try_disrupt_final:
+    type: strategy
+    strategy: disruptive
+    on_fail: sustaining
+
+  # --- UNDERSERVED ONLY path: differentiated → sustaining ---
+  try_diff_only:
+    type: strategy
+    strategy: differentiated
+    on_fail: sustaining
+
+  # --- OVERSERVED ONLY path: disruptive → sustaining ---
+  try_disrupt_only:
+    type: strategy
+    strategy: disruptive
+    on_fail: sustaining
+
+  # --- NEITHER path: discrete → sustaining ---
+  try_discrete:
+    type: strategy
+    strategy: discrete
+    on_fail: sustaining

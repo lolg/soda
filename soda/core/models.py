@@ -1,6 +1,6 @@
 """Core models and data structures for segmentation and zone analysis."""
 
-from enum import StrEnum
+from enum import StrEnum, Enum
 from typing import Any, Dict, List, Optional
 
 import pandas as pd
@@ -74,12 +74,16 @@ class SegmentZones(BaseModel):
         else:
             raise ValueError(f"Unknown zone type: {zone_type}")
 
-class NameAssignment(BaseModel):
-    """Audit trail for segment naming decisions."""
-    chosen_at: str                       # ISO 8601 timestamp (UTC)
-    source: str                          # "human_selection" | "human_custom"
-    options_presented: list[str]         # the AI-suggested options shown to user
-    chosen_option: int | None = None     # 1-indexed option picked, None if custom
+class SegmentPersona(BaseModel):
+    """ODI outcome-based persona for a segment."""
+    name: str                            # Context-based or needs-based label
+    size_summary: str                    # e.g. "58.5% of the market (largest segment)"
+    needs_summary: str                   # What unmet needs define this segment
+    overserved_summary: str | None = None  # What they're overserved on (if any)
+    demographics_summary: str            # Key demographic characteristics
+    narrative: str                       # Full 2-4 sentence persona description
+    created_at: str                      # ISO 8601 timestamp (UTC)
+    source: str                          # "human_approved" | "human_edited"
 
 class StrategyAssignment(BaseModel):
     name: str
@@ -87,16 +91,37 @@ class StrategyAssignment(BaseModel):
     viability_answers: dict[str, bool] = {}
     reasoning: str | None = None
     warning: str | None = None
+    business_context: dict[str, str] | None = None
+
+class ClassificationLabel(str, Enum):
+    MIXED       = "mixed"        # underserved + overserved → dominant eligible
+    UNDER_ONLY  = "under_only"   # underserved only
+    OVER_ONLY   = "over_only"    # overserved only
+    WELL_SERVED = "well_served"  # neither → sustaining
+
+class SegmentClassification(BaseModel):
+    """
+    Output of the classification step for a single segment.
+    """
+    classification: ClassificationLabel
+    underserved_strength: float     # 0.0–1.0 composite (breadth + intensity)
+    overserved_strength: float      # 0.0–1.0 breadth only
+    under_over_balance: float       # underserved_strength − overserved_strength
+    strategy_candidates: list[str]  # sorted: most viable first
+    classification_reasons: list[str]
+ 
+    model_config = ConfigDict(json_schema_extra={"exclude_none": True})
 
 class Segment(BaseModel):
     """Represents a segment with its size and associated outcomes."""
     segment_id: int
     name: str | None = None
-    naming: NameAssignment | None = None
+    persona: SegmentPersona | None = None
     size_pct: float
     zones: SegmentZones
     demographics: Optional[dict] = None
     strategy: StrategyAssignment | None = None
+    classification: SegmentClassification | None = None 
 
     model_config = ConfigDict(
         json_schema_extra={"exclude_none": True}

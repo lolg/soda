@@ -1,0 +1,669 @@
+# ODI Strategy Selection — Decision Graph
+#
+# v0.3 — incorporates review feedback:
+#   1. WTP elevated to explicit phase between weight override and candidate ordering
+#   2. dominant-under-only renamed to signal candidate status, not canonical dominant
+#   3. disruptive stop-doing reworded — stop chasing unwanted performance, not all improvement
+#   4. disruptive fallback in MIXED requires explicit disruption viability proof
+#   5. dual_viability split into two asks (improvement + cost) for clean routing
+#   +  OVER_ONLY disruption split into demand-side and supply-side questions
+#   +  open_gates renamed to open_dependencies
+#
+# Walked by an LLM agent with access to:
+#   - segments.json (zone data, outcomes with descriptions, demographics)
+#   - company metadata (entity type, core JTBD, known constraints, competitive context)
+#
+# Node types:
+#   condition  — deterministic check against segment data; no human input
+#   ask        — agent formulates a contextual question; human answers via CLI
+#   strategy   — resolved strategy with allocation emphasis and pricing direction
+#
+# Ask node responses: yes | no | uncertain
+# "uncertain" always produces a safe fallback — never a dead end.
+#
+# The agent does NOT ask generic ODI questions.
+# It uses gate_intent + context_from to formulate specific, answerable questions
+# grounded in the segment's outcomes, demographics, and company metadata.
+#
+# Example: gate_intent "wtp" for a public park segment might become:
+#   "Would local residents support a dedicated levy or reallocation of parks
+#    budget toward off-leash dog infrastructure, given that 80% of this segment
+#    lives within 5km and dog exercise areas scored 17.5 opportunity?"
+#
+# Example: gate_intent "improvement_capability" for a SaaS product might become:
+#   "Can the engineering team ship meaningful improvements to [outcome X]
+#    and [outcome Y] within the next two release cycles, given current
+#    headcount and tech stack?"
+
+meta:
+  version: "0.3"
+  description: >
+    Decision graph for per-segment strategy selection.
+    Five phases: classification → weight override → WTP resolution →
+    candidate ordering → execution qualification.
+    Deterministic conditions run first, human-answered gates resolve
+    only where the data cannot decide. The graph minimises the number
+    of questions asked — typically 1–3 per segment.
+  phases:
+    1_classification: >
+      Deterministic. Checks zone breadth and intensity against thresholds.
+      Outputs: MIXED | UNDER_ONLY | OVER_ONLY | WELL_SERVED
+    2_weight_override: >
+      Deterministic. Checks zone weight ratio (3:1 threshold).
+      May reclassify MIXED → UNDER_ONLY or OVER_ONLY.
+    3_wtp_resolution: >
+      Ask (for UNDER_ONLY and MIXED only). Determines pricing direction
+      and gates the Differentiated vs Dominant fork.
+      Outputs: confirmed | denied | unknown
+    4_candidate_ordering: >
+      Deterministic routing based on classification + WTP status.
+      Determines which strategy candidates to evaluate and in what order.
+    5_execution_qualification: >
+      Ask. Contextual questions about team capability, market conditions,
+      and viability of specific levers. Resolves final strategy.
+  inputs:
+    required:
+      - segments.json
+    optional:
+      - company_metadata  # entity type, core JTBD, constraints, competitive context
+  outputs:
+    - classification
+    - effective_classification  # after weight override
+    - wtp_status                # confirmed | denied | unknown
+    - strategy_label            # if signal is strong enough; null otherwise
+    - allocation_map
+    - pricing_direction         # premium | reduce | hold | unresolved
+    - reasoning                 # audit trail of nodes visited and gate answers
+
+# ─────────────────────────────────────────────
+# Thresholds — referenced by condition nodes
+# ─────────────────────────────────────────────
+
+thresholds:
+  meaningful_underserved_breadth: 15     # % of outcomes in underserved zone
+  meaningful_underserved_intensity: 15   # max opportunity score in zone
+  meaningful_overserved_breadth: 20      # % of outcomes in overserved zone
+  weight_dominance_ratio: 3.0           # zone weight ratio for override
+  high_opportunity: 15                   # score threshold for "strong" signal
+  improvement_bar: 20                    # % improvement needed to switch customers
+
+# ─────────────────────────────────────────────
+# Decision graph
+# ─────────────────────────────────────────────
+
+nodes:
+
+  # ══════════════════════════════════════════════
+  # PHASE 1: Classification (deterministic)
+  # ══════════════════════════════════════════════
+
+  start:
+    type: condition
+    phase: 1_classification
+    check: has_meaningful_underserved
+    rule: >
+      underserved.breadth >= 15%
+      OR underserved.intensity >= 15
+    on_yes: check_overserved_both
+    on_no: check_overserved_only
+
+  check_overserved_both:
+    type: condition
+    phase: 1_classification
+    check: has_meaningful_overserved
+    rule: "overserved.breadth >= 20%"
+    on_yes: mixed_weight_check        # both signals → MIXED candidate
+    on_no: classify_under_only        # underserved only
+
+  check_overserved_only:
+    type: condition
+    phase: 1_classification
+    check: has_meaningful_overserved
+    rule: "overserved.breadth >= 20%"
+    on_yes: classify_over_only
+    on_no: classify_well_served
+
+  # ══════════════════════════════════════════════
+  # PHASE 2: Weight override (deterministic)
+  # ══════════════════════════════════════════════
+
+  mixed_weight_check:
+    type: condition
+    phase: 2_weight_override
+    check: weight_balance
+    rule: >
+      Compare underserved_zone_weight to overserved_zone_weight.
+      If ratio >= 3:1 in either direction, override classification.
+    on_underserved_dominates: classify_under_only   # weight override
+    on_overserved_dominates: classify_over_only     # weight override
+    on_balanced: classify_mixed                     # genuine mixed signal
+
+  # ── Classification terminals ──
+
+  classify_mixed:
+    type: condition
+    phase: 2_weight_override
+    check: set_classification
+    value: MIXED
+    next: mixed_wtp
+
+  classify_under_only:
+    type: condition
+    phase: 2_weight_override
+    check: set_classification
+    value: UNDER_ONLY
+    next: under_only_wtp
+
+  classify_over_only:
+    type: condition
+    phase: 2_weight_override
+    check: set_classification
+    value: OVER_ONLY
+    next: over_only_demand_check
+
+  classify_well_served:
+    type: condition
+    phase: 2_weight_override
+    check: set_classification
+    value: WELL_SERVED
+    next: well_served_discrete_check
+
+  # ══════════════════════════════════════════════
+  # PHASE 3: WTP resolution (ask — UNDER_ONLY and MIXED only)
+  # ══════════════════════════════════════════════
+  #
+  # WTP is a classification-level input, not a qualification detail.
+  # It determines pricing direction and gates the Differentiated vs
+  # Dominant fork. OVER_ONLY and WELL_SERVED skip this phase.
+
+  mixed_wtp:
+    type: ask
+    phase: 3_wtp_resolution
+    gate_intent: wtp
+    purpose: >
+      Determine whether this segment would pay a premium for better
+      performance on the underserved outcomes — or whether the value
+      proposition must include cost reduction.
+    context_from:
+      - underserved_outcomes     # what they need
+      - overserved_outcomes      # what could be stripped
+      - demographics             # who they are
+      - company_metadata         # pricing context
+    on_yes: mixed_improvement_check        # WTP confirmed → try differentiated
+    on_no: mixed_improvement_for_dominant  # WTP denied → try dominant (need both levers)
+    on_uncertain: mixed_both_paths         # cannot resolve → present both
+
+  under_only_wtp:
+    type: ask
+    phase: 3_wtp_resolution
+    gate_intent: wtp
+    purpose: >
+      This segment is underserved with no meaningful overserved signal.
+      Would they pay more for a solution that addresses the top unmet
+      outcomes — or do they expect better at the same or lower price?
+    context_from:
+      - underserved_outcomes
+      - demographics
+      - company_metadata
+    on_yes: under_only_improvement_check        # WTP confirmed → try differentiated
+    on_no: under_only_improvement_for_dominant   # WTP denied → try dominant (no cost lever from stripping)
+    on_uncertain: under_only_both_paths          # cannot resolve → present both
+
+  # ══════════════════════════════════════════════
+  # PHASES 4+5: Candidate ordering & execution qualification
+  # ══════════════════════════════════════════════
+  #
+  # Candidate order per classification:
+  #   MIXED + WTP confirmed:  differentiated → sustaining
+  #   MIXED + WTP denied:     dominant → disruptive (with proof) → sustaining
+  #   UNDER_ONLY + WTP confirmed: differentiated → sustaining
+  #   UNDER_ONLY + WTP denied:    dominant-candidate → disruptive (nonconsumer proof) → sustaining
+  #   OVER_ONLY:              disruptive (demand then supply) → discrete → sustaining
+  #   WELL_SERVED:            discrete → sustaining
+
+  # ── MIXED path: WTP confirmed → differentiated ──────
+
+  mixed_improvement_check:
+    type: ask
+    phase: 5_execution_qualification
+    gate_intent: improvement_capability
+    purpose: >
+      Can the team deliver meaningful improvement (≥20% better) on the
+      top underserved outcomes? Focus on the highest-scoring outcomes
+      specifically — not improvement in general.
+    context_from:
+      - underserved_outcomes     # specific outcomes to reference
+      - company_metadata         # team capabilities, tech constraints
+    on_yes: strategy_differentiated_mixed
+    on_no: strategy_sustaining
+    on_uncertain: strategy_sustaining
+
+  # ── MIXED path: WTP denied → dominant (requires both levers) ──────
+
+  mixed_improvement_for_dominant:
+    type: ask
+    phase: 5_execution_qualification
+    gate_intent: improvement_capability
+    purpose: >
+      Can the team deliver meaningful improvement (≥20% better) on the
+      top underserved outcomes? This is the improvement lever of a
+      potential dominant strategy.
+    context_from:
+      - underserved_outcomes
+      - company_metadata
+    on_yes: mixed_cost_check_for_dominant
+    on_no: mixed_disruption_demand       # improvement fails → check if disruptive is viable
+    on_uncertain: mixed_disruption_demand
+
+  mixed_cost_check_for_dominant:
+    type: ask
+    phase: 5_execution_qualification
+    gate_intent: cost_reduction_capability
+    purpose: >
+      Can costs be meaningfully reduced by stripping or simplifying the
+      overserved outcomes? This is the cost lever of a potential dominant
+      strategy. Both this AND improvement must be viable for dominant.
+    context_from:
+      - overserved_outcomes      # specific outcomes to strip
+      - company_metadata         # cost structure, operational model
+    on_yes: strategy_dominant
+    on_no: mixed_disruption_demand       # cost lever fails → check disruptive
+    on_uncertain: mixed_disruption_demand
+
+  mixed_disruption_demand:
+    type: ask
+    phase: 5_execution_qualification
+    gate_intent: disruption_demand
+    purpose: >
+      Higher strategies have not qualified. Is there a confirmed
+      population of overserved customers (or nonconsumers) who would
+      accept a simpler, cheaper solution — even if it doesn't perform
+      as well on some dimensions?
+    context_from:
+      - overserved_outcomes      # what could be stripped
+      - demographics             # price sensitivity, switching signals
+      - company_metadata         # market context
+    on_yes: mixed_disruption_supply
+    on_no: strategy_sustaining
+    on_uncertain: strategy_sustaining
+
+  mixed_disruption_supply:
+    type: ask
+    phase: 5_execution_qualification
+    gate_intent: disruption_supply
+    purpose: >
+      Demand exists for a cheaper solution. Can the team profitably
+      deliver a lower-cost structure by stripping or simplifying the
+      overserved outcomes?
+    context_from:
+      - overserved_outcomes
+      - company_metadata         # cost structure, margins
+    on_yes: strategy_disruptive_mixed
+    on_no: strategy_sustaining
+    on_uncertain: strategy_sustaining
+
+  mixed_both_paths:
+    type: condition
+    phase: 3_wtp_resolution
+    check: present_both_paths
+    rule: >
+      WTP is uncertain. Cannot resolve Differentiated vs Dominant.
+      Output both paths with conditions for each.
+    next: strategy_unresolved_mixed
+
+  # ── UNDER_ONLY path: WTP confirmed → differentiated ──────
+
+  under_only_improvement_check:
+    type: ask
+    phase: 5_execution_qualification
+    gate_intent: improvement_capability
+    purpose: >
+      Can the team deliver ≥20% improvement on the top underserved
+      outcomes? There are no overserved outcomes to strip — improvement
+      must stand on its own.
+    context_from:
+      - underserved_outcomes
+      - company_metadata
+    on_yes: strategy_differentiated_pure
+    on_no: strategy_sustaining
+    on_uncertain: strategy_sustaining
+
+  # ── UNDER_ONLY path: WTP denied → dominant-candidate (no stripping lever) ──
+
+  under_only_improvement_for_dominant:
+    type: ask
+    phase: 5_execution_qualification
+    gate_intent: improvement_capability
+    purpose: >
+      Can the team deliver ≥20% improvement on the top underserved
+      outcomes?
+    context_from:
+      - underserved_outcomes
+      - company_metadata
+    on_yes: under_only_efficiency_check
+    on_no: under_only_nonconsumer_check    # improvement fails → check nonconsumer disruption
+    on_uncertain: under_only_nonconsumer_check
+
+  under_only_efficiency_check:
+    type: ask
+    phase: 5_execution_qualification
+    gate_intent: cost_reduction_without_stripping
+    purpose: >
+      No overserved outcomes to strip. Can cost reduction come from
+      operational efficiency, technology advantage, or business model
+      innovation — while also delivering the improvement?
+    context_from:
+      - company_metadata         # operational model, tech stack, business model
+    on_yes: strategy_dominant_candidate_under_only
+    on_no: under_only_nonconsumer_check
+    on_uncertain: under_only_nonconsumer_check
+
+  under_only_nonconsumer_check:
+    type: ask
+    phase: 5_execution_qualification
+    gate_intent: nonconsumption
+    purpose: >
+      Is there a population of nonconsumers — people priced out of or
+      unable to access existing solutions — who would accept a simpler
+      solution at lower cost?
+    context_from:
+      - demographics
+      - company_metadata         # market context
+    on_yes: strategy_disruptive_nonconsumer
+    on_no: strategy_sustaining
+    on_uncertain: strategy_sustaining
+
+  under_only_both_paths:
+    type: condition
+    phase: 3_wtp_resolution
+    check: present_both_paths
+    rule: >
+      WTP is uncertain. Present Differentiated path (if WTP confirmed)
+      and Dominant-candidate path (if WTP denied) with conditions.
+    next: strategy_unresolved_under
+
+  # ── OVER_ONLY path: disruptive (demand then supply) → discrete → sustaining ──
+
+  over_only_demand_check:
+    type: ask
+    phase: 5_execution_qualification
+    gate_intent: disruption_demand
+    purpose: >
+      This segment is overserved — they're getting more than they need.
+      Is there a confirmed population (or nonconsumers) who would switch
+      to a simpler, cheaper solution even if it doesn't perform as well
+      on some dimensions?
+    context_from:
+      - overserved_outcomes       # what they don't value
+      - demographics              # price sensitivity signals
+      - company_metadata          # market context
+    on_yes: over_only_supply_check
+    on_no: over_only_discrete_check
+    on_uncertain: over_only_discrete_check
+
+  over_only_supply_check:
+    type: ask
+    phase: 5_execution_qualification
+    gate_intent: disruption_supply
+    purpose: >
+      Demand exists for a cheaper solution. Can the team profitably
+      deliver a lower-cost structure by stripping or simplifying the
+      overserved outcomes?
+    context_from:
+      - overserved_outcomes
+      - company_metadata         # cost structure, margins
+    on_yes: strategy_disruptive_pure
+    on_no: over_only_discrete_check
+    on_uncertain: over_only_discrete_check
+
+  over_only_discrete_check:
+    type: ask
+    phase: 5_execution_qualification
+    gate_intent: restricted_customers
+    purpose: >
+      Are customers in this segment restricted — legally, physically,
+      situationally — in their alternatives? This cannot be inferred
+      from zone data.
+    context_from:
+      - demographics
+      - company_metadata
+    on_yes: strategy_discrete
+    on_no: strategy_sustaining
+    on_uncertain: strategy_sustaining
+
+  # ── WELL_SERVED path: discrete → sustaining ──────
+
+  well_served_discrete_check:
+    type: ask
+    phase: 5_execution_qualification
+    gate_intent: restricted_customers
+    purpose: >
+      No meaningful underserved or overserved signal. Is there a
+      restricted-access situation that would support a discrete strategy?
+    context_from:
+      - demographics
+      - company_metadata
+    on_yes: strategy_discrete
+    on_no: strategy_sustaining_well_served
+    on_uncertain: strategy_sustaining_well_served
+
+  # ══════════════════════════════════════════════
+  # STRATEGY TERMINALS
+  # ══════════════════════════════════════════════
+
+  strategy_differentiated_mixed:
+    type: strategy
+    label: differentiated
+    classification: MIXED
+    allocation:
+      underserved: invest — priority order by opportunity score
+      overserved: strip for margin improvement, not price reduction
+      table_stakes: maintain at competitive floor
+      appropriate: deprioritise
+    pricing_direction: premium
+    stop_doing: >
+      Stop competing on price. Stop investing in overserved outcomes
+      beyond minimum credibility. Reallocate to top underserved outcomes.
+    note: >
+      Overserved outcomes in a differentiated strategy are stripped for
+      margin, not passed through as price reduction. The premium is
+      justified by improvement on underserved outcomes.
+
+  strategy_differentiated_pure:
+    type: strategy
+    label: differentiated
+    classification: UNDER_ONLY
+    allocation:
+      underserved: invest — priority order by opportunity score
+      overserved: n/a
+      table_stakes: maintain at competitive floor
+      appropriate: deprioritise
+    pricing_direction: premium
+    stop_doing: >
+      Stop competing on price. No cost reduction lever exists — do not
+      pursue one. Focus entirely on delivering ≥20% improvement on the
+      top underserved outcomes.
+
+  strategy_dominant:
+    type: strategy
+    label: dominant
+    classification: MIXED
+    allocation:
+      underserved: invest — priority order by opportunity score
+      overserved: strip or simplify to fund improvement and reduce price
+      table_stakes: maintain at competitive floor
+      appropriate: eliminate where possible
+    pricing_direction: reduce
+    stop_doing: >
+      Stop doing anything that doesn't serve one of the two levers:
+      improvement on underserved outcomes or cost reduction on overserved
+      ones. Every feature decision must pass this test.
+    note: >
+      Dominant requires both levers to be genuinely viable. The cost
+      reduction comes from stripping overserved outcomes. The improvement
+      comes from addressing underserved outcomes. A new platform, business
+      model, or technology that restructures the cost curve is typically
+      required — this is not "differentiated plus cost cuts."
+
+  strategy_dominant_candidate_under_only:
+    type: strategy
+    label: dominant (candidate)
+    classification: UNDER_ONLY
+    allocation:
+      underserved: invest — priority order by opportunity score
+      overserved: n/a
+      table_stakes: maintain at competitive floor; look for efficiency
+      appropriate: eliminate where possible
+    pricing_direction: reduce
+    stop_doing: >
+      Stop anything that doesn't serve improvement or operational
+      efficiency. Cost reduction must come from how the product is
+      built and delivered, not from stripping features.
+    note: >
+      No overserved outcomes to strip. Cost reduction must come from
+      operational efficiency, technology advantage, or business model
+      innovation. This is the least orthodox application of dominant —
+      both levers are present but the cost lever is structural, not
+      outcome-derived. Flag this as a candidate requiring additional
+      validation that the cost mechanism is real and sustainable.
+
+  strategy_disruptive_pure:
+    type: strategy
+    label: disruptive
+    classification: OVER_ONLY
+    allocation:
+      underserved: n/a
+      overserved: strip or dramatically simplify
+      table_stakes: maintain minimum viable subset only
+      appropriate: eliminate
+    pricing_direction: reduce significantly
+    stop_doing: >
+      Stop adding performance the target does not value. Resist the
+      feature instinct. Focus on making it cheaper, simpler, and good
+      enough for the overserved population.
+    trajectory: >
+      Flag which underserved outcomes (if any, in adjacent segments or
+      future data) represent the evolutionary path toward a dominant
+      position. Disruption without a trajectory toward better-and-cheaper
+      is a dead end.
+
+  strategy_disruptive_mixed:
+    type: strategy
+    label: disruptive
+    classification: MIXED
+    allocation:
+      underserved: do not invest — improvement not viable at ≥20% bar
+      overserved: strip or dramatically simplify
+      table_stakes: maintain minimum viable subset only
+      appropriate: eliminate
+    pricing_direction: reduce significantly
+    stop_doing: >
+      Stop adding performance the target does not value. The data shows
+      underserved outcomes exist but the team cannot address them at the
+      required threshold. Focus on cost reduction via overserved stripping.
+    trajectory: >
+      The underserved outcomes remain real opportunities. If capability
+      changes (new technology, acquisition, partnership), revisit for
+      a dominant strategy.
+
+  strategy_disruptive_nonconsumer:
+    type: strategy
+    label: disruptive
+    classification: UNDER_ONLY
+    allocation:
+      underserved: address partially — enough for nonconsumer adoption
+      overserved: n/a
+      table_stakes: minimal — nonconsumers have lower expectations
+      appropriate: ignore
+    pricing_direction: reduce significantly
+    stop_doing: >
+      Stop targeting current consumers with incremental improvements.
+      The opportunity is in the population that can't access or afford
+      existing solutions. Build for their threshold, not the incumbent's.
+    note: >
+      Conditional disruptive path in an UNDER_ONLY segment. Requires
+      confirmed nonconsumption — does not follow from zone data alone.
+
+  strategy_discrete:
+    type: strategy
+    label: discrete
+    classification: any
+    allocation:
+      underserved: not required
+      overserved: not required
+      table_stakes: maintain minimum acceptable
+      appropriate: ignore
+    pricing_direction: premium (captive context)
+    stop_doing: >
+      Do not over-invest in quality. The premium is justified by access
+      and restriction, not by performance.
+    note: >
+      Discrete is always a situational overlay. It cannot be derived
+      from zone data. The restricted-access condition must be confirmed
+      independently.
+
+  strategy_sustaining:
+    type: strategy
+    label: sustaining
+    classification: any
+    allocation:
+      underserved: modest incremental improvement on highest-scoring
+      overserved: modest cost reduction if easy wins exist
+      table_stakes: maintain — this is the primary competitive battleground
+      appropriate: hold
+    pricing_direction: hold
+    stop_doing: >
+      Stop searching for a breakthrough. Protect the floor and move
+      incrementally. Focus on table stakes parity with competitors.
+
+  strategy_sustaining_well_served:
+    type: strategy
+    label: sustaining
+    classification: WELL_SERVED
+    allocation:
+      underserved: n/a (no meaningful signal)
+      overserved: n/a (no meaningful signal)
+      table_stakes: maintain and defend — this IS the product
+      appropriate: hold
+    pricing_direction: hold
+    stop_doing: >
+      No growth strategy is indicated by the data. Compete on
+      execution, reliability, and cost efficiency. Monitor for
+      shifts in future survey waves.
+
+  strategy_unresolved_mixed:
+    type: strategy
+    label: null
+    classification: MIXED
+    allocation:
+      underserved: invest (priority order) — emphasis depends on WTP resolution
+      overserved: reduce — for margin (if WTP confirmed) or price (if denied)
+      table_stakes: maintain at competitive floor
+      appropriate: deprioritise
+    pricing_direction: unresolved
+    note: >
+      WTP could not be determined. The allocation map is valid regardless
+      of WTP — the outcomes to invest in and strip are the same. But the
+      pricing direction and label depend on resolving WTP:
+      - If WTP confirmed → Differentiated (premium, strip overserved for margin)
+      - If WTP denied → Dominant (improve AND reduce price via stripping)
+    open_dependencies:
+      - wtp
+
+  strategy_unresolved_under:
+    type: strategy
+    label: null
+    classification: UNDER_ONLY
+    allocation:
+      underserved: invest (priority order) — emphasis depends on WTP resolution
+      overserved: n/a
+      table_stakes: maintain at competitive floor
+      appropriate: deprioritise
+    pricing_direction: unresolved
+    note: >
+      WTP could not be determined. The investment targets are clear but
+      the pricing direction depends on resolving WTP:
+      - If WTP confirmed → Differentiated (premium pricing, invest in top outcomes)
+      - If WTP denied → Dominant candidate (improve AND find cost reduction via efficiency)
+    open_dependencies:
+      - wtp

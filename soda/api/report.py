@@ -15,7 +15,7 @@ You create clear, actionable strategic reports from segmentation analysis data. 
 - How to translate quantitative data into business insights
 - How to write for executive audiences - concise, strategic, action-oriented
 - ODI concepts: underserved = opportunity, overserved = cost reduction potential
-- Strategy implications: differentiated, disruptive, dominant, sustaining
+- Strategy implications: differentiated, disruptive, dominant, discrete, sustaining
 """
 
 REPORT_PROMPT = """Generate a strategic ODI segmentation report.
@@ -51,12 +51,18 @@ def create_report_tools(
                 "segment_id": seg.segment_id,
                 "name": seg.name,
                 "size_pct": seg.size_pct,
+                "persona": {
+                    "narrative": seg.persona.narrative,
+                    "needs_summary": seg.persona.needs_summary,
+                    "overserved_summary": seg.persona.overserved_summary,
+                } if seg.persona else None,
                 "demographics": seg.demographics or {},
                 "strategy": {
                     "name": seg.strategy.name if seg.strategy else None,
                     "reasoning": seg.strategy.reasoning if seg.strategy else None,
                     "viability_answers": seg.strategy.viability_answers if seg.strategy else {},
                     "warning": seg.strategy.warning if seg.strategy else None,
+                    "business_context": seg.strategy.business_context if seg.strategy else None,
                 } if seg.strategy else None,
                 "zones": {
                     "underserved": {
@@ -128,8 +134,8 @@ async def _report_async(
     
     # Validate segments have required data
     for seg in segment_model.segments:
-        if not seg.name:
-            raise ValueError(f"Segment {seg.segment_id} has no name. Run 'soda name' first.")
+        if not seg.persona:
+            raise ValueError(f"Segment {seg.segment_id} has no persona. Run 'soda persona' first.")
         if not seg.strategy:
             raise ValueError(f"Segment {seg.segment_id} has no strategy. Run 'soda strategy' first.")
     
