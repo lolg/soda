@@ -1,8 +1,46 @@
-"""Classify segments for strategy selection. Deterministic, no LLM.
+"""Classify segments for strategy selection.
 
-Computes zone signals (breadth, intensity, weight) and assigns a
-classification (MIXED, UNDER_ONLY, OVER_ONLY, WELL_SERVED) to each
-segment. Run this before the strategy step.
+Looks at each segment's four zones and answers one question — 
+which zones carry enough signal to drive a strategy? The output
+is MIXED, UNDER_ONLY, OVER_ONLY, or WELL_SERVED.
+
+The signal consists of 3 components:
+- weight
+- breadth
+- intensity
+
+Weight (sum of opportunity scores) alone can't distinguish
+between two strategically different situations. For example:
+
+Segment 0's underserved zone: 3 outcomes, weight = 45.0
+Segment 0's overserved zone: 8 outcomes, weight = 34.0
+
+If we only looked at weight, you'd say "underserved is stronger."
+Which is true. But consider a segment with 10 underserved outcomes
+all scoring 4.5 — that's also weight = 45.0. Strategically those
+are completely different situations. The first has two outcomes
+above 16 (acute unmet need, strong differentiation signal). The
+second has mild dissatisfaction spread across many outcomes
+(no single target worth investing in).
+
+Intensity (max opportunity score) answers: "is there at least one
+very strong signal?" The threshold is 15 based on Ulwick's published
+threshold
+
+Breadth (% of outcomes in the zone) answers: "is a significant
+proportion of the market's needs in this state?" The threshold is
+15% for underserved, 20% for overserved.
+
+The underserved zone counts as meaningful if either condition is
+true:
+
+Breadth ≥ 15% — a significant share of outcomes are underserved
+Intensity ≥ 15 — at least one outcome has a very high opportunity
+score
+
+The logic is: a small number of acute unmet needs is just as
+strategically meaningful as a broad spread of moderate ones.
+
 """
 
 from soda.core.config import RulesConfig
@@ -16,11 +54,7 @@ from soda.core.strategy_models import (
 
 
 def compute_zone_signals(segment: Segment, thresholds: Thresholds) -> SegmentSignals:
-    """Compute zone signals and classify a segment.
-
-    Covers phases 1 (classification) and 2 (weight override) of the
-    strategy decision graph. The graph walker starts after this returns.
-    """
+    """Compute zone signals and classify a segment."""
     zones = [
         segment.zones.underserved,
         segment.zones.overserved,
@@ -83,7 +117,7 @@ def classify_segments(
     segment_model: SegmentModelWithAssignments,
     rules: RulesConfig,
 ) -> SegmentModelWithAssignments:
-    """Classify all segments. Idempotent — skips segments that already have signals."""
+    """Classify all segments.  Skips segments that already have signals."""
 
     thresholds = Thresholds.model_validate(
         rules.strategy_rules.model_dump()
