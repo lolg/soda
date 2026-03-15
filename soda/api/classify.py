@@ -41,6 +41,10 @@ score
 The logic is: a small number of acute unmet needs is just as
 strategically meaningful as a broad spread of moderate ones.
 
+The purpose of this classification is to ensure zones that are
+deserving enter the conversation and are considered downstream 
+during strategy definition.
+
 """
 
 from soda.core.config import RulesConfig
