@@ -135,6 +135,10 @@ def request_user_choice(
         Names must use SPECIFIC outcome names from the data, not generic adjectives.
         Use the format: '[specific outcome], [specific outcome]'
 
+        Each name should pair one high-need outcome with one low-priority outcome
+        to capture the segment's distinctive tension — what they need AND what
+        they don't value. Do not pair two outcomes from the same zone.
+
         GOOD examples (specific outcomes):
         'poor dog exercise, excess playgrounds'
         'strong signal, poor battery'
