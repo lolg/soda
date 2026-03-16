@@ -29,10 +29,18 @@ You help product teams analyze and name market segments based on customer outcom
 Name all unnamed segments. For each:
 1. Call get_segments_overview to see which need naming
 2. Call get_segment_details for the segment
-3. Call request_user_choice with your suggestions
-4. Call record_segment_name with the returned name
+3. Call get_cross_segment_comparison to see what is UNIQUE to this segment
+4. Call request_user_choice with your suggestions
+5. Call record_segment_name with the returned name
 
-Continue until all segments are named."""
+Names should capture what is UNIQUE about each segment — what distinguishes
+it from the others. Use the cross-segment comparison to identify the
+distinguishing outcomes. A good name references the specific outcomes that
+make this segment different, not generic descriptions like "excessive" or
+"insufficient."
+
+Continue until all segments are named.
+"""
 
 
 naming_agent = Agent(
@@ -58,6 +66,41 @@ def get_segments_overview(ctx: RunContext[NamingDeps]) -> dict:
         ],
     }
 
+@naming_agent.tool
+def get_cross_segment_comparison(ctx: RunContext[NamingDeps], segment_id: int) -> dict:
+    """Get what makes this segment UNIQUE vs other segments."""
+    target = next(s for s in ctx.deps.segment_model.segments if s.segment_id == segment_id)
+    others = [s for s in ctx.deps.segment_model.segments if s.segment_id != segment_id]
+
+    other_underserved_ids = set()
+    for s in others:
+        for o in s.zones.underserved.outcomes:
+            other_underserved_ids.add(o.outcome_id)
+
+    other_overserved_ids = set()
+    for s in others:
+        for o in s.zones.overserved.outcomes:
+            other_overserved_ids.add(o.outcome_id)
+
+    unique_underserved = [
+        {"description": o.description, "opportunity": round(o.opportunity, 1)}
+        for o in sorted(target.zones.underserved.outcomes, key=lambda o: o.opportunity, reverse=True)
+        if o.outcome_id not in other_underserved_ids
+    ]
+
+    unique_overserved = [
+        {"description": o.description}
+        for o in target.zones.overserved.outcomes
+        if o.outcome_id not in other_overserved_ids
+    ]
+
+    return {
+        "segment_id": segment_id,
+        "unique_underserved": unique_underserved,
+        "unique_overserved": unique_overserved,
+        "shared_underserved_count": len(target.zones.underserved.outcomes) - len(unique_underserved),
+        "shared_overserved_count": len(target.zones.overserved.outcomes) - len(unique_overserved),
+    }
 
 @naming_agent.tool
 def get_segment_details(ctx: RunContext[NamingDeps], segment_id: int) -> dict:
@@ -68,12 +111,12 @@ def get_segment_details(ctx: RunContext[NamingDeps], segment_id: int) -> dict:
         "size_pct": seg.size_pct,
         "demographics": seg.demographics or {},
         "underserved_outcomes": [
-            {"id": o.outcome_id, "description": o.description}
-            for o in seg.zones.underserved.outcomes[:5]
+            {"id": o.outcome_id, "description": o.description, "opportunity": round(o.opportunity, 1)}
+            for o in sorted(seg.zones.underserved.outcomes, key=lambda o: o.opportunity, reverse=True)[:5]
         ],
         "overserved_outcomes": [
-            {"id": o.outcome_id, "description": o.description}
-            for o in seg.zones.overserved.outcomes[:5]
+            {"id": o.outcome_id, "description": o.description, "opportunity": round(o.opportunity, 1)}
+            for o in sorted(seg.zones.overserved.outcomes, key=lambda o: o.opportunity, reverse=True)[:5]
         ],
     }
 
