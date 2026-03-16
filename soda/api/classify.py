@@ -4,13 +4,29 @@ Looks at each segment's four zones and answers one question —
 which zones carry enough signal to drive a strategy? The output
 is MIXED, UNDER_ONLY, OVER_ONLY, or WELL_SERVED.
 
-The signal consists of 3 components:
-- weight
-- breadth
-- intensity
+For each zone, the following signals are assigned:
+
+- breadth: (% of outcomes in the zone) answers: "is a significant
+  proportion of the market's needs in this state?" The threshold is
+  15% for underserved, 20% for overserved.
+
+- intensity: the max opportunity score. Answers: "is there at
+  least one very strong signal?" The threshold is
+  15 based on Ulwick's published
+
+- weight: Weight (sum of scores) is only used for one thing:
+  the 3:1 ratio check on MIXED segments.
+
+- count: The number of outcomes in the zone
+
+and for the segment as a whole:
+
+- classification (MIXED, UNDER_ONLY, OVER_ONLY, or WELL_SERVED)
 
 Weight (sum of opportunity scores) alone can't distinguish
-between two strategically different situations. For example:
+between two strategically different situations.
+
+For example:
 
 Segment 0's underserved zone: 3 outcomes, weight = 45.0
 Segment 0's overserved zone: 8 outcomes, weight = 34.0
@@ -23,20 +39,12 @@ above 16 (acute unmet need, strong differentiation signal). The
 second has mild dissatisfaction spread across many outcomes
 (no single target worth investing in).
 
-Intensity (max opportunity score) answers: "is there at least one
-very strong signal?" The threshold is 15 based on Ulwick's published
-threshold
-
-Breadth (% of outcomes in the zone) answers: "is a significant
-proportion of the market's needs in this state?" The threshold is
-15% for underserved, 20% for overserved.
-
 The underserved zone counts as meaningful if either condition is
 true:
 
-Breadth ≥ 15% — a significant share of outcomes are underserved
-Intensity ≥ 15 — at least one outcome has a very high opportunity
-score
+    Breadth ≥ 15% — a significant share of outcomes are underserved
+    Intensity ≥ 15 — at least one outcome has a very high opportunity
+    score
 
 The logic is: a small number of acute unmet needs is just as
 strategically meaningful as a broad spread of moderate ones.

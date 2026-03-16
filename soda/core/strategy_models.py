@@ -189,6 +189,7 @@ class BusinessContext(BaseModel):
     """Loaded from business-context.yaml. Project config, not pipeline logic."""
     entity_type: str
     core_jtbd: str
+    market_position:str # new_entrant, incumbent, adjacent
     market_size: int | float | None = None
     price_anchor: str | None = None
     constraints: str | None = None
@@ -234,17 +235,18 @@ class StepRecord(BaseModel):
     node_id: str
     node_type: Literal["ask", "strategy"]
     gate_intent: str | None = None
-    question: str | None = None       # contextualized question shown to user
+    purpose: str | None = None       # from the graph node — what was being determined
+    context_from: list[str] | None = None  # what data categories were relevant
     answer: Answer | None = None      # user's response
     next_node_id: str | None = None   # where the walk went next
 
 
 class StrategyResult(BaseModel):
-    """Complete strategy output for a single segment."""
-    classification: Classification
-    weight_override_applied: bool
-    signals: SegmentSignals
+    """Complete strategy output for a single segment.
 
+    Classification and zone signals live on the segment itself (segment.signals).
+    This model carries only what the graph walk produces.
+    """
     # From the strategy terminal
     strategy_label: str | None = None
     allocation: AllocationMap | None = None
@@ -256,7 +258,6 @@ class StrategyResult(BaseModel):
 
     # Addressable market (if market_size provided in business context)
     addressable_population: float | None = None
-    addressable_value: str | None = None
 
     # Audit trail
     terminal_node_id: str | None = None

@@ -1,5 +1,13 @@
 # ODI Strategy Selection — Decision Graph v0.4
 #
+# Slimmed from v0.3:
+#   - Removed phase 1-2 condition nodes (classification computed in code)
+#   - Removed present_both_paths routing stubs
+#   - Merged similar strategy terminals (differentiated, sustaining, unresolved)
+#
+# What remains: 15 ask nodes + 9 strategy terminals = 24 nodes.
+# The walker starts at the entry point for the segment's classification.
+#
 # Walked by an LLM agent with access to:
 #   - segments.json (zone data, outcomes with descriptions, demographics)
 #   - business-context.yaml (entity type, core JTBD, constraints, competitive context)
@@ -35,6 +43,18 @@ entry_points:
   WELL_SERVED: well_served_discrete_check
 
 # ─────────────────────────────────────────────
+# Thresholds — used by code for classification
+# ─────────────────────────────────────────────
+
+thresholds:
+  meaningful_underserved_breadth: 15     # % of outcomes in underserved zone
+  meaningful_underserved_intensity: 15   # max opportunity score in zone
+  meaningful_overserved_breadth: 20      # % of outcomes in overserved zone
+  weight_dominance_ratio: 3.0           # zone weight ratio for override
+  high_opportunity: 15                   # score threshold for "strong" signal
+  improvement_bar: 20                    # % improvement needed to switch customers
+
+# ─────────────────────────────────────────────
 # Nodes
 # ─────────────────────────────────────────────
 
@@ -55,7 +75,7 @@ nodes:
       - demographics
       - company_metadata
     on_yes: mixed_improvement_check
-    on_no: mixed_improvement_for_dominant
+    on_no: mixed_cost_check_for_dominant
     on_uncertain: strategy_unresolved
 
   mixed_improvement_check:
@@ -72,29 +92,32 @@ nodes:
     on_no: strategy_sustaining
     on_uncertain: strategy_sustaining
 
-  mixed_improvement_for_dominant:
-    type: ask
-    gate_intent: improvement_capability
-    purpose: >
-      Can the team deliver meaningful improvement (≥20% better) on the
-      top underserved outcomes? This is the improvement lever of a
-      potential dominant strategy.
-    context_from:
-      - underserved_outcomes
-      - company_metadata
-    on_yes: mixed_cost_check_for_dominant
-    on_no: mixed_disruption_demand
-    on_uncertain: mixed_disruption_demand
-
   mixed_cost_check_for_dominant:
     type: ask
     gate_intent: cost_reduction_capability
     purpose: >
-      Can costs be meaningfully reduced by stripping or simplifying the
-      overserved outcomes? This is the cost lever of a potential dominant
-      strategy. Both this AND improvement must be viable for dominant.
+      This segment has overserved outcomes where current investment
+      exceeds what customers value. Can resources be freed by stripping
+      or simplifying these low-priority outcomes? This establishes the
+      budget lever before asking about improvement.
     context_from:
       - overserved_outcomes
+      - company_metadata
+    on_yes: mixed_improvement_for_dominant
+    on_no: mixed_disruption_demand
+    on_uncertain: mixed_disruption_demand
+
+  mixed_improvement_for_dominant:
+    type: ask
+    gate_intent: improvement_capability
+    purpose: >
+      Cost reduction has already been confirmed — do not re-ask about
+      stripping or reallocating from low-priority outcomes. Focus only
+      on improvement capability: with freed resources available, can the
+      team deliver meaningful improvement (≥20% better) on the top
+      underserved outcomes?
+    context_from:
+      - underserved_outcomes
       - company_metadata
     on_yes: strategy_dominant
     on_no: mixed_disruption_demand
@@ -289,18 +312,20 @@ nodes:
     classification: MIXED
     allocation:
       underserved: invest — priority order by opportunity score
-      overserved: strip or simplify to fund improvement and reduce price
+      overserved: strip or simplify to fund improvement
       table_stakes: maintain at competitive floor
       appropriate: eliminate where possible
-    pricing_direction: reduce
+    pricing_direction: hold or reduce — savings fund improvement first; pass to customer only if structural cost advantage exists
     stop_doing: >
       Stop doing anything that doesn't serve one of the two levers:
       improvement on underserved outcomes or cost reduction on overserved
       ones. Every feature decision must pass this test.
     note: >
-      Dominant requires both levers to be genuinely viable. A new
-      platform, business model, or technology that restructures the
-      cost curve is typically required.
+      Dominant means better outcomes at no higher cost. The cost savings
+      from stripping overserved outcomes may fund the improvement (same
+      price, better product) or may also enable a price reduction if the
+      savings exceed what improvement requires. Do not assume price
+      reduction — the default is reallocation.
 
   strategy_dominant_candidate:
     type: strategy
@@ -311,7 +336,7 @@ nodes:
       overserved: n/a
       table_stakes: maintain at competitive floor; look for efficiency
       appropriate: eliminate where possible
-    pricing_direction: reduce
+    pricing_direction: hold or reduce — no overserved outcomes to strip; cost reduction requires structural efficiency gains
     stop_doing: >
       Stop anything that doesn't serve improvement or operational
       efficiency. Cost reduction must come from how the product is
@@ -344,18 +369,18 @@ nodes:
     label: disruptive
     classification: MIXED
     allocation:
-      underserved: do not invest — improvement not viable at ≥20% bar
+      underserved: not addressed in this strategy — revisit if capability changes
       overserved: strip or dramatically simplify
       table_stakes: maintain minimum viable subset only
       appropriate: eliminate
     pricing_direction: reduce significantly
     stop_doing: >
-      Stop adding performance the target does not value. The data shows
-      underserved outcomes exist but the team cannot address them at the
-      required threshold. Focus on cost reduction via overserved stripping.
+      Stop adding performance the target does not value. Focus on cost
+      reduction via stripping overserved outcomes and simplifying delivery.
     trajectory: >
       The underserved outcomes remain real opportunities. If capability
-      changes, revisit for a dominant strategy.
+      changes (new technology, funding, partnership), revisit for
+      a dominant strategy.
 
   strategy_disruptive_nonconsumer:
     type: strategy
@@ -405,6 +430,14 @@ nodes:
     stop_doing: >
       Stop searching for a breakthrough. Protect the floor and move
       incrementally. Focus on table stakes parity with competitors.
+    note: >
+      For incumbents, sustaining is a valid defensive strategy — existing
+      customers face switching costs and will stay for modest improvements.
+      For new entrants, this is a strategic warning: a product that is only
+      slightly better or cheaper cannot overcome switching costs. Reconsider
+      the market scope, job definition, or target segment. For adjacent
+      entrants, assess whether existing brand and customer relationships
+      lower the switching barrier enough to make incremental entry viable.
 
   strategy_unresolved:
     type: strategy

@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 from soda.api import enrich, segment
-from soda.core.config import RulesConfig, StrategyConfig
+from soda.core.config import RulesConfig
 from soda.core.models import Segment
 from soda.core.encoders.compact_encoder import CompactArrayEncoder
 from soda.core.loaders.codebook_loader import CodebookLoader
@@ -16,8 +16,8 @@ from soda.core.loaders.respondents_loader import RespondentsLoader
 from soda.core.loaders.responses_loader import ResponsesLoader
 from soda.core.models import SegmentModelWithAssignments
 from soda.api.name import NameSuggestions, name_segments
-from soda.api.report import report
 from soda.api.classify import classify_segments
+from soda.api.strategy import assign_strategies
 
 logging.basicConfig(
     level=logging.INFO,
@@ -75,13 +75,15 @@ def parse_args() -> argparse.Namespace:
 
     # Strategy command
     strategy_parser = subparsers.add_parser('strategy', help='Assign strategies to segments')
-    strategy_parser.add_argument('segments_file', help='Path to segments.json with named segments')
-    strategy_parser.add_argument('--rules', type=str, default='strategy-rules.yaml', help='Path to strategy rules YAML')
+    strategy_parser.add_argument('segments_file', help='Path to classified segments.json file')
+    strategy_parser.add_argument('--graph', type=str, default='strategy-decision-graph.yaml', help='Path to decision graph YAML')
+    strategy_parser.add_argument('--context', type=str, default='business-context.yaml', help='Path to business context YAML')
     strategy_parser.add_argument('-o', '--output', type=str, help='Output file (default: overwrite input)')
 
     # Report
     report_parser = subparsers.add_parser('report', help='Generate ODI segmentation report')
     report_parser.add_argument('segments_file', help='Path to segments.json with names and strategies')
+    report_parser.add_argument('--context', type=str, default='business-context.yaml', help='Path to business context YAML')
     report_parser.add_argument('-o', '--output', type=str, default='report.md', help='Output file (default: report.md)')
 
     return parser.parse_args()
@@ -213,49 +215,40 @@ def cmd_strategy(args):
 
     segment_model = SegmentModelWithAssignments.model_validate(data)
 
-    # Load strategy config — try standalone file first, fall back to embedded in RulesConfig
-    logger.info(f"Loading strategy rules from {args.rules}")
-    try:
-        strategy_config = StrategyConfig.from_file(args.rules)
-    except Exception:
-        rules = RulesConfig.from_file(args.rules)
-        strategy_config = rules.strategies
-
-    if not strategy_config or not strategy_config.strategies:
-        raise ValueError("No strategy configuration found in rules file.")
-
-    def on_question(text: str, segment: Segment) -> bool:
-        """CLI callback — ask viability question."""
-        print(f"\n[{segment.name}]")
+    def on_question(text: str, segment: Segment) -> str:
+        """CLI callback — three-valued answer."""
+        name = segment.name or f"Segment {segment.segment_id}"
+        print(f"\n  [{name}]")
         print(f"  {text}")
-        answer = input("  (y/n) > ").strip().lower()
-        return answer in ('y', 'yes')
+        return input("  (y/n/u) > ").strip()
 
-    def on_context(question: str) -> str:
-        """CLI callback — ask business context question (free text)."""
-        print("\n[Business Context]")
-        print(f"  {question}")
-        return input("  > ").strip()
+    segment_model = assign_strategies(
+        segment_model, args.graph, args.context, on_question,
+    )
 
-    segment_model = strategy(segment_model, strategy_config, on_question, on_context)
-
-    # Save
     output = args.output or args.segments_file
     with open(output, 'w') as f:
-        f.write(CompactArrayEncoder().encode(segment_model.model_dump(exclude_none=True)))
+        f.write(CompactArrayEncoder().encode(
+            segment_model.model_dump(exclude_none=True)
+        ))
 
     print(f"\nSaved to {output}")
 
 def cmd_report(args):
-    """Generate ODI segmentation report."""
+    """Generate strategy report."""
     with open(args.segments_file, 'r') as f:
         data = json.load(f)
-    
+
     segment_model = SegmentModelWithAssignments.model_validate(data)
-    
+
+    from soda.core.strategy_models import BusinessContext
+    from soda.api.report import generate_report
+
+    business_context = BusinessContext.from_file(args.context)
     output_path = Path(args.output)
-    report(segment_model, output_path)
-    
+
+    generate_report(segment_model, business_context, output_path)
+
     print(f"\nReport saved to {output_path}")
 
 def main():
@@ -273,6 +266,8 @@ def main():
         cmd_name(args)
     elif args.command == 'classify':
         cmd_classify(args)
+    elif args.command == 'strategy':
+        cmd_strategy(args)
     elif args.command == 'report':
         cmd_report(args)     
     else:

@@ -1,6 +1,6 @@
 # business-context.yaml
 
-entity_type: local council
+entity_type: local government (Town of Claremont, Western Australia)
 
 # Job statement formula: verb + object (noun) + contextual clarifier
 #
@@ -16,13 +16,20 @@ entity_type: local council
 # single platform? If yes, it's too narrow.
 core_jtbd: enjoy outdoor recreation in a local public space
 
-market_size: 200000
-price_anchor: "$4.2M annual parks maintenance budget"
+market_position: new_entrant   # or: incumbent, adjacent
 
+# Survey: n=393, convenience intercept, summer 2016-2017
+# No visitor population estimate provided in the study
+# market_size:
+
+# No pricing or budget data in the study
+# price_anchor:
+
+# From the paper — these are real regulatory constraints on the site
 constraints: >
-  Heritage-listed site. State government grant funding cycle.
-  No capacity for rate increases before 2027.
+  Conservation Category Wetland. Bush Forever Site 220.
+  Environmentally Sensitive Area. Banksia Woodland classified
+  as Endangered Ecological Community by Australian Government.
 
-competitive_context: >
-  Three other regional parks within 15km. Two have dedicated
-  off-leash dog areas. None have recently upgraded infrastructure.
+# Not provided in the study
+# competitive_context:

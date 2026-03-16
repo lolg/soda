@@ -1,3 +1,3 @@
 from .segment import segment
 from .enrich import enrich
-from .report import report
+from .report import generate_report
