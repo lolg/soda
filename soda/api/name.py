@@ -130,16 +130,28 @@ def request_user_choice(
 ) -> str:
     """Present naming options to user and get their choice.
 
-    You MUST provide EXACTLY 3 options.
-    Names must be short outcome-state labels that capture the segment's
-    distinguishing satisfaction pattern — what's working and what's not.
-    Use the format: '[outcome state], [outcome state]'
-    Examples: 'healthy gums, small filling', 'strong signal, poor battery',
-    'fast onboarding, slow support'.
-    Do NOT use full sentences, need statements, or persona descriptions.
-    NEVER use demographic-based names (gender, age, location).
-    NEVER use personal names (e.g. 'Brenda', 'Fred').
-    NEVER using terms like underserved, overserved
+        You MUST provide EXACTLY 3 options.
+
+        Names must use SPECIFIC outcome names from the data, not generic adjectives.
+        Use the format: '[specific outcome], [specific outcome]'
+
+        GOOD examples (specific outcomes):
+        'poor dog exercise, excess playgrounds'
+        'strong signal, poor battery'
+        'fast onboarding, slow support'
+        'unmet off-leash need, surplus sports facilities'
+
+        BAD examples (generic adjectives):
+        'inadequate facilities, overbuilt amenities'
+        'poor infrastructure, excess services'
+        'lacking exercise space, over-designed'
+
+        Each name must reference at least one specific outcome from the
+        cross-segment comparison that is UNIQUE to this segment.
+        Do NOT use full sentences, need statements, or persona descriptions.
+        NEVER use demographic-based names (gender, age, location).
+        NEVER use personal names (e.g. 'Brenda', 'Fred').
+        NEVER use terms like underserved, overserved.
 
     Args:
         ctx: Agent context with dependencies.
